@@ -1,0 +1,96 @@
+/* Shared JJ Riggs site header — topbar + sticky nav + mega dropdowns.
+   Injected by header.js into <div id="jjHeader">. Relies on each page's :root tokens
+   (--ink, --ink-2, --ink-3, --bone, --steel, --steel-2, --red, --line, --line-2, --maxw, --gut)
+   and the Tactic Sans Bld @font-face. Default = overlay (homepage over hero);
+   add data-variant="solid" on the mount for solid pages. */
+
+.topbar{background:var(--ink-3);border-bottom:1px solid var(--line-2)}
+.topbar .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:32px;font-family:"Tactic Sans Bld","Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:.92rem;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.topbar a{color:inherit;text-decoration:none}
+.topbar .t-left{justify-self:start}
+.topbar .t-center{justify-self:center}
+.topbar a:hover{color:#fff}
+.topbar .t-left a{margin-right:1.6rem}
+.topbar .t-right{justify-self:end;display:flex;align-items:center;gap:1.1rem}
+.topbar .addr{display:inline-flex;align-items:center;gap:.5rem}
+.topbar .tb-ico{width:15px;height:15px;color:var(--red);flex:none}
+.topbar .tb-promo{display:inline-flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.6)}
+@media(max-width:920px){.topbar .t-left{display:none}.topbar .wrap{grid-template-columns:1fr auto}}
+.topbar .soc{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(207,31,42,.55);border-radius:50%;padding:5px;color:#eef1f3;transition:border-color .15s,color .15s}.topbar .soc svg{width:15px;height:15px}
+.topbar .soc:hover{color:#fff;border-color:var(--red)}
+@media(max-width:680px){.topbar .addr,.topbar .hrs{display:none}}
+
+.site-head{position:absolute;top:32px;left:0;right:0;z-index:80;background:transparent;border-bottom:1px solid transparent;transition:background .3s ease,border-color .3s ease}
+.site-head::before{content:"";position:absolute;left:0;right:0;top:0;height:160px;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(10,12,15,.72),rgba(10,12,15,0));opacity:1;transition:opacity .3s ease}
+.site-head.scrolled{position:fixed;top:0;background:rgba(13,16,20,.97);border-bottom:1px solid var(--line)}
+.site-head.scrolled::before{opacity:0}
+.site-head.nav-open{background:rgba(13,16,20,.99);border-bottom-color:var(--line)}
+.site-head.nav-open::before{opacity:0}
+/* solid variant — sticky, dark from the top, no hero overlay */
+.site-head.is-solid{position:sticky;top:0;background:rgba(13,16,20,.97);border-bottom:1px solid var(--line)}
+.site-head.is-solid::before{display:none}
+.site-head.is-solid.scrolled{position:sticky;top:0}
+.site-head .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut);position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;height:106px;transition:height .25s ease}
+.site-head.scrolled .wrap{height:62px}
+.site-head a{text-decoration:none;color:inherit}
+.brand-logo img{height:68px;width:auto;display:block;transition:height .25s ease}
+.site-head.scrolled .brand-logo img{height:38px}
+.site-head:not(.scrolled) .primary-nav .nav-top{color:#e7eaec}
+.site-head:not(.scrolled) .head-actions .ph{color:#fff}
+.brand-lock{display:flex;align-items:center;gap:1.1rem}
+.brand-tag{font-size:.64rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--steel);line-height:1.55;padding-left:1.1rem;border-left:1px solid var(--line)}
+.brand-tag b{display:block;color:#fff;font-weight:600}
+@media(max-width:1180px){.brand-tag{display:none}}
+
+.primary-nav>ul{display:flex;align-items:center;gap:2.5rem;list-style:none;margin:0;padding:0}
+.primary-nav .nav-top{font-family:"Tactic Sans Bld","Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:1rem;font-weight:400;letter-spacing:.03em;color:var(--steel-2);padding:.4rem 0;background:none;border:0;border-bottom:2px solid transparent;cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;transition:color .15s,border-color .15s}
+.primary-nav .nav-top:hover,.has-menu:hover .nav-top,.nav-top[aria-expanded="true"],.nav-top.current{color:#fff;border-color:#fff}
+.primary-nav .caret{font-size:.66em;transition:transform .2s}
+.has-menu:hover .caret,.nav-top[aria-expanded="true"] .caret{transform:rotate(180deg)}
+.has-menu{position:relative}
+.has-menu .submenu{position:absolute;top:100%;left:-1.1rem;background:rgba(13,16,20,.98);backdrop-filter:blur(14px);border:1px solid var(--line);padding:.7rem;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease,visibility .2s ease;z-index:90;box-shadow:0 28px 70px -24px rgba(0,0,0,.7)}
+.has-menu:hover .submenu,.has-menu .submenu.open{opacity:1;visibility:visible;transform:none}
+#equip-menu{position:fixed;left:0;right:0;width:100%;top:138px;padding:0;overflow:hidden;background:#0d1014;border-top:1px solid var(--line);border-bottom:1px solid var(--line);box-shadow:0 34px 70px -34px rgba(0,0,0,.75)}
+#equip-menu .mm-wrap{position:relative;z-index:2;max-width:var(--maxw);margin:0 auto;padding:1.7rem var(--gut);display:grid;grid-template-columns:220px repeat(3,1fr);gap:0;align-items:stretch}
+.mm-intro{display:flex;flex-direction:column;justify-content:center;padding-right:1.6rem}
+.mm-eyebrow{font-family:"Tactic Sans Bld","Helvetica Neue",sans-serif;text-transform:uppercase;letter-spacing:.05em;font-size:1.5rem;color:#fff;line-height:1}
+.mm-introtxt{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;color:var(--steel-2);font-size:.88rem;line-height:1.45;margin-top:.7rem}
+@media(max-width:1080px){#equip-menu .mm-wrap{grid-template-columns:repeat(3,1fr)}.mm-intro{display:none}}
+.mm-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:.2rem;padding:.5rem 1.7rem;transition:transform .25s}
+.mm-card + .mm-card::before{content:"";position:absolute;left:0;top:6%;bottom:6%;width:3px;background:var(--red);transform:skewX(-13deg)}
+.mm-ico{position:relative;display:inline-block;height:132px;margin:-.6rem 0 -.7rem -.5rem}
+.mm-ico img{height:132px;width:auto;display:block;transition:transform .25s ease}
+.mm-ico-base{transition:opacity .2s ease,transform .25s ease}
+.mm-ico-hot{position:absolute;inset:0;opacity:0;transition:opacity .2s ease}
+.mm-card:hover .mm-ico-base{opacity:0}
+.mm-card:hover .mm-ico-hot{opacity:1}
+.mm-card:hover .mm-ico img{transform:translateY(-5px) scale(1.05)}
+.mm-title{display:block;font-family:"Tactic Sans Bld","Helvetica Neue",sans-serif;text-transform:uppercase;letter-spacing:.03em;font-size:1.34rem;color:#fff;line-height:1}
+.mm-desc{display:block;font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:.92rem;color:var(--steel-2);line-height:1.35;max-width:22ch}
+#sheds-menu{width:440px}
+.mm-feature{display:grid;grid-template-columns:222px 1fr;overflow:hidden;background:rgba(255,255,255,.03);transition:background .2s}
+.mm-feature:hover{background:rgba(255,255,255,.06)}
+.mm-feature-ico{display:flex;align-items:center;justify-content:center;padding:.7rem;min-height:196px}
+.mm-feature-ico .mm-ico{margin:0;width:100%;height:auto}
+.mm-feature-ico .mm-ico img{width:100%;height:auto}
+.mm-feature:hover .mm-ico-hot{opacity:1}
+.mm-feature:hover .mm-ico img{transform:translateY(-4px) scale(1.04)}
+.mm-feature-body{position:relative;padding:1.1rem 1.2rem 1.1rem 1.5rem;display:flex;flex-direction:column;justify-content:center}
+.mm-feature-body::before{content:"";position:absolute;left:0;top:12%;bottom:12%;width:2px;background:rgba(255,255,255,.16);transform:skewX(-13deg)}
+.mm-feature-body .mm-title{font-size:1.12rem}
+.mm-feature-body .mm-desc{margin:.45rem 0 .9rem}
+.mm-link{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:700;font-size:.74rem;letter-spacing:.05em;text-transform:uppercase;color:#fff;transition:color .15s}
+.mm-feature:hover .mm-link{color:var(--red)}
+.head-actions{display:flex;align-items:center;gap:1.6rem}
+.head-actions .ph{font-family:"Tactic Sans Bld","Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:.98rem;font-weight:400;letter-spacing:.02em;color:#fff}
+.head-actions .ph:hover{color:var(--steel-2)}
+.head-actions .btn{font-family:"Tactic Sans Bld","Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:.02em;padding:.85rem 1.5rem;font-size:.9rem}
+.burger{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:8px}
+.burger span{width:26px;height:2px;background:#fff;display:block}
+@media(max-width:940px){.primary-nav,.head-actions .ph{display:none}.burger{display:flex}.brand-logo img{height:46px}.site-head .wrap{height:82px}}
+.mobile-menu{display:none;background:var(--ink-2);border-bottom:1px solid var(--line)}
+.mobile-menu.open{display:block}
+.mobile-menu ul{list-style:none;margin:0;padding:0}
+.mobile-menu a{display:block;padding:1rem var(--gut);font-weight:500;color:var(--steel-2);border-top:1px solid var(--line-2);letter-spacing:.02em;text-decoration:none}
+.mobile-menu a:hover{color:#fff}
+.skip{position:absolute;left:-999px;top:0;background:var(--red);color:#fff;padding:.7rem 1rem;z-index:200}.skip:focus{left:0}

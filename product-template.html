@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title id="docTitle">Product | JJ Riggs Equipment, Colville WA</title>
+<meta id="metaDesc" name="description" content="Tractors, mowers and implements at JJ Riggs Equipment in Colville, WA. Sold and serviced locally." />
+<link rel="icon" href="https://jjriggsequipment.com/wp-content/uploads/2024/09/cropped-favicon2-270x270.png" />
+
+<link rel="preconnect" href="https://api.fontshare.com" />
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700,900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="header.css" />
+
+<style>
+@font-face{font-family:"Tactic Sans Bld";src:url("fonts/tactic-sans-bld.woff2") format("woff2"),url("fonts/tactic-sans-bld.woff") format("woff");font-weight:400 800;font-style:normal;font-display:swap}
+:root{--ink:#14171a;--ink-2:#1b2025;--ink-3:#0f1215;--bone:#f3f1ea;--white:#fbfbf9;--steel:#8b939c;--steel-2:#c3c8ce;--red:#cf1f2a;--red-deep:#a5151f;--green:#1d7a3c;--line:rgba(255,255,255,.12);--line-2:rgba(255,255,255,.06);--lined:rgba(20,23,26,.14);--maxw:1280px;--gut:clamp(1.4rem,5vw,4rem)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,system-ui,-apple-system,sans-serif;background:var(--ink);color:var(--white);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}img{display:block;max-width:100%;height:auto}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
+h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.012em;line-height:.92}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;font-weight:600;font-size:.82rem;letter-spacing:.04em;padding:1rem 1.7rem;border:1.5px solid transparent;cursor:pointer;transition:background .18s,border-color .18s,color .18s}
+.btn .arw{transition:transform .18s}.btn:hover .arw{transform:translateX(4px)}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:var(--red-deep)}
+.btn-dark{border-color:rgba(20,23,26,.3);color:var(--ink)}.btn-dark:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.cut-tab{display:inline-block;background:var(--ink);color:#fff;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:clamp(.95rem,1.4vw,1.2rem);letter-spacing:.08em;text-transform:uppercase;line-height:1;padding:.55rem 1.6rem .55rem 1.1rem;clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,0 100%)}
+.cut-tab--big{font-size:clamp(2rem,4.4vw,3.2rem);padding:.45rem 2.4rem .45rem 1.2rem;clip-path:polygon(0 0,100% 0,calc(100% - 26px) 100%,0 100%)}
+.ov-cat{font-size:.68rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#9aa0a6;margin-bottom:.55rem}
+.ov-brand{height:clamp(32px,4vw,46px);width:auto;display:block;margin:0}
+
+/* BREADCRUMB */
+.crumb{border-bottom:1px solid var(--line);background:var(--ink-3)}
+.crumb .wrap{display:flex;gap:.5rem;align-items:center;padding:.8rem 0;font-size:.78rem;color:var(--steel);flex-wrap:wrap}
+.crumb a:hover{color:#fff}.crumb .sep{color:#454b52}.crumb .now{color:#fff}
+
+/* OVERVIEW */
+.overview{padding:clamp(.9rem,2vw,1.4rem) 0 clamp(2rem,4vw,3rem)}
+.ov-grid{display:grid;grid-template-columns:minmax(0,1fr) clamp(340px,34%,420px);gap:1.4rem clamp(1.6rem,4vw,3rem);align-items:start;grid-template-areas:"gallery side" "details side"}
+.b-gallery{grid-area:gallery;min-width:0}
+.b-details{grid-area:details;min-width:0}
+.b-side{grid-area:side;position:sticky;top:88px;align-self:start}
+.b-side .ov-head{margin-bottom:1.3rem}
+.b-side .cut-tab--big{font-size:clamp(1.6rem,2.2vw,2.2rem);padding:.4rem 1.5rem .4rem .95rem}
+.ov-eyebrow{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem}
+.ov-head .ov-cat{display:inline-block;border:1px solid var(--lined);border-radius:999px;padding:.4rem 1.05rem;color:#6a7077;margin:0}
+.ov-head h1{margin-bottom:.65rem}
+.ov-media{background:var(--bone);border:1px solid var(--line);aspect-ratio:16/10;max-height:500px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.gal-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .25s ease;pointer-events:none}
+.gal-img.fitc{object-fit:contain;padding:clamp(.6rem,1.5vw,1.1rem);mix-blend-mode:darken}
+.gal-img.on{opacity:1}
+.gal-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:40px;height:54px;background:var(--ink);color:#fff;border:0;font-size:1.4rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:.85;transition:.15s}
+.gal-arrow:hover{opacity:1;background:var(--red)}
+.gal-arrow.prev{left:0}.gal-arrow.next{right:0}
+.gal-dots{position:absolute;left:0;right:0;bottom:.8rem;display:flex;justify-content:center;gap:.5rem;z-index:4}
+.gal-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.7);border:1px solid rgba(20,23,26,.35);cursor:pointer;padding:0}
+.gal-dot.on{background:var(--red);border-color:var(--red)}
+.gal-count{position:absolute;top:1rem;right:1rem;z-index:4;background:rgba(20,23,26,.82);color:#fff;font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.32rem .6rem}
+.ov-status{position:absolute;top:1rem;left:1rem;z-index:4;display:inline-flex;align-items:center;gap:.45rem;background:#fff;border:1px solid var(--lined);font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.34rem .6rem;color:var(--ink)}
+.ov-status .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+/* category label overlaid on the photo (top-left, mirrors the 1/N badge) */
+.ov-cat--over{position:absolute;top:1rem;left:1rem;z-index:4;display:inline-block;background:rgba(255,255,255,.92);border:1px solid var(--lined);border-radius:999px;padding:.4rem 1rem;font-size:.66rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#5a6066}
+/* brand + model overlaid on the photo, upper-left */
+.ov-idover{position:absolute;top:1rem;left:1rem;z-index:4;display:flex;flex-direction:column;gap:.7rem;align-items:flex-start;max-width:72%;pointer-events:none}
+.ov-idover-brand{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+.ov-idover .pb-logo{height:clamp(24px,2.8vw,34px);width:auto}
+.ov-idover-model{font-size:clamp(1.25rem,2.2vw,1.85rem);padding:.3rem 1.2rem .3rem .78rem;margin:0}
+.ov-idover .ov-cat--over{position:static}
+/* branded header bar (replaces breadcrumb) — brand logo + model */
+.prodbar{padding:.3rem 0 0}
+.prodbar .wrap{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap}
+.pb-logo{height:clamp(28px,3.6vw,40px);width:auto;display:block}
+.pb-model{font-size:clamp(1.4rem,2.4vw,2rem);padding:.32rem 1.4rem .32rem .85rem}
+.pb-back{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#9aa0a6;margin-left:auto}
+.pb-back:hover{color:var(--red)}
+.b-tagline{color:#4a5057;line-height:1.55;margin:1.1rem 0 0;font-size:1.05rem;max-width:68ch}
+
+.ov-head .blurb{color:var(--steel-2);line-height:1.6;margin-bottom:0;max-width:52ch}
+.quickspecs{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:1.6rem}
+.quickspecs .qs{background:var(--ink-2);padding:.85rem 1rem}
+.quickspecs .qsl{font-size:.62rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--steel);margin-bottom:.25rem}
+.quickspecs .qsv{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.3rem;letter-spacing:.02em;color:#fff}
+.quickspecs .qs.full{grid-column:1/-1}
+.quickspecs .qs.full .qsv{font-size:1rem;font-family:"Questrial",sans-serif;font-weight:600}
+/* TABS */
+.tabs{display:flex;flex-wrap:wrap;border-bottom:2px solid var(--lined);margin-bottom:1.4rem}
+.tab{appearance:none;background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-2px;padding:.7rem 1.25rem;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.02rem;letter-spacing:.06em;text-transform:uppercase;color:#7a8087;cursor:pointer;transition:color .15s,border-color .15s}
+.tab:first-child{padding-left:0}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--ink);border-bottom-color:var(--red)}
+.tabpanel{display:none}
+.tabpanel.on{display:block}
+.tab-feat-h{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:clamp(1.3rem,2.2vw,1.7rem);color:var(--ink);margin-bottom:.5rem}
+.tab-feat-intro{color:#4a5057;max-width:62ch;margin-bottom:1.4rem;line-height:1.6}
+
+/* ACTION RAIL (price + stacked actions) */
+.action-panel{border:1px solid var(--lined);background:#fff;margin-bottom:1.2rem}
+.ap-price{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:1rem 1.1rem;border-bottom:1px solid var(--lined);flex-wrap:wrap}
+.ap-price .pl{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:#7a8087;font-weight:600}
+.ap-pv{display:flex;flex-direction:column;align-items:flex-end;gap:.2rem;text-align:right}
+.ap-price .p{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.9rem;letter-spacing:.02em;color:var(--ink);line-height:1}
+.ap-price .p.quote{color:var(--red)}
+.ap-phone{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.15rem;letter-spacing:.02em;color:var(--red);line-height:1}
+.ap-phone:hover{color:var(--red-deep)}
+.ap-phone span{font-family:"Questrial",sans-serif;font-size:.7rem;letter-spacing:.04em;text-transform:uppercase;color:#7a8087;display:block;margin-bottom:.15rem}
+.ap-actions{display:flex;flex-direction:column}
+.ap-act{display:flex;align-items:center;gap:.85rem;padding:.92rem 1.1rem;border-top:1px solid var(--lined);background:none;border-left:0;border-right:0;border-bottom:0;width:100%;cursor:pointer;font-family:inherit;font-size:.95rem;font-weight:600;color:var(--ink);text-align:left;transition:background .14s,color .14s}
+.ap-act:first-child{border-top:0}
+.ap-act .ai{flex:none;width:20px;height:20px;color:var(--red);display:flex;align-items:center;justify-content:center}
+.ap-act .ai svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;fill:none}
+.ap-act .chev{margin-left:auto;color:#c0c4c8;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.1rem;transition:transform .14s,color .14s}
+.ap-act:hover{background:#f6f4ef;color:var(--red)}
+.ap-act:hover .chev{color:var(--red);transform:translateX(3px)}
+.ap-act.primary{background:var(--red);color:#fff}
+.ap-act.primary .ai,.ap-act.primary .chev{color:#fff}
+.ap-act.primary:hover{background:var(--red-deep);color:#fff}
+.fin-chip{display:flex;align-items:center;gap:.6rem;font-size:.8rem;color:#5b6168;border:1px solid var(--lined);padding:.6rem .9rem;margin-bottom:1.1rem}
+.fin-chip b{color:var(--ink);font-weight:600}
+.fin-chip .rate{color:var(--red);font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.25rem;letter-spacing:.02em}
+.jumpnav{display:flex;gap:.5rem;flex-wrap:wrap}
+.jumpnav a{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#5b6168;border:1px solid var(--lined);padding:.5rem .85rem;transition:.14s}
+.jumpnav a:hover{border-color:var(--ink);color:var(--ink)}
+@media(max-width:860px){.ov-grid{grid-template-columns:1fr;grid-template-areas:"gallery" "side" "details"}.b-side{position:static}}
+
+/* SPECS — rendered inline under the image */
+.specs-inline{color:var(--ink)}
+.specs-toggle{display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%;background:none;border:0;border-bottom:2px solid var(--ink);padding:0 0 .55rem;margin-bottom:1.2rem;cursor:pointer;text-align:left}
+.specs-toggle h2{color:var(--ink);font-size:clamp(1.4rem,2.4vw,1.9rem)}
+.specs-toggle .ic{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.9rem;line-height:1;color:var(--red);transition:color .15s}
+.specs-toggle:hover .ic{color:var(--ink)}
+.specs-body{overflow:hidden;max-height:6000px;transition:max-height .35s ease,opacity .25s ease}
+.specs-body.collapsed{max-height:0;opacity:0}
+.spec-sheet{display:grid;grid-template-columns:1fr;gap:1rem;align-items:start}
+.spec-group{background:#fff;border:1px solid var(--lined);padding:.9rem 1.15rem 1rem}
+.spec-group-h{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.05rem;letter-spacing:.05em;color:var(--ink);padding-bottom:.45rem;margin-bottom:.4rem;border-bottom:2px solid var(--red)}
+.spec-line{display:flex;justify-content:space-between;gap:1rem;padding:.5rem 0;border-bottom:1px solid rgba(20,23,26,.1)}
+.spec-line:last-child{border-bottom:0}
+.spec-line .k{color:#5f6469;font-size:.84rem}
+.spec-line .v{color:var(--ink);font-weight:600;text-align:right;font-size:.9rem}
+.spec-note{color:#7a8087;font-size:.78rem;margin-top:1.2rem}
+.spec-note a{color:var(--red);font-weight:600}
+@media(max-width:560px){.spec-sheet{grid-template-columns:1fr}}
+
+/* FEATURES */
+.features-sec{background-color:#f3f1ea;background-image:linear-gradient(rgba(243,241,234,.84),rgba(243,241,234,.9)),url('img/rocks2-bg.jpg');background-size:cover;background-position:center;border-top:1px solid var(--lined);padding:clamp(2.4rem,4vw,3.6rem) 0;color:var(--ink)}
+.features-sec h2{color:var(--ink);font-size:clamp(1.7rem,3vw,2.4rem);margin-bottom:.6rem}
+.features-sec .intro{color:#4a5057;max-width:62ch;margin-bottom:1.6rem;line-height:1.6}
+.acc{border-top:1px solid var(--lined)}
+.acc-item{border-bottom:1px solid var(--lined)}
+.acc-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem;background:none;border:0;cursor:pointer;padding:1.1rem 0;text-align:left;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:clamp(1.25rem,2vw,1.5rem);letter-spacing:.02em;color:var(--ink)}
+.acc-head:hover{color:var(--red)}
+.acc-head .ic{flex:none;width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--red);font-size:1.5rem;line-height:1;transition:transform .25s}
+.acc-item.open .acc-head .ic{transform:rotate(45deg)}
+.acc-panel{overflow:hidden;max-height:0;transition:max-height .3s ease}
+.acc-item.open .acc-panel{max-height:1400px}
+.acc-panel-inner{padding:0 0 1.4rem;color:#4a5057;line-height:1.6}
+.acc-panel-inner.has-img{display:grid;grid-template-columns:1.05fr 1fr;gap:1.4rem;align-items:center}
+.acc-panel-inner img{width:100%;border:1px solid var(--lined)}
+@media(max-width:680px){.acc-panel-inner.has-img{grid-template-columns:1fr}}
+
+/* NOT FOUND */
+.notfound{padding:5rem 0;text-align:center;color:var(--ink)}
+.notfound h1{font-size:2.6rem;margin-bottom:1rem;color:var(--ink)}
+.notfound p{color:#5b6168;margin-bottom:1.6rem}
+
+/* FOOTER */
+.site-foot{background:var(--ink-3);color:#aeb3ba;padding:48px 0 30px;font-size:14px;border-top:1px solid var(--line)}
+.foot-min{display:flex;justify-content:space-between;gap:2.5rem;flex-wrap:wrap}
+.fm-brand .nm{font-family:"Michroma","Tactic Sans Bld",sans-serif;font-size:18px;color:#fff;margin-bottom:14px}
+.fm-brand p{color:#aeb3ba;line-height:1.7}.fm-brand a:hover{color:#fff}
+.fm-shop .t{font-family:"Michroma","Tactic Sans Bld",sans-serif;font-size:14px;color:#fff;margin-bottom:14px}
+.fm-shop ul{list-style:none}.fm-shop li{margin-bottom:.6rem}.fm-shop a{color:#aeb3ba}.fm-shop a:hover{color:#fff}
+.foot-cr{margin-top:34px;padding-top:18px;border-top:1px solid #2a2f36;font-size:12.5px;color:#777c83}
+@media(max-width:560px){.foot-min{flex-direction:column;gap:1.8rem}}
+
+/* LIGHT PRODUCT THEME */
+main#main{background:#f5f4f0;color:var(--ink)}
+.crumb{background:transparent;border-bottom:0}
+.crumb .wrap{padding:.75rem var(--gut) 0;font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;font-weight:600;color:#9aa0a6;gap:.5rem}
+.crumb a{color:#9aa0a6}.crumb a:hover{color:var(--red)}.crumb .sep{color:#c7cbce}.crumb .now{color:var(--ink)}
+.overview{background:#f5f4f0}
+.ov-media{background:var(--bone);border:1px solid var(--lined)}
+.ov-head h1{color:var(--ink)}
+.ov-head .blurb{color:#4a5057}
+
+/* PRINT */
+@media print{
+  body{background:#fff;color:#000}
+  #jjHeader,.site-foot,.gal-arrow,.gal-dots,.gal-count,.ap-actions,.crumb,.tabs{display:none!important}
+  main#main{background:#fff}
+  .ov-grid{grid-template-columns:1fr 1fr;gap:1.2rem}
+  .ov-media{aspect-ratio:4/3;border:1px solid #ccc}
+  .gal-img{position:relative;opacity:1}.gal-img:not(.on){display:none}
+  .tabpanel{display:block!important}
+  .tab-feat-h,.tab-feat-intro{margin-top:1rem}
+  .quickspecs{border:1px solid #ccc;background:#ccc}.quickspecs .qs{background:#fff}.quickspecs .qsv{color:#000}
+  .action-panel{border:1px solid #ccc}.ap-price .p{color:#000}
+  .spec-sheet{grid-template-columns:1fr 1fr;max-width:none}
+}
+</style>
+</head>
+
+<body>
+<div id="jjHeader" data-variant="solid" data-active="equipment"></div>
+
+<main id="main"><div id="product"></div></main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-min">
+      <div class="fm-brand">
+        <div class="nm">JJ Riggs Equipment</div>
+        <p>685 Elm Tree Dr.<br>Colville, WA 99114<br>
+        <a href="mailto:sales@jjriggsequipment.com">sales@jjriggsequipment.com</a><br>
+        <a href="tel:+15097382985">509-738-2985</a><br>
+        Hours: Mon–Fri, 8 AM – 5 PM</p>
+      </div>
+      <nav class="fm-shop" aria-label="Shop">
+        <div class="t">Shop</div>
+        <ul>
+          <li><a href="tractors.html">Tractors</a></li>
+          <li><a href="implements.html">Implements</a></li>
+          <li><a href="mowers.html">Mowers</a></li>
+          <li><a href="services.html">Services</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="foot-cr">© 2026 JJ Riggs Equipment</div>
+  </div>
+</footer>
+
+<!-- Data sources (load all; adapters pick what they need) -->
+<script src="js/analytics.js"></script>
+<script src="js/tym-models.data.js"></script>
+<script src="js/badboy-models.data.js"></script>
+<script src="js/tractor-specs.data.js"></script>
+<script src="js/tractor-features.data.js"></script>
+<script src="js/mower-models.data.js"></script>
+<script src="js/mower-specs.data.js"></script>
+<script src="js/mower-features.data.js"></script>
+<script src="implements-data.js"></script>
+
+<script>
+(function(){
+  var FINANCE="https://prequalify.sheffieldfinancial.com/Apply/Dealer/57555";
+  var QUOTE="schedule-visit.html";
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var qp=function(k){return new URLSearchParams(location.search).get(k);};
+  var BRANDLOGO={
+    'TYM':'https://jjriggsequipment.com/wp-content/uploads/2024/09/tym-1.png',
+    'Bad Boy':'img/bb_logo_horizontal_orange.svg',
+    'CID':'img/cid-logo-black.svg',
+    'IronCraft':'https://jjriggsequipment.com/wp-content/uploads/2024/10/IronCraft-Attachments-Logo-1.svg',
+    'Braber':'https://jjriggsequipment.com/wp-content/uploads/2024/10/braber-equipment-logo-png.png'};
+  var ICON={
+    quote:'<path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.7 8.7 0 0 1-4-.9L3 20l1-3.9a8.4 8.4 0 1 1 17-4.6z"/>',
+    finance:'<circle cx="12" cy="12" r="9"/><path d="M14.8 9.3a2.6 2.6 0 0 0-2.8-1.5c-1.6 0-2.5.9-2.5 2 0 2.7 5.3 1.4 5.3 4.1 0 1.2-1 2.1-2.7 2.1a2.8 2.8 0 0 1-2.9-1.7M12 6.5v11"/>',
+    contact:'<path d="M21 16.9v2.1a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 3.1 3h2.1a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L6.5 12.4a16 16 0 0 0 6 6l.9-.9a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2z"/>',
+    print:'<path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/>',
+    share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>'};
+
+  /* ---------------- per-type adapters -> normalized product ---------------- */
+  function adaptTractor(){
+    var DATA={'TYM':(window.TYM_MODELS||[]),'Bad Boy':(window.BADBOY_MODELS||[])};
+    var bp=qp('b'),mp=qp('m');
+    var order=(bp&&DATA[bp])?[bp]:['TYM','Bad Boy'],brand=null,m=null;
+    if(mp){for(var i=0;i<order.length;i++){var h=DATA[order[i]].filter(function(x){return String(x.model).toLowerCase()===String(mp).toLowerCase();})[0];if(h){brand=order[i];m=h;break;}}}
+    if(!m){brand=DATA['TYM'].length?'TYM':'Bad Boy';m=DATA[brand][0];}
+    if(!m)return null;
+    var bkey=brand+'|'+m.model;
+    var SP=window.TRACTOR_SPECS||{},FE=window.TRACTOR_FEATURES||{},GA=window.TRACTOR_GALLERY||{};
+    var rich=SP[bkey];
+    /* quick-spec box: use curated highlights if available, else derive from the model record */
+    var qs=[];
+    if(rich&&rich.quick){qs=rich.quick.slice();}
+    else{
+      qs.push(['Horsepower',m.hp+' HP']);
+      qs.push(['Station',m.cab?'Cab':'Open']);
+      if(m.loader_lift_lbs)qs.push(['Loader lift',m.loader_lift_lbs.toLocaleString()+' lbs']);
+      if(m.transmission)qs.push(['Transmission',m.transmission]);
+      if(m.drive)qs.push(['Drive',m.drive,'full']);
+    }
+    var fkey=brand==='Bad Boy'?('Bad Boy '+(m.series_name||m.series)):('TYM '+m.series);
+    var images=[m.image].concat(GA[bkey]||[]);
+    return {type:'tractor',brand:brand,category:m.series+(m.cab?' · Cab':''),model:m.model,title:m.model,
+      blurb:m.blurb,price:null,priceNote:'Best local deal · ask Andrew',quickSpecs:qs,
+      images:images,specGroups:(rich&&rich.groups)||null,features:FE[bkey]||FE[fkey]||null,
+      crumbs:[['Home','index-redesign.html'],['Tractors','tractors.html']],
+      backHref:'tractors.html',metaType:'tractor'};
+  }
+  function adaptMower(){
+    var DATA=(window.MOWER_MODELS||[]);
+    var mp=qp('m'),m=mp?DATA.filter(function(x){return String(x.model).toLowerCase()===String(mp).toLowerCase();})[0]:null;
+    if(!m)m=DATA[0];if(!m)return null;
+    function decks(s){return s?String(s).split(',').map(function(d){return d.trim()+'″';}).join(' · '):'';}
+    var qs=[];
+    if(m.engine)qs.push(['Engine',String(m.engine).replace(/,\s*/g,' · ')]);
+    if(m.hp>0)qs.push(['Horsepower',m.hp+' HP']);
+    if(m.decks)qs.push(['Deck sizes',decks(m.decks)]);
+    qs.push(['Fuel',m.fuel]);
+    if(m.drive)qs.push(['Drive system',m.drive,'full']);
+    var SP=window.MOWER_SPECS||{},FE=window.MOWER_FEATURES||{};
+    return {type:'mower',brand:'Bad Boy',category:m.cat+' · '+m.type,model:m.model,title:m.model,
+      blurb:(FE[m.model]&&FE[m.model].intro)||'',price:m.price||null,priceNote:m.price?'Plus freight &amp; setup':'Best local deal · ask Andrew',
+      quickSpecs:qs,images:[m.image],specGroups:(SP[m.model]&&SP[m.model].groups)||null,features:FE[m.model]||null,
+      crumbs:[['Home','index-redesign.html'],['Mowers','mowers.html']],backHref:'mowers.html',metaType:'mower'};
+  }
+  function adaptImplement(){
+    var DATA=(window.JJ_IMPLEMENTS||[]);
+    var idp=qp('id'),sl=qp('slug'),m=null;
+    if(idp)m=DATA.filter(function(x){return String(x.id).toLowerCase()===String(idp).toLowerCase();})[0];
+    if(!m&&sl)m=DATA.filter(function(x){return x.slug===sl;})[0];
+    if(!m)m=DATA[0];if(!m)return null;
+    function mount(o){var a=o.attach||'';return {'Front Loader QA':'Front-mount / loader','Pull-Behind':'Pull-behind','Mid-Mount':'Mid-mount','3-Point Hitch':'3-point'+(o.hitch?' · '+o.hitch:'')}[a]||o.hitch||a||'—';}
+    var qs=[];
+    if(m.sku)qs.push(['Model / SKU',m.sku]);
+    if(m.width)qs.push(['Working width',m.width+'′'+(m.widthIn?' ('+m.widthIn+'″)':'')]);
+    if(m.weight)qs.push(['Weight',m.weight+' lb']);
+    qs.push(['Mounting',mount(m)]);
+    /* synthesize a small spec sheet from available fields */
+    var rows=[];
+    if(m.sku)rows.push(['SKU',m.sku]);
+    if(m.widthIn)rows.push(['Working width',m.widthIn+'″ ('+m.width+'′)']);
+    if(m.weight)rows.push(['Weight',m.weight+' lb']);
+    rows.push(['Mounting',mount(m)]);
+    if(m.duty)rows.push(['Build',m.duty]);
+    rows.push(['Brand',m.brand]);
+    var groups=[{group:m.category,rows:rows}];
+    return {type:'implement',brand:m.brand,category:m.category,model:m.name,title:m.name,
+      blurb:'',price:null,priceNote:'Front-mount · fits most loaders',quickSpecs:qs,
+      images:m.img?[m.img]:[],specGroups:groups,features:null,
+      manufacturerUrl:m.page||'',
+      crumbs:[['Home','index-redesign.html'],['Implements','implements.html'],[m.category,'implement-category.html?cat='+encodeURIComponent(m.category)]],
+      backHref:'implements.html',metaType:'implement'};
+  }
+
+  function getProduct(){
+    var t=(qp('type')||'tractor').toLowerCase();
+    if(t==='mower')return adaptMower();
+    if(t==='implement'||t==='implements')return adaptImplement();
+    return adaptTractor();
+  }
+
+  /* ---------------- render ---------------- */
+  function actBtn(cls,icon,label,attrs){
+    return '<button class="ap-act'+(cls?' '+cls:'')+'" '+(attrs||'')+'><span class="ai"><svg viewBox="0 0 24 24" aria-hidden="true">'+icon+'</svg></span><span>'+label+'</span><span class="chev" aria-hidden="true">›</span></button>';
+  }
+
+  function render(){
+    var root=document.getElementById('product');
+    var p=getProduct();
+    if(!p){root.innerHTML='<div class="wrap notfound"><h1>Product not found</h1><p>That item isn’t in the lineup.</p><a class="btn btn-red" href="index-redesign.html">Back home →</a></div>';return;}
+
+    document.getElementById('docTitle').textContent=p.brand+' '+p.title+' | JJ Riggs Equipment, Colville WA';
+    document.getElementById('metaDesc').setAttribute('content',(p.brand+' '+p.title+' '+p.metaType+'. Sold and serviced at JJ Riggs Equipment in Colville, WA.').slice(0,160));
+
+    /* gallery */
+    /* gallery = product photos; only pad with feature photos when product images are sparse */
+    var gimgs=p.images.slice().filter(function(u,i,a){return u&&a.indexOf(u)===i;});
+    if(gimgs.length<3&&p.features&&p.features.items)p.features.items.forEach(function(it){if(it.image&&gimgs.indexOf(it.image)<0)gimgs.push(it.image);});
+    var galHtml='';
+    if(gimgs.length){
+      galHtml=gimgs.map(function(u,i){return '<img class="gal-img'+(i===0?' on':'')+(/\.png(\?|$)/i.test(u)?' fitc':'')+'" src="'+u+'" alt="'+esc(p.brand+' '+p.title)+'" loading="'+(i===0?'eager':'lazy')+'">';}).join('');
+      if(gimgs.length>1){
+        galHtml+='<span class="gal-count">1 / '+gimgs.length+'</span>'
+          +'<button class="gal-arrow prev" type="button" aria-label="Previous photo">‹</button>'
+          +'<button class="gal-arrow next" type="button" aria-label="Next photo">›</button>'
+          +'<div class="gal-dots">'+gimgs.map(function(_,i){return '<button class="gal-dot'+(i===0?' on':'')+'" type="button" aria-label="Photo '+(i+1)+'"></button>';}).join('')+'</div>';
+      }
+    }else{galHtml='<div style="color:#9aa0a6;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase">Photo coming soon</div>';}
+
+    var qsHtml=p.quickSpecs.slice(0,5).map(function(x){return '<div class="qs'+(x[2]==='full'?' full':'')+'"><div class="qsl">'+esc(x[0])+'</div><div class="qsv">'+esc(x[1])+'</div></div>';}).join('');
+
+    /* action rail */
+    var priceVal=p.price?('$'+esc(String(p.price))):'Call for price';
+    var apHtml='<div class="action-panel">'
+      +'<div class="ap-price"><span class="pl">'+(p.price?'Selling price':'Pricing')+'</span>'
+        +'<span class="ap-pv"><span class="p">'+priceVal+'</span>'
+        +(p.price?'':'<a class="ap-phone" href="tel:+15097382985">509-738-2985</a>')
+      +'</span></div>'
+      +'<div class="ap-actions">'
+        +actBtn('primary',ICON.quote,'Get a Quote','data-act="quote"')
+        +actBtn('',ICON.finance,'Get Financing','data-act="finance"')
+        +actBtn('',ICON.contact,'Contact / Schedule Visit','data-act="contact"')
+        +actBtn('',ICON.print,'Print','data-act="print"')
+        +actBtn('',ICON.share,'Share','data-act="share"')
+      +'</div></div>';
+
+    /* ---- photos persistent; Specifications / Features tabbed below ---- */
+    var catPill=p.category?'<span class="ov-cat--over">'+esc(p.category)+'</span>':'';
+    var brandImg=BRANDLOGO[p.brand]?'<img class="pb-logo" src="'+BRANDLOGO[p.brand]+'" alt="'+esc(p.brand)+'">':'<span class="pb-brandtext">'+esc(p.brand)+'</span>';
+    var idOver='<div class="ov-idover"><div class="ov-idover-brand">'+brandImg+'<h1 class="cut-tab ov-idover-model">'+esc(p.title)+'</h1></div>'+catPill+'</div>';
+    var galFig='<figure class="ov-media">'+idOver+galHtml+'</figure>';
+    var qsBox=qsHtml?'<div class="quickspecs">'+qsHtml+'</div>':'';
+
+    var specsCards='';
+    if(p.specGroups&&p.specGroups.length){
+      var inner='<div class="spec-sheet">'+p.specGroups.map(function(g){
+        return '<div class="spec-group"><h3 class="spec-group-h">'+esc(g.group)+'</h3>'
+          +g.rows.map(function(r){return '<div class="spec-line"><span class="k">'+esc(r[0])+'</span><span class="v">'+esc(r[1])+'</span></div>';}).join('')+'</div>';
+      }).join('')+'</div>';
+      var note=p.manufacturerUrl?'<p class="spec-note">Full product details on the manufacturer site: <a href="'+esc(p.manufacturerUrl)+'" target="_blank" rel="noopener">view spec sheet →</a></p>':'<p class="spec-note">Full factory spec sheet available on request. Specs subject to change.</p>';
+      specsCards=inner+note;
+    }
+    var specsPanel=qsBox+specsCards;   /* highlight box first, then the detailed cards */
+
+    var featPanel='';
+    if(p.features&&p.features.items&&p.features.items.length){
+      featPanel=(p.features.heading?'<h3 class="tab-feat-h">'+esc(p.features.heading)+'</h3>':'')
+        +(p.features.intro?'<p class="tab-feat-intro">'+esc(p.features.intro)+'</p>':'')+'<div class="acc">'
+        +p.features.items.map(function(it,i){
+          var img=it.image?'<img loading="lazy" src="'+it.image+'" alt="'+esc(it.title)+'">':'';
+          return '<div class="acc-item'+(i===0?' open':'')+'">'
+            +'<button class="acc-head" type="button" aria-expanded="'+(i===0?'true':'false')+'"><span>'+esc(it.title)+'</span><span class="ic" aria-hidden="true">+</span></button>'
+            +'<div class="acc-panel"><div class="acc-panel-inner'+(it.image?' has-img':'')+'">'+(it.body?'<p>'+esc(it.body)+'</p>':'')+img+'</div></div></div>';
+        }).join('')+'</div>';
+    }
+
+    /* tabs below the photos — Specifications first, then Features (whichever exist) */
+    var tabs=[];
+    if(specsPanel.trim())tabs.push({k:'specs',label:'Specifications',html:specsPanel});
+    if(featPanel)tabs.push({k:'features',label:'Features',html:featPanel});
+
+    var tabsHtml='';
+    if(tabs.length>1){
+      tabsHtml='<div class="tabs" role="tablist">'+tabs.map(function(t,i){return '<button class="tab'+(i===0?' on':'')+'" type="button" role="tab" data-tab="'+t.k+'" aria-selected="'+(i===0?'true':'false')+'">'+t.label+'</button>';}).join('')+'</div>'
+        +tabs.map(function(t,i){return '<div class="tabpanel'+(i===0?' on':'')+'" data-panel="'+t.k+'">'+t.html+'</div>';}).join('');
+    }else if(tabs.length===1){
+      tabsHtml='<div class="tabpanel on" data-panel="'+tabs[0].k+'">'+tabs[0].html+'</div>';
+    }
+
+    var back=p.crumbs[p.crumbs.length-1]||['',''];
+
+    root.innerHTML=
+      '<nav class="prodbar" aria-label="Breadcrumb"><div class="wrap">'
+        +(back[1]?'<a class="pb-back" href="'+esc(back[1])+'">&lsaquo; '+esc(back[0])+'</a>':'')
+      +'</div></nav>'
+      +'<section class="overview"><div class="wrap"><div class="ov-grid">'
+        +'<div class="b-gallery">'+galFig+(p.blurb?'<p class="b-tagline">'+esc(p.blurb)+'</p>':'')+'</div>'
+        +'<aside class="b-side">'
+          +apHtml
+          +'<div class="fin-chip"><span class="rate">0% APR*</span> <span>financing available <b>on approved credit</b></span></div>'
+        +'</aside>'
+        +'<div class="b-details">'+tabsHtml+'</div>'
+      +'</div></div></section>';
+
+    /* gallery wiring */
+    (function(){
+      var gal=root.querySelector('.ov-media');if(!gal)return;
+      var imgs=gal.querySelectorAll('.gal-img');if(imgs.length<2)return;
+      var dots=gal.querySelectorAll('.gal-dot'),count=gal.querySelector('.gal-count'),gi=0;
+      function show(n){gi=(n+imgs.length)%imgs.length;
+        imgs.forEach(function(im,i){im.classList.toggle('on',i===gi);});
+        dots.forEach(function(d,i){d.classList.toggle('on',i===gi);});
+        if(count)count.textContent=(gi+1)+' / '+imgs.length;}
+      gal.querySelector('.gal-arrow.prev').addEventListener('click',function(){show(gi-1);});
+      gal.querySelector('.gal-arrow.next').addEventListener('click',function(){show(gi+1);});
+      dots.forEach(function(d,i){d.addEventListener('click',function(){show(i);});});
+      var x=0,dx=0,on=false;
+      gal.addEventListener('touchstart',function(e){on=true;x=e.touches[0].clientX;dx=0;},{passive:true});
+      gal.addEventListener('touchmove',function(e){if(on)dx=e.touches[0].clientX-x;},{passive:true});
+      gal.addEventListener('touchend',function(){if(!on)return;on=false;if(Math.abs(dx)>40)show(dx<0?gi+1:gi-1);});
+    })();
+
+    /* action wiring */
+    root.querySelectorAll('.ap-act').forEach(function(b){
+      b.addEventListener('click',function(){
+        var a=b.getAttribute('data-act');
+        if(a==='quote')location.href=QUOTE+'?intent=quote&product='+encodeURIComponent(p.brand+' '+p.title);
+        else if(a==='contact')location.href=QUOTE+'?intent=visit&product='+encodeURIComponent(p.brand+' '+p.title);
+        else if(a==='finance')window.open(FINANCE,'_blank','noopener');
+        else if(a==='print')window.print();
+        else if(a==='share'){
+          var data={title:p.brand+' '+p.title,text:'Check out the '+p.brand+' '+p.title+' at JJ Riggs Equipment',url:location.href};
+          if(navigator.share){navigator.share(data).catch(function(){});}
+          else if(navigator.clipboard){navigator.clipboard.writeText(location.href);var s=b.querySelector('span:nth-child(2)');if(s){var o=s.textContent;s.textContent='Link copied!';setTimeout(function(){s.textContent=o;},1600);}}
+        }
+      });
+    });
+
+    /* tab switching */
+    var tabBtns=root.querySelectorAll('.tab');
+    tabBtns.forEach(function(btn){btn.addEventListener('click',function(){
+      var k=btn.getAttribute('data-tab');
+      tabBtns.forEach(function(b){var on=b===btn;b.classList.toggle('on',on);b.setAttribute('aria-selected',on?'true':'false');});
+      root.querySelectorAll('.tabpanel').forEach(function(pnl){pnl.classList.toggle('on',pnl.getAttribute('data-panel')===k);});
+    });});
+
+    /* features accordion */
+    root.querySelectorAll('.acc-head').forEach(function(btn){btn.addEventListener('click',function(){
+      var it=btn.closest('.acc-item');var o=it.classList.toggle('open');btn.setAttribute('aria-expanded',o);});});
+
+    window.scrollTo(0,0);
+  }
+
+  render();
+  window.addEventListener('popstate',render);
+})();
+</script>
+<script src="header.js"></script>
+</body>
+</html>

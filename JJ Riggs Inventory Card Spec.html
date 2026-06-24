@@ -1,0 +1,2154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JJ Riggs Equipment — Inventory Card Visual Spec</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* =============================================
+   DESIGN TOKENS — JJ RIGGS EQUIPMENT
+   Brand palette: industrial green + iron/slate
+   ============================================= */
+:root {
+  /* Brand */
+  --brand-green:       #1e5c2b;
+  --brand-green-dark:  #143d1c;
+  --brand-green-light: #2e7d3c;
+  --brand-iron:        #2c3330;
+  --brand-iron-mid:    #3d4a44;
+
+  /* Surfaces — light */
+  --color-bg:             #f4f5f2;
+  --color-surface:        #ffffff;
+  --color-surface-2:      #f9faf8;
+  --color-surface-offset: #eef0eb;
+  --color-border:         #d6d9d3;
+  --color-divider:        #e2e5df;
+
+  /* Text */
+  --color-text:       #1a1f1c;
+  --color-text-muted: #5c6560;
+  --color-text-faint: #9aA09b;
+  --color-text-inv:   #f4f5f2;
+
+  /* Status badge colors */
+  --status-instock-bg:   #d4edda;
+  --status-instock-text: #1a5c2b;
+  --status-instock-dot:  #22a047;
+
+  --status-limited-bg:   #fff3cd;
+  --status-limited-text: #8a5e00;
+  --status-limited-dot:  #f0a800;
+
+  --status-low-bg:       #ffe5cc;
+  --status-low-text:     #7a3200;
+  --status-low-dot:      #e06500;
+
+  --status-backorder-bg:   #e2e5ef;
+  --status-backorder-text: #2c3875;
+  --status-backorder-dot:  #4a5db8;
+
+  --status-custom-bg:    #e8e0f5;
+  --status-custom-text:  #4a1e8a;
+  --status-custom-dot:   #7c3dd6;
+
+  --status-disc-bg:    #ebebeb;
+  --status-disc-text:  #666;
+  --status-disc-dot:   #aaa;
+
+  /* Tag badge colors */
+  --tag-justin-bg:   #1e5c2b;
+  --tag-justin-text: #ffffff;
+
+  --tag-xleft-bg:    #c0392b;
+  --tag-xleft-text:  #ffffff;
+
+  --tag-popular-bg:  #0d5f8a;
+  --tag-popular-text:#ffffff;
+
+  --tag-seasonal-bg: #7a5a00;
+  --tag-seasonal-text:#ffffff;
+
+  --tag-clearance-bg: #6b0d0d;
+  --tag-clearance-text: #ffffff;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Typography */
+  --font-body:    'Inter', system-ui, sans-serif;
+  --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+
+  --text-xs:   clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm:   clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-lg:   clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+  --text-xl:   clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+  --text-2xl:  clamp(2rem, 1.2rem + 2.5vw, 3rem);
+
+  /* Radii */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.09), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06);
+
+  --transition: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] {
+  --color-bg:             #151916;
+  --color-surface:        #1c211d;
+  --color-surface-2:      #202620;
+  --color-surface-offset: #252b26;
+  --color-border:         #333a35;
+  --color-divider:        #2a302b;
+  --color-text:           #d2d8d3;
+  --color-text-muted:     #7a8a7d;
+  --color-text-faint:     #4a5a4d;
+  --color-text-inv:       #151916;
+
+  --status-instock-bg:   #1a3d22;
+  --status-instock-text: #6dce85;
+  --status-limited-bg:   #3d2e00;
+  --status-limited-text: #f5c430;
+  --status-low-bg:       #3d1c00;
+  --status-low-text:     #f08040;
+  --status-backorder-bg: #1a2040;
+  --status-backorder-text: #8090e0;
+  --status-custom-bg:    #2a1a40;
+  --status-custom-text:  #b080f0;
+  --status-disc-bg:      #2a2a2a;
+  --status-disc-text:    #888;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.5);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--color-text);
+  background: var(--color-bg);
+  min-height: 100dvh;
+  line-height: 1.6;
+}
+img { display: block; max-width: 100%; height: auto; }
+button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; }
+
+/* =============================================
+   SPEC PAGE LAYOUT
+   ============================================= */
+.spec-header {
+  background: var(--brand-green);
+  color: #fff;
+  padding: var(--space-6) var(--space-8);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+}
+.spec-header-left { display: flex; align-items: center; gap: var(--space-3); }
+.spec-logo {
+  display: flex; align-items: center; gap: var(--space-2);
+}
+.spec-logo svg { flex-shrink: 0; }
+.spec-title { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 700; letter-spacing: 0.02em; line-height: 1; }
+.spec-subtitle { font-size: var(--text-xs); opacity: 0.75; margin-top: 2px; }
+.spec-badge { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); border-radius: var(--radius-full); padding: 2px 10px; font-size: var(--text-xs); font-weight: 600; }
+
+.theme-toggle {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-3);
+  color: white;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  display: flex; align-items: center; gap: var(--space-1);
+  transition: background var(--transition);
+}
+.theme-toggle:hover { background: rgba(255,255,255,0.25); }
+
+.spec-nav {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 var(--space-8);
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+}
+.spec-nav a {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color var(--transition), border-color var(--transition);
+}
+.spec-nav a:hover { color: var(--brand-green); }
+.spec-nav a.active { color: var(--brand-green); border-bottom-color: var(--brand-green); }
+
+.spec-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-10) var(--space-6);
+}
+
+/* Section headers with annotation style */
+.spec-section {
+  margin-bottom: var(--space-16);
+}
+.spec-section-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.spec-section-num {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  background: var(--brand-green);
+  color: white;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.spec-section-desc {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-8);
+  max-width: 70ch;
+  border-left: 3px solid var(--brand-green);
+  padding-left: var(--space-4);
+}
+.spec-divider {
+  height: 1px;
+  background: var(--color-divider);
+  margin: var(--space-16) 0;
+}
+
+/* Annotation callout boxes */
+.annotation {
+  background: #fffbe6;
+  border: 1px solid #f0d070;
+  border-left: 4px solid #f0b800;
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-xs);
+  color: #5a4a00;
+  margin-bottom: var(--space-4);
+}
+[data-theme="dark"] .annotation {
+  background: #2d2700;
+  border-color: #7a6000;
+  border-left-color: #c09000;
+  color: #d4b840;
+}
+.annotation strong { font-weight: 700; }
+
+.spec-label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-faint);
+  margin-bottom: var(--space-3);
+}
+
+/* =============================================
+   PRODUCT CARD — THE CORE COMPONENT
+   ============================================= */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Image area */
+.card-img {
+  position: relative;
+  background: var(--color-surface-2);
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: var(--space-4);
+}
+.card-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-faint);
+}
+
+/* Tag — top-left corner ribbon */
+.card-tag {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  z-index: 2;
+  line-height: 1.4;
+}
+.card-tag svg { width: 10px; height: 10px; }
+
+.tag-justin   { background: var(--tag-justin-bg);   color: var(--tag-justin-text); }
+.tag-xleft    { background: var(--tag-xleft-bg);    color: var(--tag-xleft-text); }
+.tag-popular  { background: var(--tag-popular-bg);  color: var(--tag-popular-text); }
+.tag-seasonal { background: var(--tag-seasonal-bg); color: var(--tag-seasonal-text); }
+.tag-clearance{ background: var(--tag-clearance-bg);color: var(--tag-clearance-text); }
+
+/* Body */
+.card-body {
+  padding: var(--space-4);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.card-category {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-text-faint);
+}
+
+.card-name {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+.card-sku {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  font-family: 'Courier New', monospace;
+}
+
+/* Status badge */
+.card-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  align-self: flex-start;
+  margin-top: var(--space-1);
+}
+.card-status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-instock   { background: var(--status-instock-bg);   color: var(--status-instock-text); }
+.status-instock   .card-status-dot { background: var(--status-instock-dot); }
+
+.status-limited   { background: var(--status-limited-bg);   color: var(--status-limited-text); }
+.status-limited   .card-status-dot { background: var(--status-limited-dot); }
+
+.status-low       { background: var(--status-low-bg);       color: var(--status-low-text); }
+.status-low       .card-status-dot { background: var(--status-low-dot); }
+
+.status-backorder { background: var(--status-backorder-bg); color: var(--status-backorder-text); }
+.status-backorder .card-status-dot { background: var(--status-backorder-dot); }
+
+.status-custom    { background: var(--status-custom-bg);    color: var(--status-custom-text); }
+.status-custom    .card-status-dot { background: var(--status-custom-dot); }
+
+.status-disc      { background: var(--status-disc-bg);      color: var(--status-disc-text); }
+.status-disc      .card-status-dot { background: var(--status-disc-dot); }
+
+/* Qty indicator */
+.card-qty {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+.card-qty strong { color: var(--color-text); font-weight: 700; }
+.qty-low strong  { color: #c0392b; }
+
+/* Footer — CTA */
+.card-footer {
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-divider);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  padding: 8px var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid transparent;
+  transition: all var(--transition);
+  white-space: nowrap;
+  cursor: pointer;
+  line-height: 1;
+}
+.btn-primary {
+  background: var(--brand-green);
+  color: white;
+  border-color: var(--brand-green);
+}
+.btn-primary:hover { background: var(--brand-green-dark); border-color: var(--brand-green-dark); }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--brand-green);
+  border-color: var(--brand-green);
+}
+.btn-secondary:hover { background: var(--brand-green); color: white; }
+
+.btn-ghost {
+  background: var(--color-surface-offset);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+.btn-ghost:hover { color: var(--color-text); border-color: var(--color-text-muted); }
+
+.btn-muted {
+  background: #eee;
+  color: #777;
+  border-color: #ddd;
+  cursor: default;
+  opacity: 0.8;
+}
+[data-theme="dark"] .btn-muted { background: #2a2a2a; color: #666; border-color: #444; }
+
+.btn-sm {
+  padding: 5px var(--space-3);
+  font-size: var(--text-xs);
+}
+
+/* Backorder/Custom CTA note */
+.cta-note {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* Greyed-out card state */
+.card-discontinued {
+  opacity: 0.55;
+  filter: grayscale(60%);
+}
+.card-discontinued:hover { transform: none; box-shadow: var(--shadow-sm); }
+
+/* =============================================
+   CARD GRIDS
+   ============================================= */
+.card-grid-demo {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+}
+
+/* =============================================
+   STATUS TABLE
+   ============================================= */
+.status-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.status-table th {
+  background: var(--brand-iron);
+  color: #fff;
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.status-table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-divider);
+  vertical-align: middle;
+}
+.status-table tr:last-child td { border-bottom: none; }
+.status-table tr:nth-child(even) td { background: var(--color-surface-2); }
+
+/* =============================================
+   GRID WIREFRAME DIAGRAMS
+   ============================================= */
+.wireframe-container {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+.wireframe-label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-faint);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.wireframe-label::before {
+  content: '';
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--brand-green);
+}
+.device-frame {
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+}
+.device-bar {
+  background: var(--color-surface-offset);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+.device-dots { display: flex; gap: 4px; }
+.device-dot  { width: 8px; height: 8px; border-radius: 50%; }
+.dot-red   { background: #ff5f57; }
+.dot-yellow{ background: #febc2e; }
+.dot-green { background: #28c840; }
+
+/* Wireframe blocks */
+.wf-header {
+  background: var(--brand-green);
+  padding: var(--space-3) var(--space-4);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: var(--space-2);
+}
+.wf-header-logo { display: flex; align-items: center; gap: var(--space-2); }
+.wf-header-logo-mark { width: 28px; height: 28px; background: rgba(255,255,255,0.3); border-radius: 4px; }
+.wf-header-text { background: rgba(255,255,255,0.5); height: 10px; width: 100px; border-radius: 3px; }
+.wf-header-nav { display: flex; gap: var(--space-2); }
+.wf-nav-pill { background: rgba(255,255,255,0.2); height: 8px; border-radius: 3px; }
+
+.wf-filter-bar {
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-divider);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.wf-filter-chip {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  height: 24px;
+  border-radius: 12px;
+  display: flex; align-items: center;
+  padding: 0 var(--space-3);
+}
+.wf-filter-chip-active {
+  background: var(--brand-green);
+  border-color: var(--brand-green);
+}
+.wf-chip-text { height: 8px; border-radius: 3px; background: var(--color-border); }
+.wf-filter-chip-active .wf-chip-text { background: rgba(255,255,255,0.6); }
+
+.wf-body { padding: var(--space-4); background: var(--color-bg); }
+
+/* Desktop grid wireframe: 3 cols */
+.wf-grid-desktop {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+/* Tablet: 2 cols */
+.wf-grid-tablet {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+/* Mobile: 1 col */
+.wf-grid-mobile {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+/* Mini wireframe card */
+.wf-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.wf-card-img-area {
+  background: var(--color-surface-2);
+  aspect-ratio: 4/3;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.wf-img-icon { opacity: 0.15; }
+.wf-card-tag {
+  position: absolute;
+  top: 6px; left: 6px;
+  height: 14px; width: 50px;
+  border-radius: 7px;
+  background: var(--brand-green);
+}
+.wf-card-body { padding: var(--space-3); display: flex; flex-direction: column; gap: 5px; }
+.wf-line { height: 7px; background: var(--color-surface-offset); border-radius: 3px; }
+.wf-line-short { width: 50%; }
+.wf-line-xshort{ width: 30%; }
+.wf-status-dot-row { display: flex; align-items: center; gap: 5px; }
+.wf-status-dot-mini { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.wf-status-line { height: 7px; border-radius: 3px; width: 60px; }
+.wf-card-footer {
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--color-divider);
+}
+.wf-btn { height: 22px; background: var(--brand-green); border-radius: var(--radius-sm); opacity: 0.8; }
+
+/* =============================================
+   ANNOTATED ARROW CALLOUTS
+   ============================================= */
+.annotated-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .annotated-wrapper {
+    grid-template-columns: 300px 1fr;
+  }
+}
+.annotation-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.annotation-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  position: relative;
+  padding-left: calc(var(--space-4) + 28px);
+}
+.annotation-item-num {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px; height: 22px;
+  background: var(--brand-green);
+  color: white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.annotation-item strong { color: var(--color-text); font-weight: 700; display: block; margin-bottom: 2px; }
+.annotation-item span { color: var(--color-text-muted); font-size: var(--text-xs); }
+
+/* The card with annotation markers */
+.annotated-card-wrap {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  overflow: visible;
+}
+.ann-marker {
+  position: absolute;
+  width: 22px; height: 22px;
+  background: var(--brand-green);
+  color: white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 800;
+  z-index: 10;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  pointer-events: none;
+}
+.ann-1 { top: 6px;  left: -12px;  }
+.ann-2 { top: 6px;  right: -12px; }
+.ann-3 { bottom: 100px; left: -12px; }
+.ann-4 { bottom: 100px; right: -12px; }
+.ann-5 { bottom: 60px; left: -12px; }
+.ann-6 { bottom: 14px; left: -12px; }
+
+/* =============================================
+   LAYOUT SECTION
+   ============================================= */
+.layout-grid {
+  display: grid;
+  gap: var(--space-8);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 900px) {
+  .layout-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.layout-grid-three {
+  display: grid;
+  gap: var(--space-8);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 700px) {
+  .layout-grid-three {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.breakpoint-badge {
+  display: inline-block;
+  background: var(--brand-iron);
+  color: white;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-3);
+}
+
+/* =============================================
+   COLOR SWATCH ROW
+   ============================================= */
+.swatch-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+.swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+.swatch-color {
+  width: 48px; height: 48px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+.swatch-label { font-size: 0.65rem; color: var(--color-text-muted); text-align: center; max-width: 60px; line-height: 1.3; }
+
+/* =============================================
+   RESPONSIVE DEMO TABS
+   ============================================= */
+.demo-tabs { display: flex; gap: var(--space-2); margin-bottom: var(--space-4); flex-wrap: wrap; }
+.demo-tab {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.demo-tab.active { background: var(--brand-green); color: white; border-color: var(--brand-green); }
+.demo-tab:hover:not(.active) { border-color: var(--brand-green); color: var(--brand-green); }
+
+.grid-demo-wrap { display: none; }
+.grid-demo-wrap.active { display: block; }
+
+/* =============================================
+   TAG REFERENCE GRID
+   ============================================= */
+.tag-ref-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+.tag-ref-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+.tag-ref-item p {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  max-width: 120px;
+  line-height: 1.4;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="spec-header">
+  <div class="spec-header-left">
+    <div class="spec-logo">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-label="JJ Riggs Equipment">
+        <rect width="36" height="36" rx="7" fill="rgba(255,255,255,0.15)"/>
+        <text x="18" y="24" font-family="'Barlow Condensed',Arial Narrow,sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle">JJR</text>
+      </svg>
+      <div>
+        <div class="spec-title">JJ RIGGS EQUIPMENT</div>
+        <div class="spec-subtitle">Inventory Card — Visual Specification</div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:var(--space-3);">
+    <span class="spec-badge">Dev Handoff v1.0</span>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+      <span id="theme-icon">☀</span> <span id="theme-label">Light</span>
+    </button>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="spec-nav">
+  <a href="#anatomy" class="active">Card Anatomy</a>
+  <a href="#statuses">Status States</a>
+  <a href="#tags">Tag System</a>
+  <a href="#ctas">CTA Logic</a>
+  <a href="#grid-layout">Grid Layout</a>
+  <a href="#color-tokens">Color Tokens</a>
+</nav>
+
+<main class="spec-main">
+
+<!-- =============================================
+     SECTION 1: CARD ANATOMY
+     ============================================= -->
+<section class="spec-section" id="anatomy">
+  <h2 class="spec-section-title">
+    <span class="spec-section-num">1</span>
+    Card Anatomy — Annotated
+  </h2>
+  <p class="spec-section-desc">
+    Each inventory card is built from 6 distinct zones. The annotated example below shows a card in the "Limited" status with a "Just In" tag — the most visually complex state. All other states simplify from this.
+  </p>
+
+  <div class="annotated-wrapper">
+    <!-- ANNOTATION LIST -->
+    <ul class="annotation-list">
+      <li class="annotation-item">
+        <span class="annotation-item-num">1</span>
+        <strong>Tag Badge (corner ribbon)</strong>
+        <span>Pill badge, top-left of image. Set by the "Tag" column in the Sheet. Always on top of image. Use sparingly — max 1 tag per card.</span>
+      </li>
+      <li class="annotation-item">
+        <span class="annotation-item-num">2</span>
+        <strong>Status Badge</strong>
+        <span>Colored dot + label. Top-right overlaid on image for "Just In" cards; in card body otherwise. Color-coded to status (green/amber/orange/blue/purple/grey).</span>
+      </li>
+      <li class="annotation-item">
+        <span class="annotation-item-num">3</span>
+        <strong>Category + SKU</strong>
+        <span>Faint uppercase label above the name. SKU in monospace below. Both are metadata — never bolder than the product name.</span>
+      </li>
+      <li class="annotation-item">
+        <span class="annotation-item-num">4</span>
+        <strong>Product Name</strong>
+        <span>Barlow Condensed Bold, the dominant text element. Size: --text-lg. Max 2 lines — truncate beyond that.</span>
+      </li>
+      <li class="annotation-item">
+        <span class="annotation-item-num">5</span>
+        <strong>Qty / Availability Note</strong>
+        <span>Only shown when qty &lt; 5 or when status is Backorder/Custom. "3 left on lot" or "Est. 2–3 weeks". Red text when qty ≤ 2.</span>
+      </li>
+      <li class="annotation-item">
+        <span class="annotation-item-num">6</span>
+        <strong>CTA Footer</strong>
+        <span>Separated by a hairline divider. Primary action changes based on status — see Section 4.</span>
+      </li>
+    </ul>
+
+    <!-- ANNOTATED CARD -->
+    <div class="annotated-card-wrap" style="max-width:300px;">
+      <!-- Annotation markers -->
+      <div class="ann-marker ann-1">1</div>
+      <div class="ann-marker ann-2">2</div>
+      <div class="ann-marker ann-3">3</div>
+      <div class="ann-marker ann-4">4</div>
+      <div class="ann-marker ann-5">5</div>
+      <div class="ann-marker ann-6">6</div>
+
+      <div class="card" style="max-width:300px;">
+        <div class="card-img">
+          <!-- Tag 1 -->
+          <span class="card-tag tag-justin">
+            <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 1l1.2 2.4L9 3.8l-2 1.95.47 2.75L5 7.2 2.53 8.5 3 5.75 1 3.8l2.8-.4z"/></svg>
+            Just In
+          </span>
+          <div class="card-img-placeholder">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none"><rect x="8" y="16" width="48" height="32" rx="4" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3" opacity="0.3"/><path d="M20 36l8-10 6 8 4-5 6 7" stroke="currentColor" stroke-width="2" opacity="0.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="card-category">Grapple Rakes</div>
+            <div class="card-sku">SKU: CTGRDC72</div>
+          </div>
+          <div class="card-name">72" Dual Cylinder Grapple Rake</div>
+          <div class="card-status status-limited">
+            <span class="card-status-dot"></span>
+            Limited Stock
+          </div>
+          <div class="card-qty qty-low"><strong>2 left</strong> on lot</div>
+        </div>
+        <div class="card-footer">
+          <a href="#" class="btn btn-primary btn-sm">Get a Quote</a>
+          <a href="#" class="btn btn-ghost btn-sm">Details</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="spec-divider"></div>
+
+<!-- =============================================
+     SECTION 2: STATUS STATES
+     ============================================= -->
+<section class="spec-section" id="statuses">
+  <h2 class="spec-section-title">
+    <span class="spec-section-num">2</span>
+    Status States — All 6 Variants
+  </h2>
+  <p class="spec-section-desc">
+    The <strong>Status</strong> column in the Google Sheet drives badge color, CTA button style, and card opacity. Below are live examples of all 6 states. The developer should map these exactly to the sheet dropdown values.
+  </p>
+
+  <div class="annotation">
+    <strong>Sheet column:</strong> "Status" — dropdown with these exact values: In Stock · Limited · Low Stock · Backorder · Custom Order · Discontinued
+  </div>
+
+  <!-- Status reference table -->
+  <table class="status-table" style="margin-bottom: var(--space-8);">
+    <thead>
+      <tr>
+        <th>Sheet Value</th>
+        <th>Badge</th>
+        <th>Card Behavior</th>
+        <th>CTA</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>In Stock</strong></td>
+        <td><span class="card-status status-instock"><span class="card-status-dot"></span>In Stock</span></td>
+        <td>Full opacity. Show qty if &lt; 5.</td>
+        <td><span class="btn btn-primary btn-sm">Get a Quote</span></td>
+      </tr>
+      <tr>
+        <td><strong>Limited</strong></td>
+        <td><span class="card-status status-limited"><span class="card-status-dot"></span>Limited Stock</span></td>
+        <td>Full opacity. Show qty. Red text if qty ≤ 2.</td>
+        <td><span class="btn btn-primary btn-sm">Get a Quote</span></td>
+      </tr>
+      <tr>
+        <td><strong>Low Stock</strong></td>
+        <td><span class="card-status status-low"><span class="card-status-dot"></span>Only 1 Left</span></td>
+        <td>Full opacity. Urgent qty display. Consider "1 Left" tag.</td>
+        <td><span class="btn btn-primary btn-sm">Get a Quote</span></td>
+      </tr>
+      <tr>
+        <td><strong>Backorder</strong></td>
+        <td><span class="card-status status-backorder"><span class="card-status-dot"></span>On Order</span></td>
+        <td>Full opacity. Show estimated lead time note below badge.</td>
+        <td><span class="btn btn-secondary btn-sm">Reserve It</span></td>
+      </tr>
+      <tr>
+        <td><strong>Custom Order</strong></td>
+        <td><span class="card-status status-custom"><span class="card-status-dot"></span>Custom Order</span></td>
+        <td>Full opacity. Show "Available to order" note.</td>
+        <td><span class="btn btn-secondary btn-sm">Request a Quote</span></td>
+      </tr>
+      <tr>
+        <td><strong>Discontinued</strong></td>
+        <td><span class="card-status status-disc"><span class="card-status-dot"></span>Discontinued</span></td>
+        <td>50% opacity + grayscale filter. Show last only if needed.</td>
+        <td><span class="btn btn-muted btn-sm">No Longer Available</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Live Card Examples -->
+  <p class="spec-label">Live card examples — all 6 status states</p>
+  <div class="card-grid-demo">
+
+    <!-- IN STOCK -->
+    <div class="card">
+      <div class="card-img">
+        <img src="https://cdn.bfldr.com/71PUUW3G/at/s3mzwprp6f76s334vfhsftb/Compact_Tractor_Pallet_Forks_and_Frame_-_CID.png?auto=webp&format=png&width=400" alt="Compact Tractor Pallet Forks" loading="lazy">
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="card-category">Pallet Forks</div>
+          <div class="card-sku">SKU: CTFF</div>
+        </div>
+        <div class="card-name">Compact Tractor Forks & Frame 2,000lb</div>
+        <div class="card-status status-instock"><span class="card-status-dot"></span>In Stock</div>
+      </div>
+      <div class="card-footer">
+        <a href="#" class="btn btn-primary btn-sm">Get a Quote</a>
+        <a href="#" class="btn btn-ghost btn-sm">Details</a>
+      </div>
+    </div>
+
+    <!-- LIMITED -->
+    <div class="card">
+      <div class="card-img">
+        <span class="card-tag tag-xleft">2 Left</span>
+        <img src="https://cdn.bfldr.com/71PUUW3G/at/p33cpr24xqp949crxq3r8jfb/compact-tractor-grapple-rake-dual-cylinder.png?auto=webp&format=png&width=400" alt="Grapple Rake" loading="lazy">
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="card-category">Grapple Rakes</div>
+          <div class="card-sku">SKU: CTGRDC60</div>
+        </div>
+        <div class="card-name">60" Dual Cylinder Grapple Rake</div>
+        <div class="card-status status-limited"><span class="card-status-dot"></span>Limited Stock</div>
+        <div class="card-qty qty-low"><strong>2 left</strong> on lot</div>
+      </div>
+      <div class="card-footer">
+        <a href="#" class="btn btn-primary btn-sm">Get a Quote</a>
+        <a href="#" class="btn btn-ghost btn-sm">Details</a>
+      </div>
+    </div>
+
+    <!-- LOW STOCK -->
+    <div class="card">
+      <div class="card-img">
+        <span class="card-tag tag-xleft">1 Left</span>
+        <img src="https://cdn.bfldr.com/71PUUW3G/at/stbpczxfcmfj73ftp8b6t9m/cid-mini-skid-steer-rock-bucket-attachment__82146.png?auto=webp&format=png&width=400" alt="Rock Bucket" loading="lazy">
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="card-category">Rock Buckets</div>
+          <div class="card-sku">SKU: CTRB72</div>
+        </div>
+        <div class="card-name">72" Rock Bucket</div>
+        <div class="card-status status-low"><span class="card-status-dot"></span>Only 1 Left</div>
+        <div class="card-qty qty-low"><strong style="color:#c0392b;">Last one</strong> — act fast</div>
+      </div>
+      <div class="card-footer">
+        <a href="#" class="btn btn-primary btn-sm">Get a Quote</a>
+        <a href="#" class="btn btn-ghost btn-sm">Details</a>
+      </div>
+    </div>
+
+    <!-- BACKORDER -->
+    <div class="card">
+      <div class="card-img">
+        <img src="https://cdn.bfldr.com/71PUUW3G/at/6mtt7c47c3twncnm4qbqmvv6/Heavy_Duty_Snow_Plow-e1707860566545.png?auto=webp&format=png&width=400" alt="Heavy Duty Snow Plow" loading="lazy">
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="card-category">Snow Plows</div>
+          <div class="card-sku">SKU: HDSPLOW84</div>
+        </div>
+        <div class="card-name">84" Heavy Duty Hydraulic Snow Plow</div>
+        <div class="card-status status-backorder"><span class="card-status-dot"></span>On Order</div>
+        <div class="card-qty"><strong>Est. 2–3 weeks</strong> lead time</div>
+      </div>
+      <div class="card-footer">
+        <a href="#" class="btn btn-secondary btn-sm">Reserve It</a>
+        <a href="#" class="btn btn-ghost btn-sm">Details</a>
+      </div>
+    </div>
+
+    <!-- CUSTOM ORDER -->
+    <div class="card">
+      <div class="card-img">
+        <img src="https://cdn.bfldr.com/71PUUW3G/at/6f3tkw5n9fkfqhnbqmxgjvf/cid-mini-skid-steer-root-grapple-sideways__49254.png?auto=webp&format=png&width=400" alt="Root Grapple" loading="lazy">
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="card-category">Root Grapples</div>
+          <div class="card-sku">SKU: ERG72</div>
+        </div>
+        <div class="card-name">72" Economy Root Grapple Dual Cylinder</div>
+        <div class="card-status status-custom"><span class="card-status-dot"></span>Custom Order</div>
+        <div class="card-qty">Available to order — ask us</div>
+      </div>
+      <div class="card-footer">
+        <a href="#" class="btn btn-secondary btn-sm">Request a Quote</a>
+      </div>
+    </div>
+
+    <!-- DISCONTINUED -->
+    <div class="card card-discontinued">
+      <div class="card-img">
+        <img src="https://cdn.bfldr.com/71PUUW3G/at/4wftgff5ww5qfnhncmsj5b7/cid-skid-steer-triple-low-back-hay-spear.png?auto=webp&format=png&width=400" alt="Triple Hay Spear" loading="lazy">
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="card-category">Hay Spears</div>
+          <div class="card-sku">SKU: TLBHS</div>
+        </div>
+        <div class="card-name">Triple Low Back Hay Spear</div>
+        <div class="card-status status-disc"><span class="card-status-dot"></span>Discontinued</div>
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-muted btn-sm" disabled>No Longer Available</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="spec-divider"></div>
+
+<!-- =============================================
+     SECTION 3: TAG SYSTEM
+     ============================================= -->
+<section class="spec-section" id="tags">
+  <h2 class="spec-section-title">
+    <span class="spec-section-num">3</span>
+    Tag System — Live Inventory Feel
+  </h2>
+  <p class="spec-section-desc">
+    Tags are set in the <strong>"Tag"</strong> column of the Sheet. They appear as pill badges in the top-left corner of the image. One tag per card maximum. Tags create urgency and personality without changing the card's fundamental status.
+  </p>
+
+  <div class="annotation">
+    <strong>Developer note:</strong> Tags and Statuses are separate fields. A card can have Status = "In Stock" and Tag = "Just In" simultaneously. The tag always renders on top of the image; the status badge is in the card body.
+  </div>
+
+  <p class="spec-label">All tag variants</p>
+  <div class="tag-ref-grid" style="margin-bottom: var(--space-8);">
+    <div class="tag-ref-item">
+      <span class="card-tag tag-justin" style="position:relative;top:auto;left:auto;">
+        <svg viewBox="0 0 10 10" fill="currentColor" width="10" height="10"><path d="M5 1l1.2 2.4L9 3.8l-2 1.95.47 2.75L5 7.2 2.53 8.5 3 5.75 1 3.8l2.8-.4z"/></svg>
+        Just In
+      </span>
+      <p>New arrival. Use when freshly added to lot.</p>
+    </div>
+    <div class="tag-ref-item">
+      <span class="card-tag tag-xleft" style="position:relative;top:auto;left:auto;">🔥 2 Left</span>
+      <p>Urgency. Use when qty is 1–3. Text = "X Left" where X = qty.</p>
+    </div>
+    <div class="tag-ref-item">
+      <span class="card-tag tag-popular" style="position:relative;top:auto;left:auto;">⭐ Popular</span>
+      <p>Social proof. Manually applied to top-sellers.</p>
+    </div>
+    <div class="tag-ref-item">
+      <span class="card-tag tag-seasonal" style="position:relative;top:auto;left:auto;">❄ Seasonal</span>
+      <p>Contextual. Apply to snow equip in fall/winter.</p>
+    </div>
+    <div class="tag-ref-item">
+      <span class="card-tag tag-clearance" style="position:relative;top:auto;left:auto;">🏷 Clearance</span>
+      <p>Price reduction. Always show alongside price if visible.</p>
+    </div>
+  </div>
+
+  <!-- Tag + status combinations -->
+  <p class="spec-label">Common tag + status combinations</p>
+  <div class="card-grid-demo" style="grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));">
+
+    <div class="card">
+      <div class="card-img">
+        <span class="card-tag tag-justin" style="">
+          <svg viewBox="0 0 10 10" fill="currentColor" width="10" height="10"><path d="M5 1l1.2 2.4L9 3.8l-2 1.95.47 2.75L5 7.2 2.53 8.5 3 5.75 1 3.8l2.8-.4z"/></svg>
+          Just In
+        </span>
+        <img src="https://cdn.bfldr.com/71PUUW3G/at/bqgngcs8cjmxtpmhztfbj/Compact_tractor_Rock_Grapple.png?auto=webp&format=png&width=300" alt="Rock Grapple" loading="lazy">
+      </div>
+      <div class="card-body">
+        <div class="card-category">Rock Grapples</div>
+        <div class="card-name">60" Compact Tractor Rock Grapple</div>
+        <div class="card-status status-instock"><span class="card-status-dot"></span>In Stock</div>
+      </div>
+      <div class="card-footer">
+        <a href="#" class="btn btn-primary btn-sm">Get a Quote</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img">
+        <span class="card-tag tag-xleft">🔥 1 Left</span>
+        <img src="https://cdn.bfldr.com/71PUUW3G/at/h3vvcs2wx5vxc4h6b5qp3nf4/HDRB66-66in-Rock-Bucket_00460.png?auto=webp&format=png&width=300" alt="Heavy Duty Rock Bucket" loading="lazy">
+      </div>
+      <div class="card-body">
+        <div class="card-category">Rock Buckets</div>
+        <div class="card-name">72" Heavy Duty Rock Bucket</div>
+        <div class="card-status status-low"><span class="card-status-dot"></span>Only 1 Left</div>
+        <div class="card-qty qty-low"><strong style="color:#c0392b;">Last unit</strong> — don't wait</div>
+      </div>
+      <div class="card-footer">
+        <a href="#" class="btn btn-primary btn-sm">Get a Quote</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img">
+        <span class="card-tag tag-seasonal">❄ Seasonal</span>
+        <img src="https://cdn.bfldr.com/71PUUW3G/at/98tc8b758r4x5k5r289fqxz/Compact_Snow_Pusher_-_CID.png?auto=webp&format=png&width=300" alt="Snow Pusher" loading="lazy">
+      </div>
+      <div class="card-body">
+        <div class="card-category">Snow Pushers</div>
+        <div class="card-name">60" Snow Pusher with Pull Back</div>
+        <div class="card-status status-instock"><span class="card-status-dot"></span>In Stock</div>
+      </div>
+      <div class="card-footer">
+        <a href="#" class="btn btn-primary btn-sm">Get a Quote</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="spec-divider"></div>
+
+<!-- =============================================
+     SECTION 4: CTA LOGIC
+     ============================================= -->
+<section class="spec-section" id="ctas">
+  <h2 class="spec-section-title">
+    <span class="spec-section-num">4</span>
+    CTA Logic — Button Decision Tree
+  </h2>
+  <p class="spec-section-desc">
+    The primary CTA button changes based on Status. The secondary "Details" button is always present on In Stock and Limited items. The developer should implement this as a simple if/else on the Status field.
+  </p>
+
+  <div class="annotation">
+    <strong>Implementation note:</strong> All CTA clicks should open a contact form, email link (mailto:), or phone number — not a shopping cart. This is a quote-based business.
+  </div>
+
+  <table class="status-table">
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>Primary Button</th>
+        <th>Style</th>
+        <th>Secondary</th>
+        <th>Sub-note</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="card-status status-instock" style="display:inline-flex;"><span class="card-status-dot"></span>In Stock</span></td>
+        <td>"Get a Quote"</td>
+        <td><span class="btn btn-primary btn-sm">Solid Green</span></td>
+        <td>"Details" ghost btn</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><span class="card-status status-limited" style="display:inline-flex;"><span class="card-status-dot"></span>Limited</span></td>
+        <td>"Get a Quote"</td>
+        <td><span class="btn btn-primary btn-sm">Solid Green</span></td>
+        <td>"Details" ghost btn</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><span class="card-status status-low" style="display:inline-flex;"><span class="card-status-dot"></span>Low Stock</span></td>
+        <td>"Get a Quote"</td>
+        <td><span class="btn btn-primary btn-sm">Solid Green</span></td>
+        <td>"Details" ghost btn</td>
+        <td>Consider urgency copy</td>
+      </tr>
+      <tr>
+        <td><span class="card-status status-backorder" style="display:inline-flex;"><span class="card-status-dot"></span>Backorder</span></td>
+        <td>"Reserve It"</td>
+        <td><span class="btn btn-secondary btn-sm">Outline Green</span></td>
+        <td>Optional: "Details"</td>
+        <td>Show lead time note below btn</td>
+      </tr>
+      <tr>
+        <td><span class="card-status status-custom" style="display:inline-flex;"><span class="card-status-dot"></span>Custom Order</span></td>
+        <td>"Request a Quote"</td>
+        <td><span class="btn btn-secondary btn-sm">Outline Green</span></td>
+        <td>None</td>
+        <td>Add small text: "Available to order"</td>
+      </tr>
+      <tr>
+        <td><span class="card-status status-disc" style="display:inline-flex;"><span class="card-status-dot"></span>Discontinued</span></td>
+        <td>"No Longer Available"</td>
+        <td><span class="btn btn-muted btn-sm">Disabled grey</span></td>
+        <td>None</td>
+        <td>Card at 55% opacity + grayscale</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="spec-divider"></div>
+
+<!-- =============================================
+     SECTION 5: GRID LAYOUT
+     ============================================= -->
+<section class="spec-section" id="grid-layout">
+  <h2 class="spec-section-title">
+    <span class="spec-section-num">5</span>
+    Grid Layout — Mobile, Tablet & Desktop
+  </h2>
+  <p class="spec-section-desc">
+    The inventory grid uses CSS auto-fill to fluidly adapt to viewport width. No JavaScript is needed for the grid itself. The three views below show the expected layout at each breakpoint.
+  </p>
+
+  <!-- Tabs -->
+  <div class="demo-tabs">
+    <button class="demo-tab active" onclick="showGrid('desktop', this)">🖥 Desktop (1200px+)</button>
+    <button class="demo-tab" onclick="showGrid('tablet', this)">📱 Tablet (768px)</button>
+    <button class="demo-tab" onclick="showGrid('mobile', this)">📱 Mobile (375px)</button>
+  </div>
+
+  <!-- DESKTOP WIREFRAME -->
+  <div class="grid-demo-wrap active" id="grid-desktop">
+    <div class="wireframe-container">
+      <div class="wireframe-label">Desktop — 3 columns · min card width 280px · gap 20px</div>
+      <div class="breakpoint-badge">≥ 1024px → 3-col auto-fill</div>
+
+      <div class="device-frame">
+        <div class="device-bar">
+          <div class="device-dots">
+            <div class="device-dot dot-red"></div>
+            <div class="device-dot dot-yellow"></div>
+            <div class="device-dot dot-green"></div>
+          </div>
+          <span>jjriggsequipment.com/attachments</span>
+        </div>
+
+        <!-- Nav bar -->
+        <div class="wf-header">
+          <div class="wf-header-logo">
+            <div class="wf-header-logo-mark"></div>
+            <div class="wf-header-text"></div>
+          </div>
+          <div class="wf-header-nav">
+            <div class="wf-nav-pill" style="width:50px;"></div>
+            <div class="wf-nav-pill" style="width:60px;"></div>
+            <div class="wf-nav-pill" style="width:70px;"></div>
+            <div class="wf-nav-pill" style="width:55px;"></div>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="wf-filter-bar">
+          <div class="wf-filter-chip wf-filter-chip-active"><div class="wf-chip-text" style="width:35px;"></div></div>
+          <div class="wf-filter-chip"><div class="wf-chip-text" style="width:55px;"></div></div>
+          <div class="wf-filter-chip"><div class="wf-chip-text" style="width:45px;"></div></div>
+          <div class="wf-filter-chip"><div class="wf-chip-text" style="width:50px;"></div></div>
+          <div class="wf-filter-chip"><div class="wf-chip-text" style="width:40px;"></div></div>
+          <div class="wf-filter-chip"><div class="wf-chip-text" style="width:65px;"></div></div>
+        </div>
+
+        <!-- Grid body -->
+        <div class="wf-body">
+          <div class="wf-grid-desktop">
+            <!-- 9 cards at desktop -->
+            <div class="wf-card">
+              <div class="wf-card-img-area">
+                <div class="wf-card-tag"></div>
+                <svg class="wf-img-icon" width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="24" rx="2" stroke="currentColor" stroke-width="2"/><path d="M12 24l7-8 5 6 3-4 5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="wf-card-body">
+                <div class="wf-line wf-line-xshort" style="background:#d4edda;"></div>
+                <div class="wf-line" style="height:10px;width:90%;"></div>
+                <div class="wf-line wf-line-short"></div>
+                <div class="wf-status-dot-row">
+                  <div class="wf-status-dot-mini" style="background:#22a047;"></div>
+                  <div class="wf-status-line" style="background:#d4edda;"></div>
+                </div>
+              </div>
+              <div class="wf-card-footer"><div class="wf-btn"></div></div>
+            </div>
+            <div class="wf-card">
+              <div class="wf-card-img-area">
+                <div class="wf-card-tag" style="background:#c0392b;"></div>
+                <svg class="wf-img-icon" width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="24" rx="2" stroke="currentColor" stroke-width="2"/><path d="M12 24l7-8 5 6 3-4 5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="wf-card-body">
+                <div class="wf-line wf-line-xshort" style="background:#fff3cd;"></div>
+                <div class="wf-line" style="height:10px;width:85%;"></div>
+                <div class="wf-line wf-line-short"></div>
+                <div class="wf-status-dot-row">
+                  <div class="wf-status-dot-mini" style="background:#f0a800;"></div>
+                  <div class="wf-status-line" style="background:#fff3cd;"></div>
+                </div>
+              </div>
+              <div class="wf-card-footer"><div class="wf-btn"></div></div>
+            </div>
+            <div class="wf-card">
+              <div class="wf-card-img-area">
+                <svg class="wf-img-icon" width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="24" rx="2" stroke="currentColor" stroke-width="2"/><path d="M12 24l7-8 5 6 3-4 5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="wf-card-body">
+                <div class="wf-line wf-line-xshort" style="background:#e2e5ef;"></div>
+                <div class="wf-line" style="height:10px;width:80%;"></div>
+                <div class="wf-line wf-line-short"></div>
+                <div class="wf-status-dot-row">
+                  <div class="wf-status-dot-mini" style="background:#4a5db8;"></div>
+                  <div class="wf-status-line" style="background:#e2e5ef;"></div>
+                </div>
+              </div>
+              <div class="wf-card-footer"><div class="wf-btn" style="background:transparent;border:2px solid var(--brand-green);"></div></div>
+            </div>
+            <!-- Row 2 - repeat for visual density -->
+            <div class="wf-card">
+              <div class="wf-card-img-area">
+                <svg class="wf-img-icon" width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="24" rx="2" stroke="currentColor" stroke-width="2"/><path d="M12 24l7-8 5 6 3-4 5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="wf-card-body">
+                <div class="wf-line wf-line-xshort" style="background:#d4edda;"></div>
+                <div class="wf-line" style="height:10px;width:75%;"></div>
+                <div class="wf-line wf-line-short"></div>
+                <div class="wf-status-dot-row">
+                  <div class="wf-status-dot-mini" style="background:#22a047;"></div>
+                  <div class="wf-status-line" style="background:#d4edda;"></div>
+                </div>
+              </div>
+              <div class="wf-card-footer"><div class="wf-btn"></div></div>
+            </div>
+            <div class="wf-card">
+              <div class="wf-card-img-area">
+                <div class="wf-card-tag" style="background:var(--brand-green);"></div>
+                <svg class="wf-img-icon" width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="24" rx="2" stroke="currentColor" stroke-width="2"/><path d="M12 24l7-8 5 6 3-4 5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="wf-card-body">
+                <div class="wf-line wf-line-xshort" style="background:#d4edda;"></div>
+                <div class="wf-line" style="height:10px;width:90%;"></div>
+                <div class="wf-line wf-line-short"></div>
+                <div class="wf-status-dot-row">
+                  <div class="wf-status-dot-mini" style="background:#22a047;"></div>
+                  <div class="wf-status-line" style="background:#d4edda;"></div>
+                </div>
+              </div>
+              <div class="wf-card-footer"><div class="wf-btn"></div></div>
+            </div>
+            <div class="wf-card">
+              <div class="wf-card-img-area" style="opacity:0.5;">
+                <svg class="wf-img-icon" width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="24" rx="2" stroke="currentColor" stroke-width="2"/><path d="M12 24l7-8 5 6 3-4 5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="wf-card-body" style="opacity:0.5;">
+                <div class="wf-line wf-line-xshort"></div>
+                <div class="wf-line" style="height:10px;width:80%;"></div>
+                <div class="wf-line wf-line-short"></div>
+                <div class="wf-status-dot-row">
+                  <div class="wf-status-dot-mini" style="background:#aaa;"></div>
+                  <div class="wf-status-line"></div>
+                </div>
+              </div>
+              <div class="wf-card-footer" style="opacity:0.5;"><div class="wf-btn" style="background:#ddd;"></div></div>
+            </div>
+          </div>
+          <div style="height: var(--space-4);"></div>
+        </div>
+      </div>
+
+      <div style="margin-top: var(--space-4); display:flex; flex-wrap:wrap; gap: var(--space-6); font-size: var(--text-xs); color: var(--color-text-muted);">
+        <span>📐 <strong>Grid:</strong> repeat(auto-fill, minmax(280px, 1fr))</span>
+        <span>📏 <strong>Gap:</strong> 20px (--space-5)</span>
+        <span>📦 <strong>Container:</strong> max-width 1200px, centered</span>
+        <span>🔍 <strong>Filter bar:</strong> sticky below nav header</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLET WIREFRAME -->
+  <div class="grid-demo-wrap" id="grid-tablet">
+    <div class="wireframe-container">
+      <div class="wireframe-label">Tablet — 2 columns · min card width 280px</div>
+      <div class="breakpoint-badge">768px–1023px → 2-col auto-fill</div>
+
+      <div style="max-width: 600px; margin: 0 auto;">
+        <div class="device-frame">
+          <div class="device-bar">
+            <div class="device-dots">
+              <div class="device-dot dot-red"></div>
+              <div class="device-dot dot-yellow"></div>
+              <div class="device-dot dot-green"></div>
+            </div>
+            <span>Tablet view · 768px</span>
+          </div>
+          <div class="wf-header">
+            <div class="wf-header-logo">
+              <div class="wf-header-logo-mark"></div>
+              <div class="wf-header-text"></div>
+            </div>
+            <div class="wf-header-nav">
+              <div class="wf-nav-pill" style="width:40px;"></div>
+              <div class="wf-nav-pill" style="width:50px;"></div>
+              <div class="wf-nav-pill" style="width:30px;height:24px;border-radius:4px;"></div>
+            </div>
+          </div>
+          <div class="wf-filter-bar" style="overflow-x:auto; flex-wrap:nowrap;">
+            <div class="wf-filter-chip wf-filter-chip-active"><div class="wf-chip-text" style="width:35px;"></div></div>
+            <div class="wf-filter-chip"><div class="wf-chip-text" style="width:55px;"></div></div>
+            <div class="wf-filter-chip"><div class="wf-chip-text" style="width:45px;"></div></div>
+            <div class="wf-filter-chip"><div class="wf-chip-text" style="width:50px;"></div></div>
+          </div>
+          <div class="wf-body">
+            <div class="wf-grid-tablet">
+              <div class="wf-card">
+                <div class="wf-card-img-area">
+                  <div class="wf-card-tag"></div>
+                  <svg class="wf-img-icon" width="32" height="32" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="24" rx="2" stroke="currentColor" stroke-width="2"/><path d="M12 24l7-8 5 6 3-4 5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="wf-card-body">
+                  <div class="wf-line wf-line-xshort" style="background:#d4edda;"></div>
+                  <div class="wf-line" style="height:9px;width:90%;"></div>
+                  <div class="wf-line wf-line-short"></div>
+                  <div class="wf-status-dot-row">
+                    <div class="wf-status-dot-mini" style="background:#22a047;"></div>
+                    <div class="wf-status-line" style="background:#d4edda;"></div>
+                  </div>
+                </div>
+                <div class="wf-card-footer"><div class="wf-btn"></div></div>
+              </div>
+              <div class="wf-card">
+                <div class="wf-card-img-area">
+                  <div class="wf-card-tag" style="background:#c0392b;"></div>
+                  <svg class="wf-img-icon" width="32" height="32" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="24" rx="2" stroke="currentColor" stroke-width="2"/><path d="M12 24l7-8 5 6 3-4 5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="wf-card-body">
+                  <div class="wf-line wf-line-xshort" style="background:#fff3cd;"></div>
+                  <div class="wf-line" style="height:9px;width:80%;"></div>
+                  <div class="wf-line wf-line-short"></div>
+                  <div class="wf-status-dot-row">
+                    <div class="wf-status-dot-mini" style="background:#f0a800;"></div>
+                    <div class="wf-status-line" style="background:#fff3cd;"></div>
+                  </div>
+                </div>
+                <div class="wf-card-footer"><div class="wf-btn"></div></div>
+              </div>
+              <div class="wf-card">
+                <div class="wf-card-img-area">
+                  <svg class="wf-img-icon" width="32" height="32" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="24" rx="2" stroke="currentColor" stroke-width="2"/><path d="M12 24l7-8 5 6 3-4 5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="wf-card-body">
+                  <div class="wf-line wf-line-xshort" style="background:#e2e5ef;"></div>
+                  <div class="wf-line" style="height:9px;width:75%;"></div>
+                  <div class="wf-line wf-line-short"></div>
+                  <div class="wf-status-dot-row">
+                    <div class="wf-status-dot-mini" style="background:#4a5db8;"></div>
+                    <div class="wf-status-line" style="background:#e2e5ef;"></div>
+                  </div>
+                </div>
+                <div class="wf-card-footer"><div class="wf-btn" style="background:transparent;border:2px solid var(--brand-green);"></div></div>
+              </div>
+              <div class="wf-card">
+                <div class="wf-card-img-area">
+                  <div class="wf-card-tag" style="background:var(--brand-green);"></div>
+                  <svg class="wf-img-icon" width="32" height="32" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="24" rx="2" stroke="currentColor" stroke-width="2"/><path d="M12 24l7-8 5 6 3-4 5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="wf-card-body">
+                  <div class="wf-line wf-line-xshort" style="background:#d4edda;"></div>
+                  <div class="wf-line" style="height:9px;width:85%;"></div>
+                  <div class="wf-line wf-line-short"></div>
+                  <div class="wf-status-dot-row">
+                    <div class="wf-status-dot-mini" style="background:#22a047;"></div>
+                    <div class="wf-status-line" style="background:#d4edda;"></div>
+                  </div>
+                </div>
+                <div class="wf-card-footer"><div class="wf-btn"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: var(--space-4); display:flex; flex-wrap:wrap; gap: var(--space-6); font-size: var(--text-xs); color: var(--color-text-muted);">
+        <span>📐 <strong>Grid:</strong> auto-fill collapses naturally to 2-col at 768px</span>
+        <span>🔍 <strong>Filter bar:</strong> horizontally scrollable, no wrapping</span>
+        <span>☰ <strong>Nav:</strong> condense to logo + hamburger at &lt;1024px</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE WIREFRAME -->
+  <div class="grid-demo-wrap" id="grid-mobile">
+    <div class="wireframe-container">
+      <div class="wireframe-label">Mobile — 1 column · full width cards</div>
+      <div class="breakpoint-badge">&lt; 640px → 1-col stack</div>
+
+      <div style="max-width: 320px; margin: 0 auto;">
+        <div class="device-frame" style="border-radius: 24px; border-width: 8px;">
+          <div class="device-bar" style="justify-content: center; padding: var(--space-1) var(--space-3);">
+            <span style="font-size:0.65rem;">9:41</span>
+          </div>
+          <div class="wf-header" style="padding: var(--space-2) var(--space-3);">
+            <div class="wf-header-logo">
+              <div class="wf-header-logo-mark" style="width:22px;height:22px;"></div>
+              <div class="wf-header-text" style="width:70px;height:8px;"></div>
+            </div>
+            <!-- Hamburger icon -->
+            <div style="display:flex;flex-direction:column;gap:3px;padding:4px;">
+              <div style="width:20px;height:2px;background:rgba(255,255,255,0.7);border-radius:1px;"></div>
+              <div style="width:20px;height:2px;background:rgba(255,255,255,0.7);border-radius:1px;"></div>
+              <div style="width:20px;height:2px;background:rgba(255,255,255,0.7);border-radius:1px;"></div>
+            </div>
+          </div>
+          <!-- Mobile: filter chips as scroll row -->
+          <div style="background:var(--color-surface-2);border-bottom:1px solid var(--color-divider);padding: var(--space-2) var(--space-3);display:flex;gap:var(--space-2);overflow:hidden;">
+            <div class="wf-filter-chip wf-filter-chip-active" style="flex-shrink:0;"><div class="wf-chip-text" style="width:28px;"></div></div>
+            <div class="wf-filter-chip" style="flex-shrink:0;"><div class="wf-chip-text" style="width:40px;"></div></div>
+            <div class="wf-filter-chip" style="flex-shrink:0;"><div class="wf-chip-text" style="width:35px;"></div></div>
+          </div>
+          <div class="wf-body" style="padding: var(--space-3);">
+            <div class="wf-grid-mobile">
+              <!-- Mobile card: image left, content right -->
+              <div class="wf-card" style="display:grid;grid-template-columns:90px 1fr;grid-template-rows:1fr auto;grid-template-areas:'img body' 'img footer';">
+                <div class="wf-card-img-area" style="aspect-ratio:1;grid-area:img;border-radius:var(--radius-md) 0 0 var(--radius-md);min-height:90px;">
+                  <div class="wf-card-tag" style="width:35px;"></div>
+                  <svg class="wf-img-icon" width="24" height="24" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="24" rx="2" stroke="currentColor" stroke-width="2"/><path d="M12 24l7-8 5 6 3-4 5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="wf-card-body" style="grid-area:body;padding:var(--space-2);">
+                  <div class="wf-line wf-line-xshort" style="background:#d4edda;margin-bottom:4px;"></div>
+                  <div class="wf-line" style="height:8px;width:90%;margin-bottom:4px;"></div>
+                  <div class="wf-status-dot-row">
+                    <div class="wf-status-dot-mini" style="background:#22a047;"></div>
+                    <div class="wf-status-line" style="background:#d4edda;width:45px;"></div>
+                  </div>
+                </div>
+                <div class="wf-card-footer" style="grid-area:footer;border-top:1px solid var(--color-divider);padding:var(--space-2);">
+                  <div class="wf-btn" style="height:18px;width:80px;"></div>
+                </div>
+              </div>
+
+              <div class="wf-card" style="display:grid;grid-template-columns:90px 1fr;grid-template-rows:1fr auto;grid-template-areas:'img body' 'img footer';">
+                <div class="wf-card-img-area" style="aspect-ratio:1;grid-area:img;border-radius:var(--radius-md) 0 0 var(--radius-md);min-height:90px;">
+                  <div class="wf-card-tag" style="width:35px;background:#c0392b;"></div>
+                  <svg class="wf-img-icon" width="24" height="24" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="24" rx="2" stroke="currentColor" stroke-width="2"/><path d="M12 24l7-8 5 6 3-4 5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="wf-card-body" style="grid-area:body;padding:var(--space-2);">
+                  <div class="wf-line wf-line-xshort" style="background:#fff3cd;margin-bottom:4px;"></div>
+                  <div class="wf-line" style="height:8px;width:85%;margin-bottom:4px;"></div>
+                  <div class="wf-status-dot-row">
+                    <div class="wf-status-dot-mini" style="background:#f0a800;"></div>
+                    <div class="wf-status-line" style="background:#fff3cd;width:50px;"></div>
+                  </div>
+                </div>
+                <div class="wf-card-footer" style="grid-area:footer;border-top:1px solid var(--color-divider);padding:var(--space-2);">
+                  <div class="wf-btn" style="height:18px;width:80px;"></div>
+                </div>
+              </div>
+
+              <div class="wf-card" style="display:grid;grid-template-columns:90px 1fr;grid-template-rows:1fr auto;grid-template-areas:'img body' 'img footer';">
+                <div class="wf-card-img-area" style="aspect-ratio:1;grid-area:img;border-radius:var(--radius-md) 0 0 var(--radius-md);min-height:90px;">
+                  <svg class="wf-img-icon" width="24" height="24" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="24" rx="2" stroke="currentColor" stroke-width="2"/><path d="M12 24l7-8 5 6 3-4 5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="wf-card-body" style="grid-area:body;padding:var(--space-2);">
+                  <div class="wf-line wf-line-xshort" style="background:#e2e5ef;margin-bottom:4px;"></div>
+                  <div class="wf-line" style="height:8px;width:80%;margin-bottom:4px;"></div>
+                  <div class="wf-status-dot-row">
+                    <div class="wf-status-dot-mini" style="background:#4a5db8;"></div>
+                    <div class="wf-status-line" style="background:#e2e5ef;width:45px;"></div>
+                  </div>
+                </div>
+                <div class="wf-card-footer" style="grid-area:footer;border-top:1px solid var(--color-divider);padding:var(--space-2);">
+                  <div class="wf-btn" style="height:18px;width:80px;background:transparent;border:2px solid var(--brand-green);"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: var(--space-4); display:flex; flex-wrap:wrap; gap: var(--space-6); font-size: var(--text-xs); color: var(--color-text-muted);">
+        <span>📱 <strong>Mobile card layout:</strong> horizontal — thumbnail left (90px), content right</span>
+        <span>☰ <strong>Nav:</strong> hamburger menu only</span>
+        <span>🔍 <strong>Filters:</strong> scrollable chip row, no wrapping</span>
+        <span>👆 <strong>Touch targets:</strong> CTA button min 44px tall</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="spec-divider"></div>
+
+<!-- =============================================
+     SECTION 6: COLOR TOKENS
+     ============================================= -->
+<section class="spec-section" id="color-tokens">
+  <h2 class="spec-section-title">
+    <span class="spec-section-num">6</span>
+    Color Tokens — Dev Reference
+  </h2>
+  <p class="spec-section-desc">
+    All colors should be implemented as CSS custom properties. The developer should define these in <code>:root</code> and reference them throughout — never hardcode hex values. Both light and dark modes are required.
+  </p>
+
+  <p class="spec-label">Brand palette</p>
+  <div class="swatch-row">
+    <div class="swatch"><div class="swatch-color" style="background:#1e5c2b;"></div><div class="swatch-label">--brand-green #1e5c2b</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#143d1c;"></div><div class="swatch-label">--brand-green-dark #143d1c</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#2e7d3c;"></div><div class="swatch-label">--brand-green-light #2e7d3c</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#2c3330;"></div><div class="swatch-label">--brand-iron #2c3330</div></div>
+  </div>
+
+  <p class="spec-label">Status badge tokens</p>
+  <div class="swatch-row">
+    <div class="swatch"><div class="swatch-color" style="background:#22a047;"></div><div class="swatch-label">In Stock dot</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#d4edda;border:1px solid #b8ddc4;"></div><div class="swatch-label">In Stock bg</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#f0a800;"></div><div class="swatch-label">Limited dot</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#fff3cd;border:1px solid #ffe5a0;"></div><div class="swatch-label">Limited bg</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#e06500;"></div><div class="swatch-label">Low Stock dot</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#ffe5cc;border:1px solid #ffd0a0;"></div><div class="swatch-label">Low Stock bg</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#4a5db8;"></div><div class="swatch-label">Backorder dot</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#e2e5ef;border:1px solid #c8cedf;"></div><div class="swatch-label">Backorder bg</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#7c3dd6;"></div><div class="swatch-label">Custom dot</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#e8e0f5;border:1px solid #d4c8ed;"></div><div class="swatch-label">Custom bg</div></div>
+  </div>
+
+  <p class="spec-label">Tag badge tokens</p>
+  <div class="swatch-row">
+    <div class="swatch"><div class="swatch-color" style="background:#1e5c2b;"></div><div class="swatch-label">Just In bg</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#c0392b;"></div><div class="swatch-label">X Left bg</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#0d5f8a;"></div><div class="swatch-label">Popular bg</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#7a5a00;"></div><div class="swatch-label">Seasonal bg</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#6b0d0d;"></div><div class="swatch-label">Clearance bg</div></div>
+  </div>
+
+  <div class="annotation" style="margin-top: var(--space-6);">
+    <strong>Google Sheet column → CSS class mapping:</strong><br>
+    Status "In Stock" → <code>.status-instock</code> · "Limited" → <code>.status-limited</code> · "Low Stock" → <code>.status-low</code> · "Backorder" → <code>.status-backorder</code> · "Custom Order" → <code>.status-custom</code> · "Discontinued" → <code>.status-disc card-discontinued</code><br><br>
+    Tag column value → <code>.tag-justin</code> / <code>.tag-xleft</code> / <code>.tag-popular</code> / <code>.tag-seasonal</code> / <code>.tag-clearance</code>
+  </div>
+</section>
+
+</main>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  document.getElementById('theme-icon').textContent = next === 'dark' ? '☾' : '☀';
+  document.getElementById('theme-label').textContent = next === 'dark' ? 'Dark' : 'Light';
+}
+
+function showGrid(view, btn) {
+  document.querySelectorAll('.grid-demo-wrap').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.demo-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('grid-' + view).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Active nav link on scroll
+const sections = document.querySelectorAll('.spec-section');
+const navLinks = document.querySelectorAll('.spec-nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(sec => {
+    if (window.scrollY >= sec.offsetTop - 120) current = sec.getAttribute('id');
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
+</html>
