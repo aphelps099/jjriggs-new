@@ -366,30 +366,40 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
 @media(max-width:420px){.nl-form input{padding-right:1.3rem;padding-bottom:4.6rem}.nl-form .btn{top:auto;bottom:.45rem;right:.45rem;transform:none}}
 .nl-done{font-size:1.05rem;font-weight:500;color:#fff}
 .nl-done b{color:var(--steel-2);font-weight:500}
-/* Constant Contact inline form — minimal dark treatment (no white card) to match the original sleek field.
+/* Constant Contact inline form — single sleek pill (dark input + inline red button), matches the original .nl-form.
    CC renders in the light DOM, so these scoped !important rules override its defaults. */
 .newsletter .ctct-inline-form{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;max-width:560px}
 /* strip the white card */
 .newsletter .ctct-form-defaults{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important;font-family:inherit!important}
+/* the form is the positioning context for the inset button */
+.newsletter .ctct-inline-form form{position:relative!important}
 /* hide CC's duplicate heading + intro — the section headline on the left already says it */
 .newsletter .ctct-form-header,.newsletter .ctct-form-text{display:none!important}
-/* email label — small, light, minimal */
-.newsletter .ctct-form-label,.newsletter .ctct-inline-form label{font-family:"Questrial",sans-serif!important;color:var(--steel-2)!important;font-size:.74rem!important;letter-spacing:.06em!important;text-transform:uppercase!important;font-weight:600!important}
-.newsletter .ctct-form-required{color:var(--red)!important}
-/* dark, transparent input — matches the original .nl-form field */
+/* hide the label visually (the placeholder carries it) but keep it for screen readers */
+.newsletter .ctct-form-label,.newsletter .ctct-inline-form label{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+.newsletter .ctct-form-required{display:none!important}
+.newsletter .ctct-form-field{margin:0!important;padding:0!important}
+/* the pill = the input itself; leave room on the right for the inset button */
 .newsletter .ctct-inline-form input[type="email"],.newsletter .ctct-inline-form input[type="text"]{
-  background:rgba(255,255,255,.05)!important;border:2px solid rgba(255,255,255,.34)!important;border-radius:6px!important;
-  color:#fff!important;font-family:"Questrial",sans-serif!important;font-size:1.1rem!important;padding:1.15rem 1.3rem!important}
-.newsletter .ctct-inline-form input[type="email"]::placeholder,.newsletter .ctct-inline-form input[type="text"]::placeholder{color:var(--steel)!important}
-.newsletter .ctct-inline-form input[type="email"]:focus,.newsletter .ctct-inline-form input[type="text"]:focus{border-color:var(--steel-2)!important;outline:none!important;box-shadow:none!important}
-/* consent text + CC badge — tiny and muted so they don't dominate */
-.newsletter .ctct-gdpr-text,.newsletter .ctct-gdpr-text *{color:var(--steel)!important;font-size:.7rem!important;line-height:1.45!important}
-/* button — brand red */
+  width:100%!important;box-sizing:border-box!important;height:60px!important;margin:0!important;
+  background:rgba(255,255,255,.05)!important;border:2px solid rgba(255,255,255,.34)!important;border-radius:8px!important;
+  color:#fff!important;font-family:"Questrial",sans-serif!important;font-size:1.12rem!important;padding:0 10.5rem 0 1.3rem!important}
+.newsletter .ctct-inline-form input::placeholder{color:var(--steel)!important}
+.newsletter .ctct-inline-form input:focus{border-color:var(--steel-2)!important;outline:none!important;box-shadow:none!important}
+/* red button pinned inside the right edge of the input */
 .newsletter .ctct-form-button,.newsletter .ctct-inline-form button[type="submit"]{
-  background:var(--red)!important;border:0!important;color:#fff!important;font-family:"Questrial",sans-serif!important;
-  font-weight:700!important;letter-spacing:.01em!important;text-transform:none!important;border-radius:6px!important;
-  padding:1rem 1.7rem!important;font-size:.98rem!important;transition:background .18s!important}
+  position:absolute!important;top:6px!important;right:6px!important;bottom:auto!important;left:auto!important;width:auto!important;height:48px!important;margin:0!important;
+  background:var(--red)!important;border:0!important;border-radius:6px!important;color:#fff!important;
+  font-family:"Questrial",sans-serif!important;font-weight:700!important;font-size:.95rem!important;letter-spacing:.01em!important;text-transform:none!important;
+  padding:0 1.5rem!important;transition:background .18s!important}
 .newsletter .ctct-form-button:hover,.newsletter .ctct-inline-form button[type="submit"]:hover{background:var(--red-deep)!important}
+/* consent text + CC badge — tiny, muted, below the pill */
+.newsletter .ctct-gdpr-text,.newsletter .ctct-gdpr-text *{color:var(--steel)!important;font-size:.7rem!important;line-height:1.45!important;margin-top:.7rem!important}
+/* narrow screens — drop the button below the field instead of insetting it */
+@media(max-width:560px){
+  .newsletter .ctct-inline-form input[type="email"],.newsletter .ctct-inline-form input[type="text"]{padding:0 1.3rem!important;height:56px!important}
+  .newsletter .ctct-form-button,.newsletter .ctct-inline-form button[type="submit"]{position:static!important;width:100%!important;height:auto!important;margin-top:.7rem!important;padding:.95rem 1.5rem!important;font-size:.98rem!important}
+}
 @media(max-width:780px){.newsletter .grid{grid-template-columns:1fr}}
 
 [data-reveal]{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
@@ -798,5 +808,21 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
 <script> var _ctct_m = "5b7e7fb18331534f593d34f953a15628"; </script>
 <script id="signupScript" src="//static.ctctcdn.com/js/signup-form-widget/current/signup-form-widget.min.js" async defer></script>
 <!-- End Constant Contact Active Forms -->
+<script>
+/* CC form is injected asynchronously — once it mounts, set the placeholder + button label to match the design. */
+(function(){
+  var host=document.querySelector('.newsletter .ctct-inline-form');
+  if(!host)return;
+  function tidy(){
+    var inp=host.querySelector('input[type="email"],input[type="text"]');
+    if(inp&&inp.placeholder!=='you@email.com')inp.placeholder='you@email.com';
+    var btn=host.querySelector('button[type="submit"],.ctct-form-button');
+    if(btn&&/sign\s*up/i.test(btn.textContent))btn.textContent='Subscribe';
+    return inp&&btn;
+  }
+  new MutationObserver(tidy).observe(host,{childList:true,subtree:true});
+  var n=0,iv=setInterval(function(){if(tidy()||++n>40)clearInterval(iv);},150);
+})();
+</script>
 </body>
 </html>
