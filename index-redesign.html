@@ -603,14 +603,12 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
           <h2 class="h2" id="nl-h" data-reveal>Get the deals first.</h2>
           <p class="lead" data-reveal>Updates from Andrew on new inventory and deals.</p>
         </div>
-        <!-- Newsletter signup. To go live with Constant Contact: create an "Inline"
-             sign-up form in CC (Marketing → Sign-up Forms), then either paste its embed
-             code here in place of this form, or send me the form ID to wire it in. -->
-        <form class="nl-form" id="nlForm" data-reveal novalidate>
-          <label class="sr-only" for="nl-email">Email address</label>
-          <input id="nl-email" type="email" name="email" placeholder="you@email.com" autocomplete="email" required />
-          <button class="btn btn-red" type="submit">Subscribe</button>
-        </form>
+        <!-- Newsletter signup — Constant Contact inline form (loader script is before </body>). -->
+        <div class="nl-cc" data-reveal>
+          <!-- Begin Constant Contact Inline Form Code -->
+          <div class="ctct-inline-form" data-form-id="fee970d0-04d2-4369-af02-ca53d7297a9f"></div>
+          <!-- End Constant Contact Inline Form Code -->
+        </div>
       </div>
     </div>
   </section>
@@ -645,15 +643,8 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
 <script>
 (function(){
 
-
-  /* Newsletter — graceful inline confirmation (wire to your ESP on the backend) */
-  var nl=document.getElementById('nlForm');
-  if(nl){nl.addEventListener('submit',function(e){
-    e.preventDefault();
-    var em=nl.querySelector('input');
-    if(!em.value||!em.checkValidity()){em.focus();return;}
-    nl.innerHTML='<p class="nl-done">Thanks, <b>you’re on the list.</b></p>';
-  });}
+  /* Newsletter signups are handled by the Constant Contact inline form
+     (markup in the .newsletter section; loader script before </body>). */
 
   /* hero category tabs — swap image, headline, primary CTA */
   var TABS=[
@@ -779,5 +770,9 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
 })();
 </script>
 <script src="header.js"></script>
+<!-- Begin Constant Contact Active Forms -->
+<script> var _ctct_m = "5b7e7fb18331534f593d34f953a15628"; </script>
+<script id="signupScript" src="//static.ctctcdn.com/js/signup-form-widget/current/signup-form-widget.min.js" async defer></script>
+<!-- End Constant Contact Active Forms -->
 </body>
 </html>
