@@ -87,7 +87,10 @@
 .head-actions .btn{font-family:"Tactic Sans Bld","Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:.02em;padding:.85rem 1.5rem;font-size:.9rem}
 .burger{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:8px}
 .burger span{width:26px;height:2px;background:#fff;display:block}
-@media(max-width:940px){.primary-nav,.head-actions .ph{display:none}.burger{display:flex}.brand-logo img{height:46px}.site-head .wrap{height:82px}}
+@media(max-width:940px){.primary-nav,.head-actions .ph{display:none}.burger{display:flex}.brand-logo img{height:46px}.site-head .wrap{height:82px}
+  .head-actions{gap:.6rem}
+  .head-actions .btn{padding:.5rem .85rem;font-size:.78rem;white-space:nowrap}}
+@media(max-width:380px){.head-actions .btn{padding:.45rem .7rem;font-size:.72rem}.brand-logo img{height:40px}}
 .mobile-menu{display:none;background:var(--ink-2);border-bottom:1px solid var(--line)}
 .mobile-menu.open{display:block}
 .mobile-menu ul{list-style:none;margin:0;padding:0}

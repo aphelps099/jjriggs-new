@@ -173,11 +173,16 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
   .hero-tab:first-child::before{left:-60px;border-left:0}
   .hero-tab:last-child::before{right:-60px}
 }
+/* mobile: collapse the four stacked tab rows into a compact dot strip + swipe */
 @media(max-width:620px){
-  .hero-tabs{grid-template-columns:1fr}
-  .hero-tab{padding:1.6rem 1rem}
-  .hero-tab::before{border-left:0}
-  .hero-tab+.hero-tab::before{border-top:1px solid var(--line-2)}
+  .hero-tabs{grid-template-columns:none;display:flex;justify-content:center;gap:.55rem;border-top:0;padding-bottom:1.7rem}
+  .hero-tab{position:relative;padding:.85rem;min-width:34px;font-size:0;line-height:0;color:transparent}
+  .hero-tab::before{inset:auto;left:50%;top:50%;width:11px;height:11px;border:0;border-radius:50%;
+    background:rgba(255,255,255,.4);transform:translate(-50%,-50%);transition:background .18s,transform .18s;z-index:0}
+  .hero-tab:hover::before{background:rgba(255,255,255,.7)}
+  .hero-tab[aria-selected="true"]::before{background:var(--red);transform:translate(-50%,-50%) scale(1.18)}
+  .hero-tab[aria-selected="true"]:hover::before{background:var(--red)}
+  .hero-tab[aria-selected="true"]::after{opacity:0}
 }
 
 /* ============================================================ OFFER (promo band, hero-adjacent) ============================================================ */
@@ -689,6 +694,18 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
     heroEl.addEventListener('mouseenter',function(){heroTabsEl.classList.add('paused');});
     heroEl.addEventListener('mouseleave',function(){heroTabsEl.classList.remove('paused');});
     restartProg();
+  }
+
+  /* mobile: swipe left/right across the hero to change category */
+  if(heroEl){
+    var sx=0,sy=0,stime=0;
+    heroEl.addEventListener('touchstart',function(e){var t=e.changedTouches[0];sx=t.clientX;sy=t.clientY;stime=Date.now();},{passive:true});
+    heroEl.addEventListener('touchend',function(e){
+      var t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;
+      if(Date.now()-stime<700 && Math.abs(dx)>45 && Math.abs(dx)>Math.abs(dy)*1.5){
+        setTab((hi + (dx<0 ? 1 : tabs.length-1)) % tabs.length);
+      }
+    },{passive:true});
   }
 
   var io=new IntersectionObserver(function(es){
