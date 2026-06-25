@@ -48,7 +48,11 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 
 
 /* SHOP BY SIZE band — title, brand logos, and lineup in one block */
-.cat-head{background:var(--ink);color:#fff;padding:clamp(1.5rem,3vw,2.4rem) 0 clamp(1.4rem,2.6vw,2rem)}
+.cat-head{position:relative;overflow:hidden;background:var(--ink);color:#fff;padding:clamp(1.5rem,3vw,2.4rem) 0 clamp(1.4rem,2.6vw,2rem);min-height:clamp(230px,24vw,300px);display:flex;align-items:center}
+.cat-head .wrap{position:relative;z-index:2;width:100%}
+.ch-photo{position:absolute;top:0;right:0;bottom:0;width:62%;background:url('img/jjriggs-tractors-homepage-hero.jpeg') center right/cover no-repeat;filter:grayscale(1) brightness(.9) contrast(1.05);clip-path:polygon(20% 0,100% 0,100% 100%,0 100%);z-index:1}
+.ch-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--ink),rgba(20,23,26,.55) 32%,rgba(20,23,26,0) 64%)}
+@media(max-width:760px){.ch-photo{display:none}}
 .cat-head h1{font-family:"Michroma","Tactic Sans Bld",sans-serif;text-transform:none;font-size:clamp(1.8rem,3.8vw,3rem);color:#fff;line-height:1.08;letter-spacing:-.01em;margin:.5rem 0 .55rem}
 .cat-head .lead{color:var(--steel-2);font-size:clamp(1.02rem,1.6vw,1.25rem);line-height:1.5;max-width:48ch;margin:0}
 .fin-note{display:inline-flex;align-items:center;gap:.65rem;flex-wrap:wrap;margin-top:1.1rem;font-size:.92rem;font-weight:500;color:var(--steel-2);transition:color .15s}
@@ -110,7 +114,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .callout a:hover{text-decoration:underline}
 
 /* STAGE — the carousel */
-.stage{background:#fff;color:var(--ink);padding:clamp(1.4rem,3vw,2.2rem) 0 clamp(2.6rem,5vw,4rem)}
+.stage{background:var(--bone);color:var(--ink);padding:clamp(1.4rem,3vw,2.2rem) 0 clamp(2.6rem,5vw,4rem)}
 .stage-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.6rem}
 .stage-head h2{font-size:clamp(1.7rem,3.4vw,2.4rem);color:var(--ink)}
 .stage-head h2 .cb{color:var(--red)}
@@ -128,8 +132,8 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .car-arrow:disabled{opacity:.18;cursor:default}
 .carousel-viewport{position:relative;height:clamp(230px,30vw,360px);overflow:hidden}
 .carousel-track{position:relative;height:100%}
-.slide{position:absolute;top:50%;left:50%;height:90%;transition:transform .4s ease,opacity .4s ease;opacity:0;pointer-events:none}
-.slide img{height:100%;width:auto;max-width:none;object-fit:contain;mix-blend-mode:multiply}
+.slide{position:absolute;top:50%;left:50%;height:90%;transition:transform .4s ease,opacity .4s ease;opacity:0;pointer-events:none;background:var(--bone)}
+.slide img{height:100%;width:auto;max-width:none;object-fit:contain;mix-blend-mode:darken}
 .slide.is-active{transform:translate(-50%,-50%) scale(1);opacity:1;z-index:3}
 .slide.is-prev{transform:translate(-122%,-46%) scale(.6);opacity:.38;z-index:1}
 .slide.is-next{transform:translate(22%,-46%) scale(.6);opacity:.38;z-index:1}
@@ -147,6 +151,33 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .specrow .sv{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.1rem;letter-spacing:.02em;color:var(--ink)}
 .cap-actions{display:flex;justify-content:center;gap:.7rem;flex-wrap:wrap;margin-top:.9rem}
 .cap-actions .btn{padding:.75rem 1.3rem;font-size:.78rem}
+
+/* VIEW TOGGLE (Carousel / Grid) */
+.view-toggle{display:inline-flex;border:2px solid #b8b3a6;background:transparent;margin-left:auto}
+.vt-btn{background:none;border:0;font-family:inherit;font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6a7077;padding:.5rem .95rem;cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;transition:background .15s,color .15s}
+.vt-btn svg{width:13px;height:13px;fill:currentColor}
+.vt-btn+.vt-btn{border-left:2px solid #b8b3a6}
+.vt-btn.active{background:var(--ink);color:#fff}
+.vt-btn:hover:not(.active){color:var(--ink)}
+
+/* TILE / GRID VIEW */
+/* connected grid: only the inner tangent lines are drawn (no outer box); uniform bg; hover lifts a card */
+.tile-grid{overflow:hidden;margin-top:1.3rem}
+.tg-inner{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:-1px 0 0 -1px}
+@media(max-width:820px){.tg-inner{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.tg-inner{grid-template-columns:1fr}}
+.tile{display:flex;flex-direction:column;background:var(--bone);border-top:1px solid rgba(20,23,26,.12);border-left:1px solid rgba(20,23,26,.12);position:relative;z-index:0;transition:background .15s,box-shadow .15s}
+.tile:hover{background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink),0 12px 28px rgba(20,23,26,.13);z-index:2}
+.tile .pic{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;padding:1rem;overflow:hidden}
+.tile .pic img{max-width:100%;max-height:100%;object-fit:contain;mix-blend-mode:darken}
+.tile .tb{padding:.9rem 1.1rem 1.15rem;display:flex;flex-direction:column;gap:.28rem;flex:1}
+.tile .tm{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.45rem;color:var(--ink);line-height:1}
+.tile .ts{font-size:.82rem;color:#5b6168;text-transform:capitalize}
+.tile .tile-hp{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:.95rem;color:var(--red);letter-spacing:.03em}
+.tile .go{margin-top:auto;padding-top:.55rem;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:.85rem;letter-spacing:.04em;color:var(--red);display:inline-flex;align-items:center;gap:.35rem;transition:gap .15s}
+.tile:hover .go{gap:.6rem}
+.stage[data-view="grid"] .carousel,.stage[data-view="grid"] .caption,.stage[data-view="grid"] .thumb-strip{display:none}
+.stage[data-view="carousel"] .tile-grid{display:none}
 .thumb-strip{margin-top:1rem;overflow-x:auto}
 .thumb-strip-inner{display:flex;gap:.55rem;justify-content:center;min-width:min-content;padding-bottom:.4rem}
 .thumb{flex:0 0 auto;width:84px;height:62px;background:var(--bone);border:1px solid var(--lined);cursor:pointer;padding:.3rem;transition:.15s}
@@ -195,6 +226,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 <main id="main">
 
   <section class="cat-head">
+    <div class="ch-photo" aria-hidden="true"></div>
     <div class="wrap">
       <span class="cut-tab">Equipment · Tractors</span>
       <h1 id="t-h1">TYM &amp; Bad Boy Tractors</h1>
@@ -220,12 +252,15 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     </div>
   </section>
 
-  <section class="stage" id="stage" aria-label="Tractor lineup">
+  <section class="stage" id="stage" data-view="carousel" aria-label="Tractor lineup">
     <div class="wrap">
       <div class="stage-head"><h2 id="stageCat" aria-live="polite"></h2><span class="stage-meta" id="stageMeta" aria-live="polite"></span></div>
       <div class="hp-tabs" id="hpTabs" role="tablist" aria-label="Horsepower"></div>
       <div class="stage-controls">
-        <label class="cab-toggle" for="cabChk"><input type="checkbox" id="cabChk" /> With cab only</label>
+        <div class="view-toggle" role="group" aria-label="Choose view">
+          <button class="vt-btn" type="button" data-view="carousel" aria-pressed="true"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2.5" width="10" height="11" rx="1"/><rect x="0" y="4.5" width="2" height="7" opacity=".45"/><rect x="14" y="4.5" width="2" height="7" opacity=".45"/></svg>Carousel</button>
+          <button class="vt-btn" type="button" data-view="grid" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="0" y="0" width="7" height="7"/><rect x="9" y="0" width="7" height="7"/><rect x="0" y="9" width="7" height="7"/><rect x="9" y="9" width="7" height="7"/></svg>Grid</button>
+        </div>
       </div>
       <div class="carousel">
         <button class="car-arrow prev" id="carPrev" aria-label="Previous model">‹</button>
@@ -234,6 +269,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
       </div>
       <div class="caption" id="caption" aria-live="polite"></div>
       <div class="thumb-strip" id="thumbStrip"></div>
+      <div class="tile-grid" id="tileGrid"></div>
     </div>
   </section>
 
@@ -298,7 +334,8 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     {id:'50-75',label:'50–75',min:50.001,max:75},
     {id:'75',label:'75+',min:75.001,max:999}
   ];
-  var state={brand:'TYM',bucket:'all',cab:false,series:null,index:0};
+  var state={brand:'TYM',bucket:'all',cab:false,series:null,index:0,view:'carousel'};
+  try{var _v=localStorage.getItem('jjTractorView');if(_v==='grid'||_v==='carousel')state.view=_v;}catch(e){}
 
   function sslug(s){return String(s).toLowerCase().replace(/\s+/g,'-');}
 
@@ -321,9 +358,10 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     history.replaceState(null,'','#'+parts.join('&'));
   }
 
-  var tabsEl=document.getElementById('hpTabs'),cab=document.getElementById('cabChk'),meta=document.getElementById('stageMeta'),catEl=document.getElementById('stageCat'),
+  var tabsEl=document.getElementById('hpTabs'),meta=document.getElementById('stageMeta'),catEl=document.getElementById('stageCat'),
       track=document.getElementById('carTrack'),cap=document.getElementById('caption'),thumbs=document.getElementById('thumbStrip'),
-      prev=document.getElementById('carPrev'),next=document.getElementById('carNext'),vp=document.getElementById('carViewport');
+      prev=document.getElementById('carPrev'),next=document.getElementById('carNext'),vp=document.getElementById('carViewport'),
+      tileGrid=document.getElementById('tileGrid'),stageEl=document.getElementById('stage');
 
   function models(){return DATA[state.brand].slice().sort(function(a,b){return a.hp-b.hp;});}
   function bucketsWithModels(){var ms=models();return BUCKETS.filter(function(b){return b.id==='all'||ms.some(function(m){return m.hp>=b.min&&m.hp<=b.max;});});}
@@ -374,7 +412,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     });
     grid.querySelectorAll('[data-series]').forEach(function(btn){
       btn.addEventListener('click',function(){
-        state.series=btn.dataset.series;state.bucket='all';state.cab=false;cab.checked=false;state.index=0;
+        state.series=btn.dataset.series;state.bucket='all';state.cab=false;state.index=0;
         render();
         document.getElementById('stage').scrollIntoView({behavior:'smooth'});
       });
@@ -401,7 +439,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     bits.push(m.cab?'With Cab':'Open Station');
     cap.innerHTML='<h2><span class="cb">'+state.brand+'</span> '+m.model+'</h2>'
       +'<p class="hpline">'+bits.join(' · ')+'</p>'
-      +'<div class="cap-actions"><a class="btn btn-red" href="tractor.html?b='+encodeURIComponent(state.brand)+'&m='+encodeURIComponent(m.model)+'">View details</a>'
+      +'<div class="cap-actions"><a class="btn btn-red" href="product-template.html?type=tractor&b='+encodeURIComponent(state.brand)+'&m='+encodeURIComponent(m.model)+'">View details</a>'
       +'<a class="btn btn-dark" href="schedule-visit.html" data-intent="schedule">Schedule a Visit</a></div>';
   }
   function renderThumbs(){var items=filtered();thumbs.innerHTML='';var wrap=document.createElement('div');wrap.className='thumb-strip-inner';
@@ -413,30 +451,52 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     var a=thumbs.querySelector('.thumb.active');
     if(a)thumbs.scrollTo({left:a.offsetLeft-(thumbs.clientWidth-a.offsetWidth)/2,behavior:'smooth'});}
   function move(d){var items=filtered();if(!items.length)return;state.index=(state.index+d+items.length)%items.length;position();caption();markThumb();writeHash();}
+  function renderTiles(){
+    if(!tileGrid)return;
+    var items=filtered();
+    if(!items.length){tileGrid.innerHTML='<p style="color:#6a7077;padding:1.4rem 0">No models match — try another horsepower range or turn off the cab filter.</p>';return;}
+    tileGrid.innerHTML='<div class="tg-inner">'+items.map(function(m){
+      var href='product-template.html?type=tractor&b='+encodeURIComponent(state.brand)+'&m='+encodeURIComponent(m.model);
+      return '<a class="tile" href="'+href+'">'
+        +'<span class="pic"><img src="'+m.image+'" alt="'+state.brand+' '+m.model+' tractor" loading="lazy"></span>'
+        +'<span class="tb"><span class="tm">'+m.model+'</span>'
+        +'<span class="ts">'+((m.series||'')+(m.cab?' · Cab':''))+'</span>'
+        +'<span class="tile-hp">'+m.hp+' HP</span>'
+        +'<span class="go">View details &rarr;</span></span>'
+      +'</a>';
+    }).join('')+'</div>';
+  }
+  function applyView(){
+    if(stageEl)stageEl.setAttribute('data-view',state.view);
+    document.querySelectorAll('.vt-btn').forEach(function(b){var on=b.getAttribute('data-view')===state.view;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false');});
+  }
   function render(){
     var f;
     if(state.series)f=state.series;
     else if(state.bucket!=='all'){var b=BUCKETS.filter(function(x){return x.id===state.bucket;})[0];f=b.label+' HP';}
     else f='Tractors';
     catEl.innerHTML=state.brand+' <span class="cb">'+f+'</span>';
-    renderSizes();renderTabs();renderSlides();writeHash();
+    renderSizes();renderTabs();renderSlides();renderTiles();applyView();writeHash();
   }
 
   prev.addEventListener('click',function(){move(-1);});
   next.addEventListener('click',function(){move(1);});
-  cab.checked=state.cab;
-  cab.addEventListener('change',function(){state.cab=cab.checked;state.index=0;render();});
   document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft')move(-1);else if(e.key==='ArrowRight')move(1);});
   (function(el){var x=0,dx=0,on=false;el.addEventListener('touchstart',function(e){on=true;x=e.touches[0].clientX;dx=0;},{passive:true});
     el.addEventListener('touchmove',function(e){if(on)dx=e.touches[0].clientX-x;},{passive:true});
     el.addEventListener('touchend',function(){if(!on)return;on=false;if(Math.abs(dx)>40)move(dx<0?1:-1);});})(vp);
 
   function setBrand(b){
-    state.brand=b;state.bucket='all';state.series=null;state.cab=false;cab.checked=false;state.index=0;
+    state.brand=b;state.bucket='all';state.series=null;state.cab=false;state.index=0;
     document.querySelectorAll('.bsw').forEach(function(x){var on=x.dataset.brand===b;x.classList.toggle('active',on);x.setAttribute('aria-pressed',on?'true':'false');});
     render();
   }
   document.querySelectorAll('.bsw').forEach(function(b){b.addEventListener('click',function(){setBrand(b.dataset.brand);});});
+
+  document.querySelectorAll('.vt-btn').forEach(function(b){b.addEventListener('click',function(){
+    state.view=b.getAttribute('data-view');try{localStorage.setItem('jjTractorView',state.view);}catch(e){}
+    applyView();renderTiles();
+  });});
 
   /* reflect initial brand from hash */
   document.querySelectorAll('.bsw').forEach(function(x){var on=x.dataset.brand===state.brand;x.classList.toggle('active',on);x.setAttribute('aria-pressed',on?'true':'false');});

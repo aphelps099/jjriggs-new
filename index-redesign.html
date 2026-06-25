@@ -256,6 +256,34 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
 .andrew p{color:var(--steel-2);font-weight:400;line-height:1.6;font-size:1.06rem;max-width:48ch;margin-bottom:1.6rem}
 @media(max-width:780px){.andrew .grid{grid-template-columns:1fr}.andrew figure img{aspect-ratio:16/10}}
 
+/* ============================================================ FEATURED EQUIPMENT ============================================================ */
+.featured{background:var(--bone);color:var(--ink);padding:clamp(2.6rem,5vw,4rem) 0;border-top:1px solid var(--line)}
+.featured .ft-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem}
+.featured .h2{font-size:clamp(1.7rem,3.4vw,2.4rem);color:var(--ink);margin:0}
+.ft-nav{display:flex;gap:.5rem}
+.ft-arrow{width:46px;height:46px;border:1.5px solid var(--ink);background:#fff;color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,color .15s,opacity .15s}
+.ft-arrow:hover{background:var(--ink);color:#fff}
+.ft-arrow:disabled{opacity:.28;cursor:default}
+.ft-arrow:disabled:hover{background:#fff;color:var(--ink)}
+.ft-arrow svg{width:20px;height:20px}
+.ft-viewport{overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.ft-viewport::-webkit-scrollbar{display:none}
+.ft-track{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(232px,26vw,300px);gap:1px;background:rgba(20,23,26,.12)}
+.ft-card{display:flex;flex-direction:column;background:var(--bone);color:inherit;text-decoration:none;scroll-snap-align:start;position:relative;z-index:0;transition:box-shadow .15s}
+.ft-card:hover{box-shadow:inset 0 0 0 1.5px var(--ink),0 12px 28px rgba(20,23,26,.13);z-index:2}
+.ft-pic{position:relative;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;padding:1rem;overflow:hidden}
+.ft-pic img{max-width:100%;max-height:100%;object-fit:contain;mix-blend-mode:darken}
+.ft-tag{position:absolute;top:0;left:0;background:var(--red);color:#fff;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;line-height:1;padding:.36rem .9rem .36rem .62rem;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);z-index:2}
+.ft-body{padding:.9rem 1.1rem 1.2rem;display:flex;flex-direction:column;gap:.26rem;flex:1}
+.ft-brand{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:#8a8f96;font-weight:600}
+.ft-name{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.4rem;color:var(--ink);line-height:1}
+.ft-meta{font-size:.82rem;color:#5b6168}
+.ft-price{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:.92rem;color:var(--red);letter-spacing:.03em;margin-top:.1rem}
+.ft-go{margin-top:auto;padding-top:.6rem;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:.82rem;letter-spacing:.04em;color:var(--red);display:inline-flex;align-items:center;gap:.35rem;transition:gap .15s}
+.ft-card:hover .ft-go{gap:.6rem}
+.ft-cta{display:flex;justify-content:center;margin-top:1.7rem}
+@media(max-width:560px){.ft-track{grid-auto-columns:78vw}}
+
 /* ============================================================ REVIEWS (light bone) ============================================================ */
 .reviews{background:var(--bone);color:var(--ink);padding:clamp(2rem,4vw,3.2rem) 0}
 .r-layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(2.4rem,6vw,5rem);align-items:center}
@@ -440,6 +468,62 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
     </div>
   </section>
 
+<!-- ---------- FEATURED EQUIPMENT : carousel ---------- -->
+  <section class="featured" id="featured" aria-labelledby="ft-h">
+    <div class="wrap">
+      <div class="ft-head">
+        <div>
+          <p style="margin-bottom:.5rem"><span class="cut-tab">On the lot now</span></p>
+          <h2 class="h2" id="ft-h">Featured Equipment</h2>
+        </div>
+        <div class="ft-nav">
+          <button class="ft-arrow" id="ftPrev" type="button" aria-label="Previous equipment"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button class="ft-arrow" id="ftNext" type="button" aria-label="Next equipment"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+      </div>
+
+      <div class="ft-viewport" id="ftViewport">
+        <div class="ft-track">
+
+          <a class="ft-card" href="product-template.html?type=tractor&b=Bad%20Boy&m=5055CS">
+            <span class="ft-pic"><span class="ft-tag">Just In</span><img src="img/bb-tractor-images/5055/5055cs_model_photo_1.jpg" alt="Bad Boy 5055CS compact utility tractor" loading="lazy"></span>
+            <span class="ft-body"><span class="ft-brand">Bad Boy</span><span class="ft-name">5055CS</span><span class="ft-meta">Compact Utility · 55 HP</span><span class="ft-go">View details &rarr;</span></span>
+          </a>
+
+          <a class="ft-card" href="product-template.html?type=mower&m=Rogue">
+            <span class="ft-pic"><span class="ft-tag">Just In</span><img src="img/bad-boy-mowers/bad-boy-rogue-commercial.jpg" alt="Bad Boy Rogue zero-turn mower" loading="lazy"></span>
+            <span class="ft-body"><span class="ft-brand">Bad Boy</span><span class="ft-name">Rogue</span><span class="ft-meta">Zero-Turn · 40 HP</span><span class="ft-go">View details &rarr;</span></span>
+          </a>
+
+          <a class="ft-card" href="product-template.html?type=implement&id=CID-019">
+            <span class="ft-pic"><span class="ft-tag">Just In</span><img src="https://cdn.bfldr.com/71PUUW3G/at/stbpczxfcmfj73ftp8b6t9m/cid-mini-skid-steer-rock-bucket-attachment__82146.png" alt="CID 60-inch rock bucket attachment" loading="lazy"></span>
+            <span class="ft-body"><span class="ft-brand">CID</span><span class="ft-name">60&quot; Rock Bucket</span><span class="ft-meta">Skid-steer attachment</span><span class="ft-go">View details &rarr;</span></span>
+          </a>
+
+          <a class="ft-card" href="product-template.html?type=tractor&b=Bad%20Boy&m=1025">
+            <span class="ft-pic"><img src="img/bb-tractor-images/1025/1025_model_photo_1.png" alt="Bad Boy 1025 sub-compact tractor" loading="lazy"></span>
+            <span class="ft-body"><span class="ft-brand">Bad Boy</span><span class="ft-name">1025</span><span class="ft-meta">Sub-Compact · 25 HP</span><span class="ft-go">View details &rarr;</span></span>
+          </a>
+
+          <a class="ft-card" href="product-template.html?type=mower&m=Rebel">
+            <span class="ft-pic"><img src="img/bad-boy-mowers/bad-boy-rebel.jpg" alt="Bad Boy Rebel zero-turn mower" loading="lazy"></span>
+            <span class="ft-body"><span class="ft-brand">Bad Boy</span><span class="ft-name">Rebel</span><span class="ft-meta">Zero-Turn · 35 HP</span><span class="ft-go">View details &rarr;</span></span>
+          </a>
+
+          <a class="ft-card" href="product-template.html?type=implement&id=CID-001">
+            <span class="ft-pic"><img src="https://cdn.bfldr.com/71PUUW3G/at/6f3tkw5n9fkfqhnbqmxgjvf/cid-mini-skid-steer-root-grapple-sideways__49254.png" alt="CID 60-inch economy root grapple" loading="lazy"></span>
+            <span class="ft-body"><span class="ft-brand">CID</span><span class="ft-name">60&quot; Root Grapple</span><span class="ft-meta">Skid-steer attachment</span><span class="ft-go">View details &rarr;</span></span>
+          </a>
+
+        </div>
+      </div>
+
+      <div class="ft-cta">
+        <a class="btn btn-red" href="schedule-visit.html">Visit our lot</a>
+      </div>
+    </div>
+  </section>
+
 <!-- ---------- REVIEWS : 4.8★ social proof ---------- -->
   <section class="reviews" id="reviews" aria-label="Customer reviews">
     <div class="wrap">
@@ -514,6 +598,9 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
           <h2 class="h2" id="nl-h" data-reveal>Get the deals first.</h2>
           <p class="lead" data-reveal>Updates from Andrew on new inventory and deals.</p>
         </div>
+        <!-- Newsletter signup. To go live with Constant Contact: create an "Inline"
+             sign-up form in CC (Marketing → Sign-up Forms), then either paste its embed
+             code here in place of this form, or send me the form ID to wire it in. -->
         <form class="nl-form" id="nlForm" data-reveal novalidate>
           <label class="sr-only" for="nl-email">Email address</label>
           <input id="nl-email" type="email" name="email" placeholder="you@email.com" autocomplete="email" required />
@@ -644,6 +731,34 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
     offerEl.addEventListener('mouseleave',oStart);
     oShow(0);oStart();
   }
+})();
+</script>
+<script>
+/* Featured Equipment carousel — arrows + auto-rotate */
+(function(){
+  var vp=document.getElementById('ftViewport');if(!vp)return;
+  var prev=document.getElementById('ftPrev'),next=document.getElementById('ftNext');
+  function cardW(){var c=vp.querySelector('.ft-card');return c?c.getBoundingClientRect().width+1:260;}
+  function maxLeft(){return vp.scrollWidth-vp.clientWidth-2;}
+  function upd(){var max=maxLeft();prev.disabled=vp.scrollLeft<=2;next.disabled=vp.scrollLeft>=max;}
+  function go(dir){vp.scrollBy({left:dir*cardW()*2,behavior:'smooth'});}
+  prev.addEventListener('click',function(){go(-1);hold();});
+  next.addEventListener('click',function(){go(1);hold();});
+  vp.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);upd();
+
+  // Auto-rotate: advance one card every 4s; loop to start at the end.
+  var DELAY=4000,timer=null;
+  function tick(){
+    if(vp.scrollLeft>=maxLeft()){vp.scrollTo({left:0,behavior:'smooth'});}
+    else{vp.scrollBy({left:cardW(),behavior:'smooth'});}
+  }
+  function start(){if(!timer&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches)timer=setInterval(tick,DELAY);}
+  function stop(){if(timer){clearInterval(timer);timer=null;}}
+  function hold(){stop();start();} // reset timer after manual nav
+  ['mouseenter','focusin','touchstart','pointerdown'].forEach(function(ev){vp.addEventListener(ev,stop,{passive:true});});
+  ['mouseleave','focusout'].forEach(function(ev){vp.addEventListener(ev,start);});
+  document.addEventListener('visibilitychange',function(){document.hidden?stop():start();});
+  start();
 })();
 </script>
 <script src="header.js"></script>

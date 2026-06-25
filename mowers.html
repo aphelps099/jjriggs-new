@@ -48,8 +48,12 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 
 
 /* SHOP BY USE band — title, brand badge, and categories in one block */
-.cat-head{position:relative;overflow:hidden;background:var(--ink);color:#fff;padding:clamp(1.5rem,3vw,2.4rem) 0 clamp(1.4rem,2.6vw,2rem)}
-.cat-head .wrap{position:relative;z-index:1}
+.cat-head{position:relative;overflow:hidden;background:var(--ink);color:#fff;padding:clamp(1.5rem,3vw,2.4rem) 0 clamp(1.4rem,2.6vw,2rem);min-height:clamp(230px,24vw,300px);display:flex;align-items:center}
+.cat-head .wrap{position:relative;z-index:2;width:100%}
+.ch-photo{position:absolute;top:0;right:0;bottom:0;width:62%;background:url('img/bb-mowers-home.jpeg') center right/cover no-repeat;filter:grayscale(1) brightness(.9) contrast(1.05);clip-path:polygon(20% 0,100% 0,100% 100%,0 100%);z-index:1}
+.ch-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--ink),rgba(20,23,26,.55) 32%,rgba(20,23,26,0) 64%)}
+.stage-logo{height:clamp(26px,3.6vw,42px);width:auto;display:block}
+@media(max-width:760px){.ch-photo{display:none}}
 .hero-bblogo{position:absolute;right:-3%;top:50%;transform:translateY(-50%);width:clamp(420px,55vw,840px);height:auto;filter:brightness(0) invert(1);opacity:.1;pointer-events:none;z-index:0}
 .cat-head h1{font-family:"Michroma","Tactic Sans Bld",sans-serif;text-transform:none;font-size:clamp(1.8rem,3.8vw,3rem);color:#fff;line-height:1.08;letter-spacing:-.01em;margin:.5rem 0 .55rem}
 .cat-head .lead{color:var(--steel-2);font-size:clamp(1.02rem,1.6vw,1.25rem);line-height:1.5;max-width:48ch;margin:0}
@@ -95,7 +99,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 }
 
 /* STAGE — the carousel */
-.stage{background:#fff;color:var(--ink);padding:clamp(1.4rem,3vw,2.2rem) 0 clamp(2.6rem,5vw,4rem)}
+.stage{background:var(--bone);color:var(--ink);padding:clamp(1.4rem,3vw,2.2rem) 0 clamp(2.6rem,5vw,4rem)}
 .stage-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.6rem}
 .stage-head h2{font-size:clamp(1.7rem,3.4vw,2.4rem);color:var(--ink)}
 .stage-head h2 .cb{color:var(--red)}
@@ -112,8 +116,8 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .car-arrow:disabled{opacity:.18;cursor:default}
 .carousel-viewport{position:relative;height:clamp(230px,30vw,360px);overflow:hidden}
 .carousel-track{position:relative;height:100%}
-.slide{position:absolute;top:50%;left:50%;height:90%;transition:transform .4s ease,opacity .4s ease;opacity:0;pointer-events:none}
-.slide img{height:100%;width:auto;max-width:none;object-fit:contain;mix-blend-mode:multiply}
+.slide{position:absolute;top:50%;left:50%;height:90%;transition:transform .4s ease,opacity .4s ease;opacity:0;pointer-events:none;background:var(--bone)}
+.slide img{height:100%;width:auto;max-width:none;object-fit:contain;mix-blend-mode:darken}
 .slide.is-active{transform:translate(-50%,-50%) scale(1);opacity:1;z-index:3}
 .slide.is-prev{transform:translate(-122%,-46%) scale(.6);opacity:.38;z-index:1}
 .slide.is-next{transform:translate(22%,-46%) scale(.6);opacity:.38;z-index:1}
@@ -131,6 +135,31 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .specrow .sv{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.1rem;letter-spacing:.02em;color:var(--ink)}
 .cap-actions{display:flex;justify-content:center;gap:.7rem;flex-wrap:wrap;margin-top:.9rem}
 .cap-actions .btn{padding:.75rem 1.3rem;font-size:.78rem}
+
+/* VIEW TOGGLE (Carousel / Grid) */
+.view-toggle{display:inline-flex;border:2px solid #b8b3a6;background:transparent;margin-left:auto}
+.vt-btn{background:none;border:0;font-family:inherit;font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6a7077;padding:.5rem .95rem;cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;transition:background .15s,color .15s}
+.vt-btn svg{width:13px;height:13px;fill:currentColor}
+.vt-btn+.vt-btn{border-left:2px solid #b8b3a6}
+.vt-btn.active{background:var(--ink);color:#fff}
+.vt-btn:hover:not(.active){color:var(--ink)}
+/* connected grid: only inner tangent lines, uniform bg, hover lifts a card */
+.tile-grid{overflow:hidden;margin-top:1.3rem}
+.tg-inner{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:-1px 0 0 -1px}
+@media(max-width:820px){.tg-inner{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.tg-inner{grid-template-columns:1fr}}
+.tile{display:flex;flex-direction:column;background:var(--bone);border-top:1px solid rgba(20,23,26,.12);border-left:1px solid rgba(20,23,26,.12);position:relative;z-index:0;transition:background .15s,box-shadow .15s}
+.tile:hover{background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink),0 12px 28px rgba(20,23,26,.13);z-index:2}
+.tile .pic{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;padding:1rem;overflow:hidden}
+.tile .pic img{max-width:100%;max-height:100%;object-fit:contain;mix-blend-mode:darken}
+.tile .tb{padding:.9rem 1.1rem 1.15rem;display:flex;flex-direction:column;gap:.28rem;flex:1}
+.tile .tm{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.45rem;color:var(--ink);line-height:1}
+.tile .ts{font-size:.82rem;color:#5b6168}
+.tile .tile-hp{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:.95rem;color:var(--red);letter-spacing:.03em}
+.tile .go{margin-top:auto;padding-top:.55rem;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:.85rem;letter-spacing:.04em;color:var(--red);display:inline-flex;align-items:center;gap:.35rem;transition:gap .15s}
+.tile:hover .go{gap:.6rem}
+.stage[data-view="grid"] .carousel,.stage[data-view="grid"] .caption,.stage[data-view="grid"] .thumb-strip{display:none}
+.stage[data-view="carousel"] .tile-grid{display:none}
 .thumb-strip{margin-top:1rem;overflow-x:auto}
 .thumb-strip-inner{display:flex;gap:.55rem;justify-content:center;min-width:min-content;padding-bottom:.4rem}
 .thumb{flex:0 0 auto;width:84px;height:62px;background:var(--bone);border:1px solid var(--lined);cursor:pointer;padding:.3rem;transition:.15s}
@@ -179,7 +208,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 <main id="main">
 
   <section class="cat-head">
-    <img class="hero-bblogo" src="img/bb_logo_horizontal_orange.svg" alt="" aria-hidden="true" />
+    <div class="ch-photo" aria-hidden="true"></div>
     <div class="wrap">
       <span class="cut-tab">Equipment · Mowers</span>
       <h1 id="t-h1">Bad Boy Mowers</h1>
@@ -187,10 +216,15 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
       <a class="fin-note" href="financing.html"><span class="fin-tag">0% APR · 60 mo</span> Financing on select Bad Boy mowers <svg class="arw" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg></a>
     </div>
   </section>
-  <section class="stage" id="stage" aria-label="Mower lineup">
+  <section class="stage" id="stage" data-view="carousel" aria-label="Mower lineup">
     <div class="wrap">
       <div class="stage-head"><h2 id="stageCat" aria-live="polite"></h2><span class="stage-meta" id="stageMeta" aria-live="polite"></span></div>
-      <div class="hp-tabs" id="typeTabs" role="tablist" aria-label="Mower type"></div>
+      <div class="stage-controls">
+        <div class="view-toggle" role="group" aria-label="Choose view">
+          <button class="vt-btn" type="button" data-view="carousel" aria-pressed="true"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2.5" width="10" height="11" rx="1"/><rect x="0" y="4.5" width="2" height="7" opacity=".45"/><rect x="14" y="4.5" width="2" height="7" opacity=".45"/></svg>Carousel</button>
+          <button class="vt-btn" type="button" data-view="grid" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="0" y="0" width="7" height="7"/><rect x="9" y="0" width="7" height="7"/><rect x="0" y="9" width="7" height="7"/><rect x="9" y="9" width="7" height="7"/></svg>Grid</button>
+        </div>
+      </div>
       <div class="carousel">
         <button class="car-arrow prev" id="carPrev" aria-label="Previous mower">‹</button>
         <button class="car-arrow next" id="carNext" aria-label="Next mower">›</button>
@@ -198,6 +232,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
       </div>
       <div class="caption" id="caption" aria-live="polite"></div>
       <div class="thumb-strip" id="thumbStrip"></div>
+      <div class="tile-grid" id="tileGrid"></div>
     </div>
   </section>
 
@@ -256,7 +291,8 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     'Electric':'JJ-RIGGS-ADS-BUILDER/badboy-images/menu_e_magnum.jpg'
   };
 
-  var state={type:'all',index:0};
+  var state={type:'all',index:0,view:'carousel'};
+  try{var _v=localStorage.getItem('jjMowerView');if(_v==='grid'||_v==='carousel')state.view=_v;}catch(e){}
 
   function sslug(s){return String(s).toLowerCase().replace(/\s+/g,'-');}
 
@@ -276,7 +312,8 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 
   var tabsEl=document.getElementById('typeTabs'),meta=document.getElementById('stageMeta'),catEl=document.getElementById('stageCat'),
       track=document.getElementById('carTrack'),cap=document.getElementById('caption'),thumbs=document.getElementById('thumbStrip'),
-      prev=document.getElementById('carPrev'),next=document.getElementById('carNext'),vp=document.getElementById('carViewport');
+      prev=document.getElementById('carPrev'),next=document.getElementById('carNext'),vp=document.getElementById('carViewport'),
+      tileGrid=document.getElementById('tileGrid'),stageEl=document.getElementById('stage');
 
   function inCat(){return ALL.slice().sort(function(a,b){return b.hp-a.hp;});}
   function typesPresent(){var ms=inCat();return TYPES.filter(function(t){return t==='all'||ms.some(function(m){return m.type===t;});});}
@@ -340,7 +377,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     if(m.fuel&&m.fuel!=='Gas')bits.push(m.fuel);
     cap.innerHTML='<h2><span class="cb">Bad Boy</span> '+m.model+'</h2>'
       +'<p class="hpline">'+bits.join(' · ')+'</p>'
-      +'<div class="cap-actions"><a class="btn btn-red" href="mower.html?m='+encodeURIComponent(m.model)+'">View details</a>'
+      +'<div class="cap-actions"><a class="btn btn-red" href="product-template.html?type=mower&m='+encodeURIComponent(m.model)+'">View details</a>'
       +'<a class="btn btn-dark" href="schedule-visit.html" data-intent="schedule">Schedule a Visit</a></div>';
   }
   function renderThumbs(){var items=filtered();thumbs.innerHTML='';var wrap=document.createElement('div');wrap.className='thumb-strip-inner';
@@ -352,10 +389,34 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     var a=thumbs.querySelector('.thumb.active');
     if(a)thumbs.scrollTo({left:a.offsetLeft-(thumbs.clientWidth-a.offsetWidth)/2,behavior:'smooth'});}
   function move(d){var items=filtered();if(!items.length)return;state.index=(state.index+d+items.length)%items.length;position();caption();markThumb();writeHash();}
-  function render(){
-    catEl.innerHTML='The <span class="cb">Lineup</span>';
-    renderTabs();renderSlides();writeHash();
+  function renderTiles(){
+    if(!tileGrid)return;
+    var items=filtered();
+    if(!items.length){tileGrid.innerHTML='<p style="color:#6a7077;padding:1.4rem 0">No mowers here — try another type.</p>';return;}
+    tileGrid.innerHTML='<div class="tg-inner">'+items.map(function(m){
+      var href='product-template.html?type=mower&m='+encodeURIComponent(m.model);
+      var hl=deckLine(m.decks);if(!hl&&m.hp>0)hl=m.hp+' HP';
+      return '<a class="tile" href="'+href+'">'
+        +'<span class="pic"><img src="'+m.image+'" alt="Bad Boy '+m.model+' mower" loading="lazy"></span>'
+        +'<span class="tb"><span class="tm">'+m.model+'</span>'
+        +'<span class="ts">'+(m.cat+' · '+(TYPELABEL[m.type]||m.type))+'</span>'
+        +(hl?'<span class="tile-hp">'+hl+'</span>':'')
+        +'<span class="go">View details &rarr;</span></span>'
+      +'</a>';
+    }).join('')+'</div>';
   }
+  function applyView(){
+    if(stageEl)stageEl.setAttribute('data-view',state.view);
+    document.querySelectorAll('.vt-btn').forEach(function(b){var on=b.getAttribute('data-view')===state.view;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false');});
+  }
+  function render(){
+    catEl.innerHTML='<img class="stage-logo" src="img/bb_logo_horizontal_orange.svg" alt="Bad Boy mowers">';
+    renderSlides();renderTiles();applyView();writeHash();
+  }
+  document.querySelectorAll('.vt-btn').forEach(function(b){b.addEventListener('click',function(){
+    state.view=b.getAttribute('data-view');try{localStorage.setItem('jjMowerView',state.view);}catch(e){}
+    applyView();renderTiles();
+  });});
 
   prev.addEventListener('click',function(){move(-1);});
   next.addEventListener('click',function(){move(1);});

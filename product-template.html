@@ -42,7 +42,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .crumb a:hover{color:#fff}.crumb .sep{color:#454b52}.crumb .now{color:#fff}
 
 /* OVERVIEW */
-.overview{padding:clamp(.9rem,2vw,1.4rem) 0 clamp(2rem,4vw,3rem)}
+.overview{padding:clamp(.7rem,1.3vw,1rem) 0 clamp(2rem,4vw,3rem)}
 .ov-grid{display:grid;grid-template-columns:minmax(0,1fr) clamp(340px,34%,420px);gap:1.4rem clamp(1.6rem,4vw,3rem);align-items:start;grid-template-areas:"gallery side" "details side"}
 .b-gallery{grid-area:gallery;min-width:0}
 .b-details{grid-area:details;min-width:0}
@@ -74,11 +74,15 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .ov-idover-model{font-size:clamp(1.25rem,2.2vw,1.85rem);padding:.3rem 1.2rem .3rem .78rem;margin:0}
 .ov-idover .ov-cat--over{position:static}
 /* branded header bar (replaces breadcrumb) — brand logo + model */
-.prodbar{padding:.3rem 0 0}
-.prodbar .wrap{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap}
+.prodbar{padding:.35rem 0 0}
+.prodbar .wrap{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;padding-bottom:.7rem;border-bottom:1px solid var(--lined)}
 .pb-logo{height:clamp(28px,3.6vw,40px);width:auto;display:block}
+.pb-div{width:1px;height:20px;background:var(--lined);flex:none}
+.pb-crumb{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#9aa0a6}
+a.pb-crumb:hover{color:var(--red)}
+.pb-sep{color:#c2c5c8;font-size:.85rem;line-height:1}
 .pb-model{font-size:clamp(1.4rem,2.4vw,2rem);padding:.32rem 1.4rem .32rem .85rem}
-.pb-back{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#9aa0a6;margin-left:auto}
+.pb-back{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#9aa0a6}
 .pb-back:hover{color:var(--red)}
 .b-tagline{color:#4a5057;line-height:1.55;margin:1.1rem 0 0;font-size:1.05rem;max-width:68ch}
 
@@ -111,11 +115,12 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .ap-phone:hover{color:var(--red-deep)}
 .ap-phone span{font-family:"Questrial",sans-serif;font-size:.7rem;letter-spacing:.04em;text-transform:uppercase;color:#7a8087;display:block;margin-bottom:.15rem}
 .ap-actions{display:flex;flex-direction:column}
-.ap-act{display:flex;align-items:center;gap:.85rem;padding:.92rem 1.1rem;border-top:1px solid var(--lined);background:none;border-left:0;border-right:0;border-bottom:0;width:100%;cursor:pointer;font-family:inherit;font-size:.95rem;font-weight:600;color:var(--ink);text-align:left;transition:background .14s,color .14s}
+.ap-act{display:flex;align-items:center;gap:.9rem;padding:1.05rem 1.2rem;border-top:1px solid var(--lined);background:none;border-left:0;border-right:0;border-bottom:0;width:100%;cursor:pointer;font-family:inherit;font-size:1rem;font-weight:600;color:var(--ink);text-align:left;transition:background .14s,color .14s}
+@media(min-width:861px){.ap-act{padding:1.3rem 1.4rem;font-size:1.1rem;gap:1.05rem}.ap-act .ai,.ap-act .ai svg{width:25px;height:25px}.ap-act .chev{font-size:1.35rem}}
 .ap-act:first-child{border-top:0}
-.ap-act .ai{flex:none;width:20px;height:20px;color:var(--red);display:flex;align-items:center;justify-content:center}
-.ap-act .ai svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;fill:none}
-.ap-act .chev{margin-left:auto;color:#c0c4c8;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.1rem;transition:transform .14s,color .14s}
+.ap-act .ai{flex:none;width:22px;height:22px;color:var(--red);display:flex;align-items:center;justify-content:center}
+.ap-act .ai svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.8;fill:none}
+.ap-act .chev{margin-left:auto;color:#c0c4c8;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.2rem;transition:transform .14s,color .14s}
 .ap-act:hover{background:#f6f4ef;color:var(--red)}
 .ap-act:hover .chev{color:var(--red);transform:translateX(3px)}
 .ap-act.primary{background:var(--red);color:#fff}
@@ -242,6 +247,7 @@ main#main{background:#f5f4f0;color:var(--ink)}
 <script src="js/badboy-models.data.js"></script>
 <script src="js/tractor-specs.data.js"></script>
 <script src="js/tractor-features.data.js"></script>
+<script src="js/badboy-tractor-images.data.js"></script>
 <script src="js/mower-models.data.js"></script>
 <script src="js/mower-specs.data.js"></script>
 <script src="js/mower-features.data.js"></script>
@@ -262,7 +268,7 @@ main#main{background:#f5f4f0;color:var(--ink)}
   var ICON={
     quote:'<path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.7 8.7 0 0 1-4-.9L3 20l1-3.9a8.4 8.4 0 1 1 17-4.6z"/>',
     finance:'<circle cx="12" cy="12" r="9"/><path d="M14.8 9.3a2.6 2.6 0 0 0-2.8-1.5c-1.6 0-2.5.9-2.5 2 0 2.7 5.3 1.4 5.3 4.1 0 1.2-1 2.1-2.7 2.1a2.8 2.8 0 0 1-2.9-1.7M12 6.5v11"/>',
-    contact:'<path d="M21 16.9v2.1a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 3.1 3h2.1a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L6.5 12.4a16 16 0 0 0 6 6l.9-.9a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2z"/>',
+    contact:'<rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
     print:'<path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/>',
     share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>'};
 
@@ -289,9 +295,24 @@ main#main{background:#f5f4f0;color:var(--ink)}
     }
     var fkey=brand==='Bad Boy'?('Bad Boy '+(m.series_name||m.series)):('TYM '+m.series);
     var images=[m.image].concat(GA[bkey]||[]);
+    /* spec sheet: hand-built groups if present, else synthesize Engine/Drivetrain from the model fields */
+    function synthGroups(m){
+      var eng=[];
+      if(m.engine)eng.push(['Engine',m.engine]);
+      if(m.fuel)eng.push(['Fuel',m.fuel]);
+      eng.push(['Horsepower',m.hp+' HP']);
+      var dt=[];
+      if(m.drive)dt.push(['Drive',m.drive]);
+      if(m.transmission)dt.push(['Transmission',m.transmission]);
+      if(m.loader_lift_lbs)dt.push(['Loader lift capacity',m.loader_lift_lbs.toLocaleString()+' lbs']);
+      dt.push(['Operator station',m.cab?'Cab':'Open station']);
+      var g=[{group:'Engine',rows:eng}];
+      if(dt.length)g.push({group:'Drivetrain',rows:dt});
+      return g;
+    }
     return {type:'tractor',brand:brand,category:m.series+(m.cab?' · Cab':''),model:m.model,title:m.model,
       blurb:m.blurb,price:null,priceNote:'Best local deal · ask Andrew',quickSpecs:qs,
-      images:images,specGroups:(rich&&rich.groups)||null,features:FE[bkey]||FE[fkey]||null,
+      images:images,specGroups:(rich&&rich.groups)||synthGroups(m),features:FE[bkey]||FE[fkey]||null,
       crumbs:[['Home','index-redesign.html'],['Tractors','tractors.html']],
       backHref:'tractors.html',metaType:'tractor'};
   }
@@ -307,9 +328,20 @@ main#main{background:#f5f4f0;color:var(--ink)}
     qs.push(['Fuel',m.fuel]);
     if(m.drive)qs.push(['Drive system',m.drive,'full']);
     var SP=window.MOWER_SPECS||{},FE=window.MOWER_FEATURES||{};
+    /* synthesize spec cards from the model fields when no hand-built MOWER_SPECS */
+    function synthMowerGroups(m){
+      var eng=[];
+      if(m.engine)eng.push(['Engine',String(m.engine).replace(/,\s*/g,' · ')]);
+      if(m.fuel)eng.push(['Fuel',m.fuel]);
+      if(m.hp>0)eng.push(['Horsepower',m.hp+' HP']);
+      var deck=[]; if(m.decks)deck.push(['Available decks',decks(m.decks)]);
+      var dr=[]; if(m.drive)dr.push(['Drive system',m.drive]); if(m.transmission&&m.transmission!==m.drive)dr.push(['Transmission',m.transmission]);
+      var g=[]; if(eng.length)g.push({group:'Engine',rows:eng}); if(deck.length)g.push({group:'Cutting deck',rows:deck}); if(dr.length)g.push({group:'Drive',rows:dr});
+      return g.length?g:null;
+    }
     return {type:'mower',brand:'Bad Boy',category:m.cat+' · '+m.type,model:m.model,title:m.model,
-      blurb:(FE[m.model]&&FE[m.model].intro)||'',price:m.price||null,priceNote:m.price?'Plus freight &amp; setup':'Best local deal · ask Andrew',
-      quickSpecs:qs,images:[m.image],specGroups:(SP[m.model]&&SP[m.model].groups)||null,features:FE[m.model]||null,
+      blurb:m.blurb||(FE[m.model]&&FE[m.model].intro)||'',price:m.price||null,priceNote:m.price?'Plus freight &amp; setup':'Best local deal · ask Andrew',
+      quickSpecs:qs,images:[m.image],specGroups:(SP[m.model]&&SP[m.model].groups)||synthMowerGroups(m),features:FE[m.model]||null,
       crumbs:[['Home','index-redesign.html'],['Mowers','mowers.html']],backHref:'mowers.html',metaType:'mower'};
   }
   function adaptImplement(){
@@ -367,7 +399,7 @@ main#main{background:#f5f4f0;color:var(--ink)}
     if(gimgs.length<3&&p.features&&p.features.items)p.features.items.forEach(function(it){if(it.image&&gimgs.indexOf(it.image)<0)gimgs.push(it.image);});
     var galHtml='';
     if(gimgs.length){
-      galHtml=gimgs.map(function(u,i){return '<img class="gal-img'+(i===0?' on':'')+(/\.png(\?|$)/i.test(u)?' fitc':'')+'" src="'+u+'" alt="'+esc(p.brand+' '+p.title)+'" loading="'+(i===0?'eager':'lazy')+'">';}).join('');
+      galHtml=gimgs.map(function(u,i){return '<img class="gal-img'+(i===0?' on':'')+((i===0||/\.png(\?|$)/i.test(u))?' fitc':'')+'" src="'+u+'" alt="'+esc(p.brand+' '+p.title)+'" loading="'+(i===0?'eager':'lazy')+'">';}).join('');
       if(gimgs.length>1){
         galHtml+='<span class="gal-count">1 / '+gimgs.length+'</span>'
           +'<button class="gal-arrow prev" type="button" aria-label="Previous photo">‹</button>'
@@ -388,17 +420,14 @@ main#main{background:#f5f4f0;color:var(--ink)}
       +'<div class="ap-actions">'
         +actBtn('primary',ICON.quote,'Get a Quote','data-act="quote"')
         +actBtn('',ICON.finance,'Get Financing','data-act="finance"')
-        +actBtn('',ICON.contact,'Contact / Schedule Visit','data-act="contact"')
+        +actBtn('',ICON.contact,'Schedule a Visit','data-act="contact"')
         +actBtn('',ICON.print,'Print','data-act="print"')
-        +actBtn('',ICON.share,'Share','data-act="share"')
       +'</div></div>';
 
     /* ---- photos persistent; Specifications / Features tabbed below ---- */
-    var catPill=p.category?'<span class="ov-cat--over">'+esc(p.category)+'</span>':'';
     var brandImg=BRANDLOGO[p.brand]?'<img class="pb-logo" src="'+BRANDLOGO[p.brand]+'" alt="'+esc(p.brand)+'">':'<span class="pb-brandtext">'+esc(p.brand)+'</span>';
-    var idOver='<div class="ov-idover"><div class="ov-idover-brand">'+brandImg+'<h1 class="cut-tab ov-idover-model">'+esc(p.title)+'</h1></div>'+catPill+'</div>';
+    var idOver='<div class="ov-idover"><h1 class="cut-tab ov-idover-model">'+esc(p.title)+'</h1></div>';
     var galFig='<figure class="ov-media">'+idOver+galHtml+'</figure>';
-    var qsBox=qsHtml?'<div class="quickspecs">'+qsHtml+'</div>':'';
 
     var specsCards='';
     if(p.specGroups&&p.specGroups.length){
@@ -409,7 +438,7 @@ main#main{background:#f5f4f0;color:var(--ink)}
       var note=p.manufacturerUrl?'<p class="spec-note">Full product details on the manufacturer site: <a href="'+esc(p.manufacturerUrl)+'" target="_blank" rel="noopener">view spec sheet →</a></p>':'<p class="spec-note">Full factory spec sheet available on request. Specs subject to change.</p>';
       specsCards=inner+note;
     }
-    var specsPanel=qsBox+specsCards;   /* highlight box first, then the detailed cards */
+    var specsPanel=specsCards;   /* detailed spec cards only (redundant black highlight box removed) */
 
     var featPanel='';
     if(p.features&&p.features.items&&p.features.items.length){
@@ -429,24 +458,24 @@ main#main{background:#f5f4f0;color:var(--ink)}
     if(featPanel)tabs.push({k:'features',label:'Features',html:featPanel});
 
     var tabsHtml='';
-    if(tabs.length>1){
+    if(tabs.length){
       tabsHtml='<div class="tabs" role="tablist">'+tabs.map(function(t,i){return '<button class="tab'+(i===0?' on':'')+'" type="button" role="tab" data-tab="'+t.k+'" aria-selected="'+(i===0?'true':'false')+'">'+t.label+'</button>';}).join('')+'</div>'
         +tabs.map(function(t,i){return '<div class="tabpanel'+(i===0?' on':'')+'" data-panel="'+t.k+'">'+t.html+'</div>';}).join('');
-    }else if(tabs.length===1){
-      tabsHtml='<div class="tabpanel on" data-panel="'+tabs[0].k+'">'+tabs[0].html+'</div>';
     }
 
-    var back=p.crumbs[p.crumbs.length-1]||['',''];
+    var back=p.crumbs[1]||p.crumbs[0]||['',''];   /* the section (Tractors / Implements / Mowers), not the category */
 
     root.innerHTML=
       '<nav class="prodbar" aria-label="Breadcrumb"><div class="wrap">'
-        +(back[1]?'<a class="pb-back" href="'+esc(back[1])+'">&lsaquo; '+esc(back[0])+'</a>':'')
+        +brandImg
+        +'<span class="pb-div" aria-hidden="true"></span>'
+        +(back[1]?'<a class="pb-crumb" href="'+esc(back[1])+'">'+esc(back[0])+'</a>':'')
+        +(p.category?((back[1]?'<span class="pb-sep" aria-hidden="true">&rsaquo;</span>':'')+'<span class="pb-crumb">'+esc(p.category)+'</span>'):'')
       +'</div></nav>'
       +'<section class="overview"><div class="wrap"><div class="ov-grid">'
         +'<div class="b-gallery">'+galFig+(p.blurb?'<p class="b-tagline">'+esc(p.blurb)+'</p>':'')+'</div>'
         +'<aside class="b-side">'
           +apHtml
-          +'<div class="fin-chip"><span class="rate">0% APR*</span> <span>financing available <b>on approved credit</b></span></div>'
         +'</aside>'
         +'<div class="b-details">'+tabsHtml+'</div>'
       +'</div></div></section>';
