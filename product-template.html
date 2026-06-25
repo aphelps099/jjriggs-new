@@ -313,7 +313,7 @@ main#main{background:#f5f4f0;color:var(--ink)}
     return {type:'tractor',brand:brand,category:m.series+(m.cab?' · Cab':''),model:m.model,title:m.model,
       blurb:m.blurb,price:null,priceNote:'Best local deal · ask Andrew',quickSpecs:qs,
       images:images,specGroups:(rich&&rich.groups)||synthGroups(m),features:FE[bkey]||FE[fkey]||null,
-      crumbs:[['Home','index-redesign.html'],['Tractors','tractors.html']],
+      crumbs:[['Home','index.html'],['Tractors','tractors.html']],
       backHref:'tractors.html',metaType:'tractor'};
   }
   function adaptMower(){
@@ -342,7 +342,7 @@ main#main{background:#f5f4f0;color:var(--ink)}
     return {type:'mower',brand:'Bad Boy',category:m.cat+' · '+m.type,model:m.model,title:m.model,
       blurb:m.blurb||(FE[m.model]&&FE[m.model].intro)||'',price:m.price||null,priceNote:m.price?'Plus freight &amp; setup':'Best local deal · ask Andrew',
       quickSpecs:qs,images:[m.image],specGroups:(SP[m.model]&&SP[m.model].groups)||synthMowerGroups(m),features:FE[m.model]||null,
-      crumbs:[['Home','index-redesign.html'],['Mowers','mowers.html']],backHref:'mowers.html',metaType:'mower'};
+      crumbs:[['Home','index.html'],['Mowers','mowers.html']],backHref:'mowers.html',metaType:'mower'};
   }
   function adaptImplement(){
     var DATA=(window.JJ_IMPLEMENTS||[]);
@@ -369,7 +369,7 @@ main#main{background:#f5f4f0;color:var(--ink)}
       blurb:'',price:null,priceNote:'Front-mount · fits most loaders',quickSpecs:qs,
       images:m.img?[m.img]:[],specGroups:groups,features:null,
       manufacturerUrl:m.page||'',
-      crumbs:[['Home','index-redesign.html'],['Implements','implements.html'],[m.category,'implement-category.html?cat='+encodeURIComponent(m.category)]],
+      crumbs:[['Home','index.html'],['Implements','implements.html'],[m.category,'implement-category.html?cat='+encodeURIComponent(m.category)]],
       backHref:'implements.html',metaType:'implement'};
   }
 
@@ -388,7 +388,7 @@ main#main{background:#f5f4f0;color:var(--ink)}
   function render(){
     var root=document.getElementById('product');
     var p=getProduct();
-    if(!p){root.innerHTML='<div class="wrap notfound"><h1>Product not found</h1><p>That item isn’t in the lineup.</p><a class="btn btn-red" href="index-redesign.html">Back home →</a></div>';return;}
+    if(!p){root.innerHTML='<div class="wrap notfound"><h1>Product not found</h1><p>That item isn’t in the lineup.</p><a class="btn btn-red" href="index.html">Back home →</a></div>';return;}
 
     document.getElementById('docTitle').textContent=p.brand+' '+p.title+' | JJ Riggs Equipment, Colville WA';
     document.getElementById('metaDesc').setAttribute('content',(p.brand+' '+p.title+' '+p.metaType+'. Sold and serviced at JJ Riggs Equipment in Colville, WA.').slice(0,160));

@@ -13,7 +13,7 @@ Header `::before` dark gradient is hidden on this page. Hero CTAs are adjusted f
 
 The homepage block headed **"Rock-solid customer service."** (the `.andrew` section,
 `id="andrew-h"`, with Andrew's photo) is to be **moved off the homepage and onto the
-new services page.** Remove it from `index-redesign.html` when the services page is built.
+new services page.** Remove it from `index.html` when the services page is built.
 
 ## 2. Services page copy (client-provided)
 
