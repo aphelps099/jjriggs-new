@@ -366,16 +366,30 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
 @media(max-width:420px){.nl-form input{padding-right:1.3rem;padding-bottom:4.6rem}.nl-form .btn{top:auto;bottom:.45rem;right:.45rem;transform:none}}
 .nl-done{font-size:1.05rem;font-weight:500;color:#fff}
 .nl-done b{color:var(--steel-2);font-weight:500}
-/* Constant Contact inline form — restyle to JJ Riggs brand (CC renders in light DOM, so these override its defaults) */
-.newsletter .ctct-inline-form{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif}
-.newsletter .ctct-form-defaults{border-radius:3px!important;padding:clamp(1.6rem,3vw,2.4rem)!important;font-family:inherit!important}
-.newsletter .ctct-form-header,.newsletter .ctct-inline-form h2{font-family:"Tactic Sans Bld","Michroma","Bebas Neue",sans-serif!important;font-weight:400!important;text-transform:uppercase!important;letter-spacing:.012em!important;color:var(--ink)!important;line-height:1.05!important}
-.newsletter .ctct-form-text,.newsletter .ctct-form-label,.newsletter .ctct-gdpr-text,.newsletter .ctct-inline-form p,.newsletter .ctct-inline-form label{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif!important;color:#3b4046!important}
+/* Constant Contact inline form — minimal dark treatment (no white card) to match the original sleek field.
+   CC renders in the light DOM, so these scoped !important rules override its defaults. */
+.newsletter .ctct-inline-form{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;max-width:560px}
+/* strip the white card */
+.newsletter .ctct-form-defaults{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important;font-family:inherit!important}
+/* hide CC's duplicate heading + intro — the section headline on the left already says it */
+.newsletter .ctct-form-header,.newsletter .ctct-form-text{display:none!important}
+/* email label — small, light, minimal */
+.newsletter .ctct-form-label,.newsletter .ctct-inline-form label{font-family:"Questrial",sans-serif!important;color:var(--steel-2)!important;font-size:.74rem!important;letter-spacing:.06em!important;text-transform:uppercase!important;font-weight:600!important}
 .newsletter .ctct-form-required{color:var(--red)!important}
-.newsletter .ctct-inline-form input[type="email"],.newsletter .ctct-inline-form input[type="text"]{border-radius:3px!important;border:1.5px solid rgba(20,23,26,.32)!important;font-family:"Questrial",sans-serif!important}
-.newsletter .ctct-inline-form input[type="email"]:focus,.newsletter .ctct-inline-form input[type="text"]:focus{border-color:var(--red)!important;outline:none!important;box-shadow:0 0 0 2px rgba(207,31,42,.25)!important}
-.newsletter .ctct-form-button,.newsletter .ctct-inline-form button[type="submit"]{background:var(--red)!important;border:1.5px solid var(--red)!important;color:#fff!important;font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif!important;font-weight:700!important;letter-spacing:.01em!important;text-transform:none!important;border-radius:3px!important;transition:background .18s,border-color .18s!important}
-.newsletter .ctct-form-button:hover,.newsletter .ctct-inline-form button[type="submit"]:hover{background:var(--red-deep)!important;border-color:var(--red-deep)!important}
+/* dark, transparent input — matches the original .nl-form field */
+.newsletter .ctct-inline-form input[type="email"],.newsletter .ctct-inline-form input[type="text"]{
+  background:rgba(255,255,255,.05)!important;border:2px solid rgba(255,255,255,.34)!important;border-radius:6px!important;
+  color:#fff!important;font-family:"Questrial",sans-serif!important;font-size:1.1rem!important;padding:1.15rem 1.3rem!important}
+.newsletter .ctct-inline-form input[type="email"]::placeholder,.newsletter .ctct-inline-form input[type="text"]::placeholder{color:var(--steel)!important}
+.newsletter .ctct-inline-form input[type="email"]:focus,.newsletter .ctct-inline-form input[type="text"]:focus{border-color:var(--steel-2)!important;outline:none!important;box-shadow:none!important}
+/* consent text + CC badge — tiny and muted so they don't dominate */
+.newsletter .ctct-gdpr-text,.newsletter .ctct-gdpr-text *{color:var(--steel)!important;font-size:.7rem!important;line-height:1.45!important}
+/* button — brand red */
+.newsletter .ctct-form-button,.newsletter .ctct-inline-form button[type="submit"]{
+  background:var(--red)!important;border:0!important;color:#fff!important;font-family:"Questrial",sans-serif!important;
+  font-weight:700!important;letter-spacing:.01em!important;text-transform:none!important;border-radius:6px!important;
+  padding:1rem 1.7rem!important;font-size:.98rem!important;transition:background .18s!important}
+.newsletter .ctct-form-button:hover,.newsletter .ctct-inline-form button[type="submit"]:hover{background:var(--red-deep)!important}
 @media(max-width:780px){.newsletter .grid{grid-template-columns:1fr}}
 
 [data-reveal]{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
