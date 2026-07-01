@@ -103,10 +103,10 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-weight:400;t
 .p-visit .row span:last-child{font-weight:600;white-space:nowrap}
 
 /* ===== specifications: numbers + list, one panel, zero duplication ===== */
-.sec{padding:2.6rem 0;border-top:1px solid var(--lined)}
+.sec{padding:2.6rem 0}
 .sec-h{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.6rem}
 .sec-h h2{font-size:clamp(1.6rem,3vw,2.2rem)}
-.sec-h .rule{flex:1;height:3px;background:linear-gradient(90deg,var(--red) 120px,var(--lined) 120px)}
+.sec-h .rule{display:none}
 .specwrap{display:grid;grid-template-columns:280px 1fr;background:#fff;border:1px solid var(--lined)}
 @media(max-width:860px){.specwrap{grid-template-columns:1fr}}
 /* left: the big numbers only — numeric facts, nothing that wraps badly */
@@ -124,7 +124,8 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-weight:400;t
 /* features */
 .feat-intro{font-size:1.15rem;max-width:70ch;color:#2a2f34;margin-bottom:1.6rem}
 .featgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.2rem}
-.featcard{background:#fff;border:1px solid var(--lined);display:flex;flex-direction:column}
+.featcard{background:var(--bone);border-top:1px solid rgba(20,23,26,.12);border-left:1px solid rgba(20,23,26,.12);border-right:1px solid rgba(20,23,26,.12);border-bottom:1px solid rgba(20,23,26,.12);display:flex;flex-direction:column;transition:background .15s,box-shadow .15s}
+.featcard:hover{background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink),0 12px 28px rgba(20,23,26,.13)}
 .featcard img{width:100%;aspect-ratio:16/10;object-fit:cover}
 .featcard .fx{padding:1.2rem 1.3rem 1.4rem}
 .featcard h3{font-size:1.08rem;letter-spacing:.05em;margin-bottom:.5rem}
