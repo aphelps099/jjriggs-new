@@ -104,6 +104,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-weight:400;t
 
 /* ===== specifications: numbers + list, one panel, zero duplication ===== */
 .sec{padding:2.6rem 0}
+main .sec{max-width:920px}
 .sec-h{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.6rem}
 .sec-h h2{font-size:clamp(1.6rem,3vw,2.2rem)}
 .sec-h .rule{display:none}
@@ -122,15 +123,19 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-weight:400;t
 .specline .v{font-weight:600;text-align:right}
 
 /* features */
-.feat-intro{font-size:1.15rem;max-width:70ch;color:#2a2f34;margin-bottom:1.6rem}
-.featgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.2rem}
-.featcard{background:var(--bone);border-top:1px solid rgba(20,23,26,.12);border-left:1px solid rgba(20,23,26,.12);border-right:1px solid rgba(20,23,26,.12);border-bottom:1px solid rgba(20,23,26,.12);display:flex;flex-direction:column;transition:background .15s,box-shadow .15s}
-.featcard:hover{background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink),0 12px 28px rgba(20,23,26,.13)}
-.featcard img{width:100%;aspect-ratio:16/10;object-fit:cover}
-.featcard .fx{padding:1.2rem 1.3rem 1.4rem}
-.featcard h3{font-size:1.08rem;letter-spacing:.05em;margin-bottom:.5rem}
-.featcard h3::after{content:"";display:block;width:44px;height:3px;background:var(--red);margin-top:.5rem}
-.featcard p{font-size:1rem;color:#3a4046}
+.feat-intro{font-size:1.15rem;max-width:70ch;color:#2a2f34;margin-bottom:1.4rem}
+.acc{border-top:1px solid rgba(20,23,26,.12)}
+.acc-item{border-bottom:1px solid rgba(20,23,26,.12);background:var(--bone);transition:background .15s}
+.acc-item.open{background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink)}
+.acc-head{display:flex;align-items:center;gap:1rem;width:100%;background:none;border:0;cursor:pointer;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.08rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);text-align:left;padding:1.1rem 1.2rem}
+.acc-head .ic{margin-left:auto;flex:none;width:30px;height:30px;border:1.5px solid rgba(20,23,26,.25);display:flex;align-items:center;justify-content:center;font-family:"Questrial",sans-serif;font-size:1.25rem;line-height:1;color:var(--red);transition:transform .18s,background .15s,color .15s,border-color .15s}
+.acc-item.open .acc-head .ic{background:var(--red);border-color:var(--red);color:#fff;transform:rotate(45deg)}
+.acc-panel{display:none;padding:0 1.2rem 1.3rem}
+.acc-item.open .acc-panel{display:block}
+.acc-panel-inner{display:flex;gap:1.6rem;align-items:flex-start}
+.acc-panel-inner p{font-size:1.02rem;color:#3a4046;max-width:60ch;flex:1}
+.acc-panel-inner img{width:min(300px,38%);aspect-ratio:16/10;object-fit:cover;flex:none}
+@media(max-width:640px){.acc-panel-inner{flex-direction:column}.acc-panel-inner img{width:100%}}
 
 /* trust band — simplified: headline, one line, one button */
 .trust{background:var(--ink);color:#fff}
@@ -340,8 +345,10 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-weight:400;t
   if(p.features&&p.features.items&&p.features.items.length){
     featSec='<section class="sec" id="features"><div class="sec-h"><h2>'+esc(p.features.heading||'Features')+'</h2><div class="rule"></div></div>'
       +(p.features.intro?'<p class="feat-intro">'+esc(p.features.intro)+'</p>':'')
-      +'<div class="featgrid">'+p.features.items.map(function(it){
-        return '<div class="featcard">'+(it.image?'<img loading="lazy" src="'+it.image+'" alt="'+esc(it.title)+'">':'')+'<div class="fx"><h3>'+esc(it.title)+'</h3><p>'+esc(it.body||'')+'</p></div></div>';
+      +'<div class="acc">'+p.features.items.map(function(it,i){
+        return '<div class="acc-item'+(i===0?' open':'')+'">'
+          +'<button class="acc-head" type="button" aria-expanded="'+(i===0?'true':'false')+'">'+esc(it.title)+'<span class="ic" aria-hidden="true">+</span></button>'
+          +'<div class="acc-panel"><div class="acc-panel-inner">'+(it.body?'<p>'+esc(it.body)+'</p>':'')+(it.image?'<img loading="lazy" src="'+it.image+'" alt="'+esc(it.title)+'">':'')+'</div></div></div>';
       }).join('')+'</div></section>';
   }else{
     var fl=document.getElementById('featNavLink');if(fl)fl.style.display='none';
@@ -376,6 +383,15 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-weight:400;t
   document.getElementById('relgrid').innerHTML=p.rel.map(function(r){
     return '<a class="rel" href="'+r.href+'"><span class="pic">'+(r.img?'<img src="'+r.img+'" alt="'+esc(r.model)+'" loading="lazy">':'')+'</span><span class="bd"><span class="nm">'+esc(r.model)+'</span><div class="mt">'+esc(r.meta)+'</div><div class="go">View details →</div></span></a>';
   }).join('');
+
+  /* accordion wiring */
+  document.querySelectorAll(".acc-head").forEach(function(h){
+    h.addEventListener("click",function(){
+      var item=h.parentNode,open=item.classList.contains("open");
+      item.classList.toggle("open",!open);
+      h.setAttribute("aria-expanded",!open);
+    });
+  });
 
   /* gallery wiring */
   (function(){
