@@ -99,6 +99,20 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 }
 
 /* STAGE — the carousel */
+/* what's the work — task entry */
+.worksec{background:var(--bone);color:var(--ink);padding:clamp(1.8rem,4vw,2.8rem) 0 0}
+.work-h{display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:1.1rem}
+.work-h h2{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(1.3rem,2.6vw,1.8rem);letter-spacing:.02em}
+.work-sub{font-size:.95rem;color:#6a7178}
+.workgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem}
+.wk{background:#fff;border:1px solid var(--lined);border-top:4px solid transparent;padding:1.2rem 1.3rem 1.1rem;cursor:pointer;text-align:left;font-family:inherit;color:var(--ink);transition:transform .15s,box-shadow .15s,border-color .15s}
+.wk:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(20,23,26,.12)}
+.wk.on{border-color:var(--red);border-top-color:var(--red)}
+.wk h3{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-weight:400;text-transform:uppercase;font-size:1.12rem;letter-spacing:.04em}
+.wk p{margin-top:.4rem;font-size:.93rem;color:#5c636a;line-height:1.5}
+.wk .tag{display:block;margin-top:.65rem;font-size:.72rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--red)}
+.wk .tag::after{content:""}
+.wk.on .tag::after{content:" ✕ clear"}
 .stage{background:var(--bone);color:var(--ink);padding:clamp(1.4rem,3vw,2.2rem) 0 clamp(2.6rem,5vw,4rem)}
 .stage-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.6rem}
 .stage-head h2{font-size:clamp(1.7rem,3.4vw,2.4rem);color:var(--ink)}
@@ -216,6 +230,29 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
       <a class="fin-note" href="financing.html"><span class="fin-tag">0% APR · 60 mo</span> Financing on select Bad Boy mowers <svg class="arw" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg></a>
     </div>
   </section>
+  <section class="worksec" aria-label="Shop by the work">
+    <div class="wrap">
+      <div class="work-h"><h2>What's the work?</h2><span class="work-sub">Pick the job — we'll narrow the lineup.</span></div>
+      <div class="workgrid">
+        <button class="wk" type="button" data-work="yard">
+          <h3>The Weekend Yard</h3>
+          <p>A clean cut on a normal lawn without giving up your Saturday.</p>
+          <span class="tag">Residential · up to 48″ decks</span>
+        </button>
+        <button class="wk" type="button" data-work="acreage">
+          <h3>Big Lawns &amp; Acreage</h3>
+          <p>Wide decks and faster ground speed for properties measured in acres.</p>
+          <span class="tag">54″ decks and up</span>
+        </button>
+        <button class="wk" type="button" data-work="pro">
+          <h3>Mowing for a Living</h3>
+          <p>Commercial decks, engines, and hydros built for every day, all season.</p>
+          <span class="tag">Commercial line</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
   <section class="stage" id="stage" data-view="carousel" aria-label="Mower lineup">
     <div class="wrap">
       <div class="stage-head"><h2 id="stageCat" aria-live="polite"></h2><span class="stage-meta" id="stageMeta" aria-live="polite"></span></div>
@@ -291,7 +328,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     'Electric':'JJ-RIGGS-ADS-BUILDER/badboy-images/menu_e_magnum.jpg'
   };
 
-  var state={type:'all',index:0,view:'carousel'};
+  var state={type:'all',work:null,index:0,view:'carousel'};
   try{var _v=localStorage.getItem('jjMowerView');if(_v==='grid'||_v==='carousel')state.view=_v;}catch(e){}
 
   function sslug(s){return String(s).toLowerCase().replace(/\s+/g,'-');}
@@ -301,11 +338,13 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     var h=location.hash.replace(/^#/,'');if(!h)return;
     var p={};h.split('&').forEach(function(kv){var x=kv.split('=');if(x.length===2)p[x[0]]=decodeURIComponent(x[1]);});
     if(p.type){var t=TYPES.filter(function(x){return sslug(x)===p.type;})[0];if(t)state.type=t;}
+    if(p.w&&['yard','acreage','pro'].indexOf(p.w)>-1)state.work=p.w;
     if(p.m&&!isNaN(+p.m))state.index=Math.max(0,+p.m);
   })();
   function writeHash(){
     var parts=[];
     if(state.type!=='all')parts.push('type='+sslug(state.type));
+    if(state.work)parts.push('w='+state.work);
     if(state.index>0)parts.push('m='+state.index);
     history.replaceState(null,'',parts.length?'#'+parts.join('&'):'#');
   }
@@ -317,7 +356,15 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 
   function inCat(){return ALL.slice().sort(function(a,b){return b.hp-a.hp;});}
   function typesPresent(){var ms=inCat();return TYPES.filter(function(t){return t==='all'||ms.some(function(m){return m.type===t;});});}
-  function filtered(){return inCat().filter(function(m){return state.type==='all'||m.type===state.type;});}
+  function workMatch(m){
+    if(!state.work)return true;
+    var d=String(m.decks||'').split(',').map(function(x){return parseInt(x.trim(),10);}).filter(function(n){return n>0;});
+    if(state.work==='yard')return m.cat==='Residential'&&d.some(function(n){return n<=48;});
+    if(state.work==='acreage')return d.some(function(n){return n>=54;});
+    if(state.work==='pro')return m.cat==='Commercial';
+    return true;
+  }
+  function filtered(){return inCat().filter(function(m){return (state.type==='all'||m.type===state.type)&&workMatch(m);});}
 
   function deckList(s){var d=s?s.split(',').map(function(x){return x.trim();}):[];return d.length?d.join(' · ')+'″':'—';}
   function deckLine(s){
@@ -411,8 +458,14 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
   }
   function render(){
     catEl.innerHTML='<img class="stage-logo" src="img/bb_logo_horizontal_orange.svg" alt="Bad Boy mowers">';
+    document.querySelectorAll('.wk').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-work')===state.work);});
     renderSlides();renderTiles();applyView();writeHash();
   }
+  document.querySelectorAll('.wk').forEach(function(b){b.addEventListener('click',function(){
+    var v=b.getAttribute('data-work');
+    state.work=(state.work===v?null:v);state.index=0;render();
+    if(state.work)document.getElementById('stage').scrollIntoView({behavior:'smooth',block:'start'});
+  });});
   document.querySelectorAll('.vt-btn').forEach(function(b){b.addEventListener('click',function(){
     state.view=b.getAttribute('data-view');try{localStorage.setItem('jjMowerView',state.view);}catch(e){}
     applyView();renderTiles();

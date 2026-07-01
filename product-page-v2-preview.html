@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title id="docTitle">Product — JJ Riggs Equipment (v2 preview)</title>
+<meta name="description" content="Product page layout v2 preview" id="metaDesc">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Questrial&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:"Tactic Sans Bld";src:url("fonts/tactic-sans-bld.woff2") format("woff2"),url("fonts/tactic-sans-bld.woff") format("woff");font-weight:400 800;font-style:normal;font-display:swap}
+:root{--ink:#14171a;--ink-2:#1b2025;--ink-3:#0f1215;--bone:#f3f1ea;--white:#fbfbf9;--steel:#8b939c;--red:#cf1f2a;--red-deep:#a5151f;--green:#1d7a3c;--lined:rgba(20,23,26,.14);--maxw:1280px;--gut:clamp(1.4rem,5vw,4rem)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bone);color:var(--ink);line-height:1.55;font-size:17px;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}img{display:block;max-width:100%;height:auto}
+h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.012em;line-height:.94}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
+.cut-tab{display:inline-block;background:var(--ink);color:#fff;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;letter-spacing:.08em;text-transform:uppercase;line-height:1;padding:.5rem 1.6rem .5rem 1.1rem;clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,0 100%)}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+
+/* demo switcher (preview only — delete in production) */
+.demo{position:fixed;bottom:14px;left:14px;z-index:99;background:var(--ink);color:#fff;padding:.6rem .8rem;font-size:.8rem;display:flex;gap:.5rem;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.demo a{padding:.35rem .7rem;border:1px solid rgba(255,255,255,.25)}
+.demo a.on,.demo a:hover{background:var(--red);border-color:var(--red)}
+
+/* site header (compressed stand-in) */
+.hdr{background:var(--ink);color:#fff}
+.hdr .wrap{display:flex;align-items:center;gap:1.6rem;height:84px}
+.hdr .logo{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.5rem;letter-spacing:.03em}
+.hdr .tag{font-size:.68rem;letter-spacing:.16em;color:var(--steel);text-transform:uppercase;line-height:1.5}
+.hdr nav{margin-left:auto;display:flex;gap:1.8rem;font-size:.95rem}
+.hdr .btn-quote{background:var(--red);padding:.85rem 1.5rem;font-weight:600}
+@media(max-width:840px){.hdr nav{display:none}}
+
+/* breadcrumb / brand bar */
+.prodbar{background:var(--white);border-bottom:1px solid var(--lined)}
+.prodbar .wrap{display:flex;align-items:center;gap:1rem;height:64px}
+.pb-logo{height:30px;width:auto}
+.pb-crumb{font-size:.82rem;letter-spacing:.18em;text-transform:uppercase;color:#5c636a}
+.pb-crumb a:hover{color:var(--red)}
+.pb-sep{color:#b8bdc2}
+
+/* ===== 1. identity header — real text, not an image overlay ===== */
+.idhead{padding:2.4rem 0 1.6rem}
+.idhead .cat{font-size:.8rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#6a7178;margin-bottom:.6rem}
+.idhead h1{font-size:clamp(2.6rem,6vw,4.4rem);color:var(--ink)}
+.idhead h1 .brand{color:var(--red)}
+.id-sub{margin-top:.7rem;display:flex;flex-wrap:wrap;gap:.55rem;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:.4rem;background:#fff;border:1px solid var(--lined);padding:.42rem .85rem;font-size:.9rem;font-weight:600;letter-spacing:.04em}
+.chip.station{background:var(--ink);color:#fff}
+.chip.instock{color:var(--green);border-color:rgba(29,122,60,.35)}
+.chip.instock::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--green)}
+
+/* ===== 2. main grid ===== */
+.ov-grid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:2.2rem;align-items:start;padding-bottom:2.6rem}
+@media(max-width:980px){.ov-grid{grid-template-columns:1fr}}
+
+/* gallery */
+.gal{position:relative;background:#fff;border:1px solid var(--lined);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.gal img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:1.4rem;opacity:0;transition:opacity .25s}
+.gal img.on{opacity:1}
+.gal .noimg{color:#8b939c;text-align:center;font-size:1rem;padding:2rem}
+.gal .noimg b{display:block;font-size:1.15rem;color:var(--ink);margin-bottom:.3rem}
+.gal-arrow{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border:0;background:var(--ink);color:#fff;font-size:1.5rem;cursor:pointer;z-index:2}
+.gal-arrow:hover{background:var(--red)}
+.gal-arrow.prev{left:0}.gal-arrow.next{right:0}
+.gal-count{position:absolute;top:12px;right:12px;background:var(--ink);color:#fff;font-size:.85rem;padding:.35rem .7rem;z-index:2}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:.55rem;margin-top:.6rem}
+.thumbs button{border:2px solid var(--lined);background:#fff;aspect-ratio:4/3;cursor:pointer;overflow:hidden;padding:0}
+.thumbs button.on{border-color:var(--red)}
+.thumbs img{width:100%;height:100%;object-fit:cover}
+
+.tagline{margin-top:1.2rem;font-size:1.18rem;line-height:1.6;color:#2a2f34;max-width:62ch}
+
+/* ===== 3. stat tiles — the "information rich" anchor ===== */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--lined);border:1px solid var(--lined);margin-top:1.6rem}
+.stat{background:#fff;padding:1.1rem 1.2rem}
+.stat .n{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:clamp(1.5rem,2.6vw,2.1rem);line-height:1;color:var(--ink)}
+.stat .n small{font-size:.55em;color:var(--red)}
+.stat .l{font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#6a7178;margin-top:.4rem}
+
+/* use tags */
+.uses{margin-top:1.2rem;display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.uses .lbl{font-size:.8rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#6a7178;margin-right:.3rem}
+.uses .u{background:transparent;border:1px solid var(--lined);padding:.4rem .9rem;font-size:.92rem;color:#2a2f34}
+
+/* ===== 4. action rail ===== */
+.rail{position:sticky;top:1.2rem;display:flex;flex-direction:column;gap:1rem}
+.panel{background:#fff;border:1px solid var(--lined)}
+.p-price{padding:1.4rem 1.5rem;border-bottom:1px solid var(--lined)}
+.p-price .pl{font-size:.75rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#6a7178}
+.p-price .pv{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:2.3rem;line-height:1.05;margin-top:.25rem}
+.p-price .pn{font-size:.95rem;color:#5c636a;margin-top:.35rem}
+.call{display:flex;align-items:center;gap:1rem;background:var(--ink);color:#fff;padding:1.15rem 1.5rem}
+.call:hover{background:var(--ink-2)}
+.call .ico{width:40px;height:40px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;flex:none}
+.call .ico svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.call .t1{font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;color:#b8bdc2}
+.call .t2{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.5rem;letter-spacing:.04em}
+.acts{display:flex;flex-direction:column}
+.act{display:flex;align-items:center;gap:.9rem;padding:1.05rem 1.5rem;border-top:1px solid var(--lined);font-size:1.05rem;font-weight:600;cursor:pointer;background:#fff;border-left:0;border-right:0;border-bottom:0;text-align:left;width:100%;font-family:inherit;color:var(--ink)}
+.act:hover{background:var(--bone)}
+.act.primary{background:var(--red);color:#fff;border-top:0}
+.act.primary:hover{background:var(--red-deep)}
+.act svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.act .chev{margin-left:auto;color:currentColor;opacity:.5}
+.p-visit{padding:1.1rem 1.5rem;font-size:.95rem;color:#3a4046;border-top:3px solid var(--red)}
+.p-visit b{display:block;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:#6a7178;margin-bottom:.35rem}
+.p-visit .row{display:flex;justify-content:space-between;gap:1rem;padding:.18rem 0}
+.p-visit .row span:last-child{font-weight:600;white-space:nowrap}
+
+/* ===== 5. stacked info sections (no tabs) ===== */
+.sec{padding:2.6rem 0;border-top:1px solid var(--lined)}
+.sec-h{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.6rem}
+.sec-h h2{font-size:clamp(1.6rem,3vw,2.2rem)}
+.sec-h .rule{flex:1;height:3px;background:linear-gradient(90deg,var(--red) 120px,var(--lined) 120px)}
+.specgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.2rem}
+.speccard{background:#fff;border:1px solid var(--lined)}
+.speccard h3{font-size:1.1rem;letter-spacing:.06em;padding:1rem 1.3rem;border-bottom:2px solid var(--red)}
+.specline{display:flex;justify-content:space-between;gap:1.4rem;padding:.85rem 1.3rem;border-bottom:1px solid var(--lined);font-size:1.02rem}
+.specline:last-child{border-bottom:0}
+.specline .k{color:#5c636a}
+.specline .v{font-weight:600;text-align:right}
+.spec-note{margin-top:1.1rem;font-size:.95rem;color:#5c636a}
+.spec-note a{color:var(--red);font-weight:600}
+
+/* features — open cards, no accordion */
+.feat-intro{font-size:1.15rem;max-width:70ch;color:#2a2f34;margin-bottom:1.6rem}
+.featgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.2rem}
+.featcard{background:#fff;border:1px solid var(--lined);display:flex;flex-direction:column}
+.featcard img{width:100%;aspect-ratio:16/10;object-fit:cover}
+.featcard .fx{padding:1.2rem 1.3rem 1.4rem}
+.featcard h3{font-size:1.08rem;letter-spacing:.05em;margin-bottom:.5rem}
+.featcard h3::after{content:"";display:block;width:44px;height:3px;background:var(--red);margin-top:.5rem}
+.featcard p{font-size:1rem;color:#3a4046}
+
+/* trust band */
+.trust{background:var(--ink);color:#fff}
+.trust .wrap{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:2.4rem;padding-top:2.8rem;padding-bottom:2.8rem}
+@media(max-width:840px){.trust .wrap{grid-template-columns:1fr}}
+.trust h2{font-size:clamp(1.6rem,3vw,2.1rem);margin-bottom:.8rem}
+.trust h2 em{color:var(--red);font-style:normal}
+.trust p{color:#c3c8ce;font-size:1.02rem}
+.trust .tl{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--steel);margin-bottom:.7rem}
+.trust ul{list-style:none}
+.trust li{padding:.34rem 0 .34rem 1.6rem;position:relative;color:#e8eaec;font-size:1rem}
+.trust li::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700}
+.trust .call2{display:inline-flex;margin-top:1.1rem;background:var(--red);padding:.95rem 1.5rem;font-weight:600;font-size:1.05rem;gap:.6rem;align-items:center}
+.trust .call2:hover{background:var(--red-deep)}
+
+/* related models */
+.relgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.2rem}
+.rel{background:#fff;border:1px solid var(--lined);display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s}
+.rel:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(20,23,26,.12)}
+.rel .pic{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff}
+.rel .pic img{max-height:88%;object-fit:contain}
+.rel .bd{padding:1rem 1.2rem 1.2rem;border-top:1px solid var(--lined)}
+.rel .nm{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.35rem}
+.rel .mt{font-size:.88rem;color:#6a7178;margin-top:.2rem}
+.rel .go{font-size:.88rem;font-weight:600;color:var(--red);margin-top:.55rem}
+
+footer{background:var(--ink-3);color:#8b939c;text-align:center;padding:1.6rem;font-size:.85rem}
+
+@media print{.demo,.hdr nav,.gal-arrow,.acts,.trust,.rel-sec{display:none!important}body{background:#fff}}
+</style>
+</head>
+<body>
+
+<div class="demo" id="demo">
+  <span style="letter-spacing:.14em">PREVIEW:</span>
+  <a href="?type=tractor&b=Bad%20Boy&m=5055CH">Bad Boy 5055CH</a>
+  <a href="?type=tractor&b=TYM&m=T474H">TYM T474H</a>
+  <a href="?type=mower&m=Rebel">Mower · Rebel</a>
+</div>
+
+<header class="hdr">
+  <div class="wrap">
+    <div>
+      <div class="logo">JJ RIGGS<span style="color:var(--red)">.</span> EQUIPMENT</div>
+    </div>
+    <div class="tag">Bad Boy + TYM Dealer<br>Colville, Washington</div>
+    <nav><a href="tractors.html">Equipment</a><a href="#">Sheds</a><a href="services.html">Service</a><a href="financing.html">Financing</a></nav>
+    <a class="btn-quote" href="schedule-visit.html">Get a Quote</a>
+  </div>
+</header>
+
+<nav class="prodbar" aria-label="Breadcrumb"><div class="wrap" id="crumbs"></div></nav>
+
+<main id="page" class="wrap"></main>
+
+<section class="trust" id="trust">
+  <div class="wrap">
+    <div>
+      <h2>Buy it from the people<br>who <em>service it</em>.</h2>
+      <p>JJ Riggs Equipment is family owned and operated in Colville, Washington. Every machine we sell, we set up, deliver, and keep running — for neighbors, not ticket numbers.</p>
+      <a class="call2" href="tel:+15097382985"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2z"/></svg> Call Andrew · 509-738-2985</a>
+    </div>
+    <div>
+      <div class="tl">Why buy local</div>
+      <ul>
+        <li>Full setup &amp; delivery to your property</li>
+        <li>We service what we sell — parts on hand</li>
+        <li>Straight answers on the right size machine</li>
+        <li>Sheffield financing, handled in store</li>
+      </ul>
+    </div>
+    <div>
+      <div class="tl">Visit the lot</div>
+      <ul style="list-style:none">
+        <li style="padding-left:0">370 N Hwy 395, Colville, WA</li>
+        <li style="padding-left:0">Mon–Fri · 8:00–5:00</li>
+        <li style="padding-left:0">Sat · 9:00–3:00</li>
+        <li style="padding-left:0">Sun · Closed</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec rel-sec" id="relsec" style="border-top:0;background:var(--bone)">
+  <div class="wrap">
+    <div class="sec-h"><h2 id="relh">You might also compare</h2><div class="rule"></div></div>
+    <div class="relgrid" id="relgrid"></div>
+  </div>
+</section>
+
+<footer>Layout preview v2 · not linked from the live site · JJ Riggs Equipment, Colville WA</footer>
+
+<script src="js/tym-models.data.js"></script>
+<script src="js/badboy-models.data.js"></script>
+<script src="js/tractor-specs.data.js"></script>
+<script src="js/tractor-features.data.js"></script>
+<script src="js/badboy-tractor-images.data.js"></script>
+<script src="js/mower-models.data.js"></script>
+<script src="js/mower-specs.data.js"></script>
+<script src="js/mower-features.data.js"></script>
+<script>
+(function(){
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var qp=function(k){return new URLSearchParams(location.search).get(k);};
+  var PHONE='509-738-2985',TEL='tel:+15097382985';
+  var FINANCE='https://prequalify.sheffieldfinancial.com/Apply/Dealer/57555';
+  var BRANDLOGO={'TYM':'https://jjriggsequipment.com/wp-content/uploads/2024/09/tym-1.png','Bad Boy':'img/bb_logo_horizontal_orange.svg'};
+  var ICONS={
+    quote:'<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.7 8.7 0 0 1-4-.9L3 20l1-3.9a8.4 8.4 0 1 1 17-4.6z"/></svg>',
+    fin:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M14.8 9.3a2.6 2.6 0 0 0-2.8-1.5c-1.6 0-2.5.9-2.5 2 0 2.7 5.3 1.4 5.3 4.1 0 1.2-1 2.1-2.7 2.1a2.8 2.8 0 0 1-2.9-1.7M12 6.5v11"/></svg>',
+    cal:'<svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>',
+    print:'<svg viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>'};
+
+  /* ---------- adapters: normalize tractor + mower into one shape ---------- */
+  function adaptTractor(){
+    var DATA={'TYM':(window.TYM_MODELS||[]),'Bad Boy':(window.BADBOY_MODELS||[])};
+    var bp=qp('b'),mp=qp('m'),brand=null,m=null;
+    var order=(bp&&DATA[bp])?[bp]:['Bad Boy','TYM'];
+    if(mp){order.some(function(b){var h=DATA[b].filter(function(x){return String(x.model).toLowerCase()===String(mp).toLowerCase();})[0];if(h){brand=b;m=h;return true;}});}
+    if(!m){brand='Bad Boy';m=DATA[brand][0];}
+    if(!m)return null;
+    var key=brand+'|'+m.model;
+    var GA=window.TRACTOR_GALLERY||{},FE=window.TRACTOR_FEATURES||{};
+    var station=m.cab?'Cab':'Open Station';
+    var stats=[
+      {n:m.hp,u:'HP',l:'Horsepower'},
+      m.loader_lift_lbs?{n:m.loader_lift_lbs.toLocaleString(),u:'LB',l:'Loader lift'}:null,
+      {n:esc(shortTrans(m.transmission)),u:'',l:'Transmission'},
+      {n:esc(m.drive||'4WD'),u:'',l:'Drive'}
+    ].filter(Boolean);
+    var groups=[
+      {group:'Engine',rows:[['Engine',m.engine||'—'],['Horsepower',m.hp+' HP'],['Fuel',m.fuel||'Diesel']]},
+      {group:'Drivetrain',rows:[['Drive',m.drive||'—'],['Transmission',m.transmission||'—'],m.loader_lift_lbs?['Loader lift capacity',m.loader_lift_lbs.toLocaleString()+' lbs']:null,['Operator station',station]].filter(Boolean)},
+      {group:'Fit on your place',rows:[['Series',(brand==='Bad Boy'?(m.series_name||m.series):('TYM '+m.series))],['Best for',(m.use_tags||seriesUse(m)).slice(0,3).join(', ')],['Sold & serviced','JJ Riggs · Colville, WA']]}
+    ];
+    var rel=DATA[brand].filter(function(x){return x.model!==m.model;})
+      .sort(function(a,b){return Math.abs(a.hp-m.hp)-Math.abs(b.hp-m.hp);}).slice(0,4);
+    return{type:'Tractor',brand:brand,model:m.model,cat:(brand==='Bad Boy'?(m.series_name||m.series):(m.series+' Series'))+' Tractor',
+      subchips:[m.hp+' HP',station,shortTrans(m.transmission),m.drive||'4WD'],station:station,
+      blurb:m.blurb,images:[m.image].concat(GA[key]||[]).filter(Boolean),
+      stats:stats,uses:m.use_tags||seriesUse(m),groups:groups,features:FE[key]||null,manuUrl:m.url,
+      rel:rel.map(function(x){return{model:x.model,meta:x.hp+' HP · '+(x.cab?'Cab':'Open Station'),img:x.image,href:'?type=tractor&b='+encodeURIComponent(brand)+'&m='+encodeURIComponent(x.model)};}),
+      crumbs:[['Tractors','tractors.html'],[(brand==='Bad Boy'?(m.series_name||m.series):m.series)+(m.cab?' · Cab':' · Open Station'),null]],
+      price:null};
+  }
+  function seriesUse(m){
+    if(m.hp<26)return['lawn & garden','small acreage','loader chores'];
+    if(m.hp<40)return['property maintenance','hobby farm','snow & gravel'];
+    return['hay & livestock','acreage','heavy loader work'];
+  }
+  function shortTrans(t){if(!t)return'HST';return String(t).replace('Hydrostatic','HST').replace('Hydro Max','Hydro Max HST');}
+
+  function adaptMower(){
+    var DATA=(window.MOWER_MODELS||[]),mp=qp('m');
+    var m=mp?DATA.filter(function(x){return String(x.model).toLowerCase()===String(mp).toLowerCase();})[0]:DATA[0];
+    if(!m)return null;
+    var FE=window.MOWER_FEATURES||{};
+    var decks=m.decks?String(m.decks).split(',').map(function(d){return d.trim()+'″';}):[];
+    var stats=[
+      m.hp>0?{n:m.hp,u:'HP',l:'Horsepower'}:null,
+      decks.length?{n:decks.join(' · '),u:'',l:'Deck sizes'}:null,
+      {n:esc(String(m.engine).split(',')[0]),u:'',l:'Engine'},
+      {n:esc(m.fuel),u:'',l:'Fuel'}
+    ].filter(Boolean);
+    var groups=[
+      {group:'Power',rows:[['Engine',String(m.engine).replace(/,\s*/g,' · ')],m.hp>0?['Horsepower',m.hp+' HP']:null,['Fuel',m.fuel]].filter(Boolean)},
+      {group:'Cutting & drive',rows:[decks.length?['Available decks',decks.join(' · ')]:null,['Drive system',m.drive||'—'],m.transmission&&m.transmission!==m.drive?['Transmission',m.transmission]:null].filter(Boolean)},
+      {group:'Fit on your place',rows:[['Class',m.cat+' '+m.type],['Sold & serviced','JJ Riggs · Colville, WA']]}
+    ];
+    var rel=DATA.filter(function(x){return x.model!==m.model&&x.cat===m.cat;}).slice(0,4);
+    if(rel.length<3)rel=rel.concat(DATA.filter(function(x){return x.model!==m.model&&rel.indexOf(x)<0;}).slice(0,4-rel.length));
+    return{type:'Mower',brand:'Bad Boy',model:m.model,cat:m.cat+' '+m.type,
+      subchips:[m.hp>0?m.hp+' HP':null,decks.length?decks.join(' / ')+' decks':null,m.fuel].filter(Boolean),station:null,
+      blurb:m.blurb||(FE[m.model]&&FE[m.model].intro)||'',images:[m.image].filter(Boolean),
+      stats:stats,uses:m.cat==='Commercial'?['all-day mowing','crews & contracts','large properties']:['residential lawns','acreage mowing','weekend upkeep'],
+      groups:groups,features:FE[m.model]||null,manuUrl:m.url,
+      rel:rel.map(function(x){return{model:x.model,meta:(x.hp>0?x.hp+' HP · ':'')+x.cat,img:x.image,href:'?type=mower&m='+encodeURIComponent(x.model)};}),
+      crumbs:[['Mowers','mowers.html'],[m.cat+' · '+m.type,null]],
+      price:m.price||null};
+  }
+
+  var p=(qp('type')==='mower')?adaptMower():adaptTractor();
+  if(!p){document.getElementById('page').innerHTML='<p style="padding:3rem 0">No data found.</p>';return;}
+
+  document.getElementById('docTitle').textContent=p.brand+' '+p.model+' | JJ Riggs Equipment, Colville WA';
+
+  /* breadcrumb */
+  var logo=BRANDLOGO[p.brand]?'<img class="pb-logo" src="'+BRANDLOGO[p.brand]+'" alt="'+esc(p.brand)+'">':'<b>'+esc(p.brand)+'</b>';
+  document.getElementById('crumbs').innerHTML=logo+'<span style="width:1px;height:26px;background:var(--lined)"></span>'
+    +p.crumbs.map(function(c,i){return (i?'<span class="pb-sep">›</span>':'')+(c[1]?'<a class="pb-crumb" href="'+c[1]+'">'+esc(c[0])+'</a>':'<span class="pb-crumb">'+esc(c[0])+'</span>');}).join('');
+
+  /* gallery */
+  var imgs=p.images.filter(function(u,i,a){return u&&a.indexOf(u)===i;});
+  if(imgs.length<3&&p.features&&p.features.items)p.features.items.forEach(function(it){if(it.image&&imgs.indexOf(it.image)<0)imgs.push(it.image);});
+  var galInner=imgs.length
+    ? imgs.map(function(u,i){return '<img class="'+(i===0?'on':'')+'" src="'+u+'" alt="'+esc(p.brand+' '+p.model)+'" loading="'+(i===0?'eager':'lazy')+'">';}).join('')
+      +(imgs.length>1?'<span class="gal-count" id="gCount">1 / '+imgs.length+'</span><button class="gal-arrow prev" aria-label="Previous photo">‹</button><button class="gal-arrow next" aria-label="Next photo">›</button>':'')
+    : '<div class="noimg"><b>Photo coming to the lot</b>Call for current photos &amp; availability — '+PHONE+'</div>';
+  var thumbs=imgs.length>1?'<div class="thumbs">'+imgs.map(function(u,i){return '<button class="'+(i===0?'on':'')+'" aria-label="Photo '+(i+1)+'"><img src="'+u+'" alt=""></button>';}).join('')+'</div>':'';
+
+  var statsHtml=p.stats.slice(0,4).map(function(s){return '<div class="stat"><div class="n">'+s.n+(s.u?' <small>'+s.u+'</small>':'')+'</div><div class="l">'+esc(s.l)+'</div></div>';}).join('');
+  var usesHtml=p.uses&&p.uses.length?'<div class="uses"><span class="lbl">Built for</span>'+p.uses.slice(0,4).map(function(u){return '<span class="u">'+esc(u)+'</span>';}).join('')+'</div>':'';
+
+  var specCards=p.groups.map(function(g){
+    return '<div class="speccard"><h3>'+esc(g.group)+'</h3>'+g.rows.map(function(r){return '<div class="specline"><span class="k">'+esc(r[0])+'</span><span class="v">'+esc(r[1])+'</span></div>';}).join('')+'</div>';
+  }).join('');
+
+  var featSec='';
+  if(p.features&&p.features.items&&p.features.items.length){
+    featSec='<section class="sec"><div class="sec-h"><h2>'+esc(p.features.heading||'Features')+'</h2><div class="rule"></div></div>'
+      +(p.features.intro?'<p class="feat-intro">'+esc(p.features.intro)+'</p>':'')
+      +'<div class="featgrid">'+p.features.items.map(function(it){
+        return '<div class="featcard">'+(it.image?'<img loading="lazy" src="'+it.image+'" alt="'+esc(it.title)+'">':'')+'<div class="fx"><h3>'+esc(it.title)+'</h3><p>'+esc(it.body||'')+'</p></div></div>';
+      }).join('')+'</div></section>';
+  }
+
+  var priceVal=p.price?('$'+esc(String(p.price))):'Call for price';
+  document.getElementById('page').innerHTML=
+    '<div class="idhead"><div class="cat">'+esc(p.brand)+' · '+esc(p.cat)+'</div>'
+    +'<h1><span class="brand">'+esc(p.brand)+'</span> '+esc(p.model)+'</h1>'
+    +'<div class="id-sub">'+(p.station?'<span class="chip station">'+esc(p.station)+'</span>':'')
+      +p.subchips.map(function(c){return '<span class="chip">'+esc(c)+'</span>';}).join('')
+      +'<span class="chip instock">On the lot in Colville</span></div></div>'
+    +'<div class="ov-grid">'
+      +'<div><div class="gal" id="gal">'+galInner+'</div>'+thumbs
+        +(p.blurb?'<p class="tagline">'+esc(p.blurb)+'</p>':'')
+        +'<div class="stats">'+statsHtml+'</div>'+usesHtml+'</div>'
+      +'<aside class="rail"><div class="panel">'
+        +'<div class="p-price"><div class="pl">'+(p.price?'Selling price':'Pricing')+'</div><div class="pv">'+priceVal+'</div><div class="pn">Best local deal — talk to Andrew. Trades welcome.</div></div>'
+        +'<a class="call" href="'+TEL+'"><span class="ico"><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2z"/></svg></span><span><span class="t1">Call or text</span><br><span class="t2">'+PHONE+'</span></span></a>'
+        +'<div class="acts">'
+          +'<a class="act primary" href="schedule-visit.html">'+ICONS.quote+'Get a Quote<span class="chev">›</span></a>'
+          +'<a class="act" href="'+FINANCE+'" target="_blank" rel="noopener">'+ICONS.fin+'Get Financing<span class="chev">›</span></a>'
+          +'<a class="act" href="schedule-visit.html">'+ICONS.cal+'Schedule a Visit<span class="chev">›</span></a>'
+          +'<button class="act" onclick="window.print()">'+ICONS.print+'Print this page<span class="chev">›</span></button>'
+        +'</div>'
+        +'<div class="p-visit"><b>See it in person</b><div class="row"><span>370 N Hwy 395, Colville</span></div><div class="row"><span>Mon–Fri</span><span>8:00–5:00</span></div><div class="row"><span>Saturday</span><span>9:00–3:00</span></div></div>'
+      +'</div></aside>'
+    +'</div>'
+    +'<section class="sec"><div class="sec-h"><h2>Specifications</h2><div class="rule"></div></div>'
+      +'<div class="specgrid">'+specCards+'</div>'
+      +'<p class="spec-note">'+(p.manuUrl?'Full factory spec sheet: <a href="'+esc(p.manuUrl)+'" target="_blank" rel="noopener">view on the manufacturer site →</a> — or ':'')+'call us and we’ll walk you through the right configuration for your property.</p></section>'
+    +featSec;
+
+  /* related */
+  document.getElementById('relh').textContent='More '+p.brand+' '+(p.type==='Mower'?'mowers':'tractors')+' on the lot';
+  document.getElementById('relgrid').innerHTML=p.rel.map(function(r){
+    return '<a class="rel" href="'+r.href+'"><span class="pic">'+(r.img?'<img src="'+r.img+'" alt="'+esc(r.model)+'" loading="lazy">':'')+'</span><span class="bd"><span class="nm">'+esc(r.model)+'</span><div class="mt">'+esc(r.meta)+'</div><div class="go">View details →</div></span></a>';
+  }).join('');
+
+  /* demo switcher active state */
+  document.querySelectorAll('.demo a').forEach(function(a){
+    if(a.getAttribute('href')===('?'+new URLSearchParams(location.search).toString()).replace(/\+/g,'%20'))a.classList.add('on');
+  });
+
+  /* gallery wiring */
+  (function(){
+    var gal=document.getElementById('gal');if(!gal)return;
+    var gimgs=gal.querySelectorAll('img');if(gimgs.length<2)return;
+    var tbs=document.querySelectorAll('.thumbs button'),count=document.getElementById('gCount'),gi=0;
+    function show(n){gi=(n+gimgs.length)%gimgs.length;
+      gimgs.forEach(function(im,i){im.classList.toggle('on',i===gi);});
+      tbs.forEach(function(t,i){t.classList.toggle('on',i===gi);});
+      if(count)count.textContent=(gi+1)+' / '+gimgs.length;}
+    gal.querySelector('.gal-arrow.prev').addEventListener('click',function(){show(gi-1);});
+    gal.querySelector('.gal-arrow.next').addEventListener('click',function(){show(gi+1);});
+    tbs.forEach(function(t,i){t.addEventListener('click',function(){show(i);});});
+    var x=0,dx=0,on=false;
+    gal.addEventListener('touchstart',function(e){on=true;x=e.touches[0].clientX;dx=0;},{passive:true});
+    gal.addEventListener('touchmove',function(e){if(on)dx=e.touches[0].clientX-x;},{passive:true});
+    gal.addEventListener('touchend',function(){if(!on)return;on=false;if(Math.abs(dx)>40)show(dx<0?gi+1:gi-1);});
+  })();
+})();
+</script>
+</body>
+</html>

@@ -119,9 +119,12 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .stage-head h2{font-size:clamp(1.7rem,3.4vw,2.4rem);color:var(--ink)}
 .stage-head h2 .cb{color:var(--red)}
 .hp-tabs{display:flex;flex-wrap:wrap;gap:.1rem;border-bottom:1px solid var(--lined);margin-bottom:1.1rem}
-.hp-tab{background:none;border:0;border-bottom:3px solid transparent;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.2rem;letter-spacing:.04em;color:#6a7077;padding:.7rem 1rem;cursor:pointer;transition:color .15s;margin-bottom:-1px}
+.hp-tab{background:none;border:0;border-bottom:3px solid transparent;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:clamp(.88rem,1.15vw,1.02rem);letter-spacing:.02em;color:#6a7077;padding:.55rem .7rem .6rem;cursor:pointer;transition:color .15s;margin-bottom:-1px;white-space:nowrap;text-align:left}
 .hp-tab:hover{color:var(--ink)}
 .hp-tab.active{color:var(--ink);border-bottom-color:var(--red)}
+.hp-tab .hp-sub{display:block;font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#9aa0a6;margin-top:.14rem}
+.hp-tab.active .hp-sub{color:var(--red)}
+@media(max-width:720px){.hp-tab{white-space:normal}}
 .stage-controls{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.4rem}
 .cab-toggle{display:inline-flex;align-items:center;gap:.5rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#42474c;cursor:pointer;border:1px solid var(--lined);padding:.5rem .85rem;background:#fff}
 .cab-toggle input{accent-color:var(--red);width:15px;height:15px}
@@ -328,11 +331,11 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 
   var DATA={'TYM':(window.TYM_MODELS||[]),'Bad Boy':(window.BADBOY_MODELS||[])};
   var BUCKETS=[
-    {id:'all',label:'All HP',min:0,max:999},
-    {id:'u30',label:'Under 30',min:0,max:29.999},
-    {id:'30-50',label:'30–50',min:30,max:50},
-    {id:'50-75',label:'50–75',min:50.001,max:75},
-    {id:'75',label:'75+',min:75.001,max:999}
+    {id:'all',label:'All Models',sub:'Every HP',min:0,max:999},
+    {id:'u30',label:'Mow & Maintain',sub:'Under 30 HP',min:0,max:29.999},
+    {id:'30-50',label:'Loader & Property Work',sub:'30–50 HP',min:30,max:50},
+    {id:'50-75',label:'Hay & Livestock',sub:'50–75 HP',min:50.001,max:75},
+    {id:'75',label:'Heavy Utility',sub:'75+ HP',min:75.001,max:999}
   ];
   var state={brand:'TYM',bucket:'all',cab:false,series:null,index:0,view:'carousel'};
   try{var _v=localStorage.getItem('jjTractorView');if(_v==='grid'||_v==='carousel')state.view=_v;}catch(e){}
@@ -378,7 +381,8 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     bucketsWithModels().forEach(function(b){
       var on=!state.series&&state.bucket===b.id;
       var btn=document.createElement('button');btn.type='button';btn.className='hp-tab'+(on?' active':'');
-      btn.setAttribute('aria-pressed',on);btn.textContent=b.label;
+      btn.setAttribute('aria-pressed',on);
+      btn.innerHTML=b.label+(b.sub?'<span class="hp-sub">'+b.sub+'</span>':'');
       btn.addEventListener('click',function(){state.series=null;state.bucket=b.id;state.index=0;render();});
       tabsEl.appendChild(btn);
     });
@@ -398,7 +402,8 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
       var list=bySeries[s];
       var hps=list.map(function(m){return m.hp;});
       var lo=Math.floor(Math.min.apply(null,hps)),hi=Math.ceil(Math.max.apply(null,hps));
-      var rep=list.slice().sort(function(a,b){return b.hp-a.hp;})[0];
+      var sorted=list.slice().sort(function(a,b){return b.hp-a.hp;});
+      var rep=sorted.filter(function(m){return m.image;})[0]||sorted[0];
       var hpTxt=lo===hi?lo+' HP':lo+' – '+hi+' HP';
       return '<div class="size-card">'
         +'<img src="'+rep.image+'" alt="'+state.brand+' '+s+' tractor" loading="lazy" />'

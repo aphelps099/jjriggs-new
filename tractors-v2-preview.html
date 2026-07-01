@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tractors — JJ Riggs Equipment (category v2 preview)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Questrial&family=Michroma&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="header.css">
+<style>
+@font-face{font-family:"Tactic Sans Bld";src:url("fonts/tactic-sans-bld.woff2") format("woff2"),url("fonts/tactic-sans-bld.woff") format("woff");font-weight:400 800;font-style:normal;font-display:swap}
+:root{--ink:#14171a;--ink-2:#1b2025;--ink-3:#0f1215;--bone:#f3f1ea;--white:#fbfbf9;--steel:#8b939c;--steel-2:#c3c8ce;--red:#cf1f2a;--red-deep:#a5151f;--green:#1d7a3c;--line:rgba(255,255,255,.12);--line-2:rgba(255,255,255,.06);--lined:rgba(20,23,26,.14);--maxw:1280px;--gut:clamp(1.4rem,5vw,4rem)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bone);color:var(--ink);line-height:1.55;font-size:17px;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}img{display:block;max-width:100%;height:auto}
+h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.012em;line-height:.94}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;font-weight:600;font-size:.82rem;letter-spacing:.04em;padding:1rem 1.7rem;border:1.5px solid transparent;cursor:pointer;transition:background .18s,border-color .18s,color .18s}
+.btn-red,.btn-red:visited,.head-actions .btn-red{background:var(--red);color:#fff!important}.btn-red:hover{background:var(--red-deep)}
+.cut-tab{display:inline-block;background:var(--red);color:#fff;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:.95rem;letter-spacing:.1em;text-transform:uppercase;line-height:1;padding:.55rem 1.6rem .55rem 1.1rem;clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,0 100%)}
+
+/* demo banner */
+.demo{position:fixed;bottom:14px;left:14px;z-index:99;background:var(--ink);color:#fff;padding:.6rem .9rem;font-size:.8rem;display:flex;gap:.8rem;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.demo a{padding:.35rem .7rem;border:1px solid rgba(255,255,255,.25)}
+.demo a.on,.demo a:hover{background:var(--red);border-color:var(--red)}
+
+/* hero */
+.hero{background:var(--ink) url('img/tractors-hero.jpeg') center/cover no-repeat;position:relative;color:#fff}
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(100deg,rgba(10,12,15,.93) 30%,rgba(10,12,15,.55))}
+.hero .wrap{position:relative;padding-top:4.6rem;padding-bottom:3.4rem}
+.hero h1{font-size:clamp(2.6rem,6vw,4.2rem);margin-top:1rem}
+.hero .sub{margin-top:.7rem;font-size:1.15rem;color:#d7dade;max-width:52ch}
+
+/* brand toggle — segmented */
+.brandbar{background:var(--white);border-bottom:1px solid var(--lined)}
+.brandbar .wrap{display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;padding-top:1.1rem;padding-bottom:1.1rem}
+.seg{display:inline-flex;border:1.5px solid var(--ink)}
+.seg button{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.05rem;letter-spacing:.06em;text-transform:uppercase;background:#fff;color:var(--ink);border:0;padding:.75rem 1.8rem;cursor:pointer}
+.seg button.on{background:var(--ink);color:#fff}
+.brandbar .note{font-size:.95rem;color:#5c636a}
+.brandbar .count{margin-left:auto;font-size:.85rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#6a7178}
+
+/* shop by the work */
+.work{padding:2.6rem 0 .6rem}
+.sec-h{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.4rem}
+.sec-h h2{font-size:clamp(1.5rem,2.8vw,2rem)}
+.sec-h .rule{flex:1;height:3px;background:linear-gradient(90deg,var(--red) 120px,var(--lined) 120px)}
+.workgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem}
+.wk{background:#fff;border:1px solid var(--lined);padding:1.5rem 1.5rem 1.4rem;cursor:pointer;text-align:left;font-family:inherit;transition:transform .15s,box-shadow .15s;border-top:4px solid transparent}
+.wk:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(20,23,26,.12)}
+.wk.on{border-color:var(--red);border-top-color:var(--red)}
+.wk h3{font-size:1.25rem;letter-spacing:.04em}
+.wk p{margin-top:.5rem;font-size:.98rem;color:#5c636a}
+.wk .hp{margin-top:.8rem;font-size:.78rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--red)}
+
+/* filter bar */
+.filters{padding:1.6rem 0 .4rem;display:flex;gap:1.6rem;flex-wrap:wrap;align-items:center}
+.fgroup{display:flex;align-items:center;gap:.6rem}
+.fgroup .fl{font-size:.78rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#6a7178}
+.pill{background:#fff;border:1px solid var(--lined);padding:.55rem 1.1rem;font-size:.95rem;font-weight:600;cursor:pointer;font-family:inherit;color:var(--ink)}
+.pill.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pill:hover:not(.on){border-color:var(--ink)}
+.clear{font-size:.9rem;color:var(--red);font-weight:600;cursor:pointer;background:none;border:0;font-family:inherit;display:none}
+.clear.show{display:inline}
+
+/* model grid */
+.grid-sec{padding:1.4rem 0 3rem}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.4rem}
+.mc{background:#fff;border:1px solid var(--lined);display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s}
+.mc:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(20,23,26,.13)}
+.mc .pic{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;background:#fff;border-bottom:1px solid var(--lined)}
+.mc .pic img{max-height:88%;object-fit:contain;padding:.8rem}
+.mc .pic .ph{color:#9aa0a6;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase}
+.mc .station-tag{position:absolute;top:12px;left:0;background:var(--ink);color:#fff;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;padding:.4rem 1.1rem .4rem .9rem;clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+.mc .bd{padding:1.2rem 1.3rem .4rem}
+.mc .nm{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.6rem;line-height:1}
+.mc .sr{font-size:.85rem;color:#6a7178;margin-top:.3rem;letter-spacing:.04em}
+.mc .specs{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--lined);border:1px solid var(--lined);margin:1rem 1.3rem 0}
+.mc .sp{background:#fff;padding:.6rem .8rem}
+.mc .sp .v{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.15rem;line-height:1.1}
+.mc .sp .v small{font-size:.6em;color:var(--red)}
+.mc .sp .k{font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#6a7178;margin-top:.15rem}
+.mc .go{margin:1.1rem 1.3rem 1.2rem;display:flex;align-items:center;justify-content:space-between;font-weight:600;font-size:.98rem;color:var(--red)}
+.mc .go .arw{transition:transform .15s}
+.mc:hover .go .arw{transform:translateX(4px)}
+.empty{padding:3rem 0;text-align:center;color:#6a7178;font-size:1.05rem;display:none}
+
+/* call strip */
+.callstrip{background:var(--ink);color:#fff}
+.callstrip .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:1.2rem 2.6rem;padding-top:2.2rem;padding-bottom:2.2rem}
+.callstrip h2{font-size:clamp(1.4rem,2.8vw,1.9rem);flex:1 1 320px}
+.callstrip h2 em{color:var(--red);font-style:normal}
+.callstrip p{color:#c3c8ce;font-size:1rem;flex:1 1 300px;max-width:44ch}
+.call2{display:inline-flex;background:var(--red);padding:1rem 1.7rem;font-weight:600;font-size:1.05rem;gap:.6rem;align-items:center;white-space:nowrap}
+.call2:hover{background:var(--red-deep)}
+
+/* footer (site) */
+.site-foot{background:var(--ink-3);color:#aeb3ba;padding:48px 0 30px;font-size:14px;border-top:1px solid var(--line);text-align:left}
+.foot-min{display:flex;justify-content:space-between;gap:2.5rem;flex-wrap:wrap}
+.fm-brand .nm{font-family:"Michroma","Tactic Sans Bld",sans-serif;font-size:18px;color:#fff;margin-bottom:14px}
+.fm-brand p{color:#aeb3ba;line-height:1.7}.fm-brand a:hover{color:#fff}
+.fm-shop .t{font-family:"Michroma","Tactic Sans Bld",sans-serif;font-size:14px;color:#fff;margin-bottom:14px}
+.fm-shop ul{list-style:none}.fm-shop li{margin-bottom:.6rem}.fm-shop a{color:#aeb3ba}.fm-shop a:hover{color:#fff}
+.foot-cr{margin-top:34px;padding-top:18px;border-top:1px solid #2a2f36;font-size:12.5px;color:#777c83}
+@media(max-width:560px){.foot-min{flex-direction:column;gap:1.8rem}}
+</style>
+</head>
+<body>
+
+<div class="demo">
+  <span style="letter-spacing:.14em">CATEGORY PREVIEW:</span>
+  <a href="tractors-v2-preview.html" class="on">Tractors</a>
+  <a href="mowers-v2-preview.html">Mowers</a>
+</div>
+
+<div id="jjHeader" data-variant="solid" data-active="equipment"></div>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="cut-tab">Equipment · Tractors</span>
+    <h1>TYM &amp; Bad Boy Tractors</h1>
+    <p class="sub">Sub-compacts to 127 HP — sold, set up, and serviced in Colville.</p>
+  </div>
+</section>
+
+<div class="brandbar">
+  <div class="wrap">
+    <div class="seg" role="tablist" aria-label="Brand">
+      <button type="button" data-brand="TYM" class="on">TYM</button>
+      <button type="button" data-brand="Bad Boy">Bad Boy</button>
+    </div>
+    <span class="note" id="brandNote"></span>
+    <span class="count" id="count"></span>
+  </div>
+</div>
+
+<section class="work wrap" aria-label="Shop by the work">
+  <div class="sec-h"><h2>What's the work?</h2><div class="rule"></div></div>
+  <div class="workgrid">
+    <button class="wk" type="button" data-band="0-25">
+      <h3>Mow &amp; maintain</h3>
+      <p>Lawns, gardens, and keeping a few acres tidy. Easy to run, fits in the garage.</p>
+      <span class="hp">Sub-compact · up to 25 HP</span>
+    </button>
+    <button class="wk" type="button" data-band="26-49">
+      <h3>Loader, snow &amp; gravel</h3>
+      <p>Bucket work, driveway upkeep, snow, and heavier chores around the property.</p>
+      <span class="hp">Compact · 26 – 49 HP</span>
+    </button>
+    <button class="wk" type="button" data-band="50-999">
+      <h3>Hay, livestock &amp; acreage</h3>
+      <p>Round bales, feeding, bigger implements, and long days on real acreage.</p>
+      <span class="hp">50 HP and up</span>
+    </button>
+  </div>
+</section>
+
+<div class="wrap filters" aria-label="Filters">
+  <div class="fgroup">
+    <span class="fl">Station</span>
+    <button class="pill on" type="button" data-station="all">All</button>
+    <button class="pill" type="button" data-station="open">Open Station</button>
+    <button class="pill" type="button" data-station="cab">Cab</button>
+  </div>
+  <button class="clear" id="clearBtn" type="button">Clear filters ✕</button>
+</div>
+
+<section class="grid-sec wrap">
+  <div class="mgrid" id="grid"></div>
+  <p class="empty" id="empty">No models match those filters — <a href="tel:+15097382985" style="color:var(--red);font-weight:600">call Sales at 509-738-2985</a> and we'll find the right fit.</p>
+</section>
+
+<section class="callstrip">
+  <div class="wrap">
+    <h2>Not sure which size?<br><em>Two minutes on the phone</em> settles it.</h2>
+    <p>Tell us your acreage and the jobs on your list — we'll point you at the right machine, no upsell.</p>
+    <a class="call2" href="tel:+15097382985"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2z"/></svg> Call Sales · 509-738-2985</a>
+  </div>
+</section>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-min">
+      <div class="fm-brand">
+        <div class="nm">JJ Riggs Equipment</div>
+        <p>685 Elm Tree Dr.<br>Colville, WA 99114<br>
+        <a href="mailto:sales@jjriggsequipment.com">sales@jjriggsequipment.com</a><br>
+        <a href="tel:+15097382985">509-738-2985</a><br>
+        Hours: Mon–Fri, 8 AM – 5 PM</p>
+      </div>
+      <nav class="fm-shop" aria-label="Shop">
+        <div class="t">Shop</div>
+        <ul>
+          <li><a href="tractors.html">Tractors</a></li>
+          <li><a href="implements.html">Implements</a></li>
+          <li><a href="mowers.html">Mowers</a></li>
+          <li><a href="services.html">Services</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="foot-cr">© 2026 JJ Riggs Equipment</div>
+  </div>
+</footer>
+
+<script src="header.js"></script>
+<script src="js/tym-models.data.js"></script>
+<script src="js/badboy-models.data.js"></script>
+<script>
+(function(){
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var DATA={'TYM':(window.TYM_MODELS||[]),'Bad Boy':(window.BADBOY_MODELS||[])};
+  var NOTES={'TYM':'Yanmar & Deutz-powered · 6-yr powertrain warranty','Bad Boy':'Hydro Max HST · built in Arkansas'};
+  var state={brand:'TYM',band:null,station:'all'};
+
+  function shortTrans(t){if(!t)return'HST';return String(t).replace('Hydrostatic','HST');}
+  function models(){
+    return DATA[state.brand].filter(function(m){
+      if(state.band){var p=state.band.split('-');if(m.hp<+p[0]||m.hp>+p[1])return false;}
+      if(state.station==='open'&&m.cab)return false;
+      if(state.station==='cab'&&!m.cab)return false;
+      return true;
+    });
+  }
+  function card(m){
+    var st=m.cab?'Cab':'Open Station';
+    var href='product-page-v3-preview.html?type=tractor&b='+encodeURIComponent(state.brand)+'&m='+encodeURIComponent(m.model);
+    var sp='<div class="sp"><div class="v">'+m.hp+' <small>HP</small></div><div class="k">Horsepower</div></div>'
+      +(m.loader_lift_lbs?'<div class="sp"><div class="v">'+m.loader_lift_lbs.toLocaleString()+' <small>LB</small></div><div class="k">Loader lift</div></div>':'<div class="sp"><div class="v">'+esc(m.drive||'4WD')+'</div><div class="k">Drive</div></div>')
+      +'<div class="sp"><div class="v">'+esc(shortTrans(m.transmission))+'</div><div class="k">Transmission</div></div>'
+      +'<div class="sp"><div class="v">'+st+'</div><div class="k">Station</div></div>';
+    return '<a class="mc" href="'+href+'">'
+      +'<span class="pic"><span class="station-tag">'+st+'</span>'+(m.image?'<img src="'+m.image+'" alt="'+esc(state.brand+' '+m.model)+'" loading="lazy">':'<span class="ph">Photo coming to the lot</span>')+'</span>'
+      +'<span class="bd"><span class="nm">'+esc(m.model)+'</span><div class="sr">'+esc(state.brand==='Bad Boy'?(m.series_name||m.series):(m.series+' Series'))+'</div></span>'
+      +'<span class="specs">'+sp+'</span>'
+      +'<span class="go">View details <span class="arw">→</span></span></a>';
+  }
+  function render(){
+    var list=models().slice().sort(function(a,b){return a.hp-b.hp;});
+    document.getElementById('grid').innerHTML=list.map(card).join('');
+    document.getElementById('empty').style.display=list.length?'none':'block';
+    document.getElementById('count').textContent=list.length+' model'+(list.length===1?'':'s');
+    document.getElementById('brandNote').textContent=NOTES[state.brand]||'';
+    document.getElementById('clearBtn').classList.toggle('show',!!(state.band||state.station!=='all'));
+    document.querySelectorAll('.seg button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-brand')===state.brand);});
+    document.querySelectorAll('.wk').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-band')===state.band);});
+    document.querySelectorAll('[data-station]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-station')===state.station);});
+  }
+  document.querySelectorAll('.seg button').forEach(function(b){b.addEventListener('click',function(){state.brand=b.getAttribute('data-brand');render();});});
+  document.querySelectorAll('.wk').forEach(function(b){b.addEventListener('click',function(){
+    var v=b.getAttribute('data-band');state.band=(state.band===v?null:v);render();
+    document.getElementById('grid').scrollIntoView({behavior:'smooth',block:'start'});
+  });});
+  document.querySelectorAll('[data-station]').forEach(function(b){b.addEventListener('click',function(){state.station=b.getAttribute('data-station');render();});});
+  document.getElementById('clearBtn').addEventListener('click',function(){state.band=null;state.station='all';render();});
+  render();
+})();
+</script>
+</body>
+</html>
