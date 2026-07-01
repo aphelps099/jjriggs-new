@@ -126,8 +126,6 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .hp-tab.active .hp-sub{color:var(--red)}
 @media(max-width:720px){.hp-tab{white-space:normal}}
 .stage-controls{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.4rem}
-.btn-customize{display:inline-flex;align-items:center;margin-left:auto;background:var(--red);color:#fff;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:.8rem;letter-spacing:.07em;text-transform:uppercase;line-height:1;padding:.62rem 1.5rem .62rem 1.15rem;clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%);transition:background .15s}
-.btn-customize:hover{background:var(--red-deep)}
 .cab-toggle{display:inline-flex;align-items:center;gap:.5rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#42474c;cursor:pointer;border:1px solid var(--lined);padding:.5rem .85rem;background:#fff}
 .cab-toggle input{accent-color:var(--red);width:15px;height:15px}
 .stage-meta{font-size:.76rem;letter-spacing:.04em;color:#6a7077}
@@ -259,7 +257,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 
   <section class="stage" id="stage" data-view="carousel" aria-label="Tractor lineup">
     <div class="wrap">
-      <div class="stage-head"><h2 id="stageCat" aria-live="polite"></h2><a class="btn-customize" id="customizeBtn" href="builder.html">Customize Your Tractor</a><span class="stage-meta" id="stageMeta" aria-live="polite"></span></div>
+      <div class="stage-head"><h2 id="stageCat" aria-live="polite"></h2><span class="stage-meta" id="stageMeta" aria-live="polite"></span></div>
       <div class="hp-tabs" id="hpTabs" role="tablist" aria-label="Horsepower"></div>
       <div class="stage-controls">
         <div class="view-toggle" role="group" aria-label="Choose view">
@@ -478,7 +476,6 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     document.querySelectorAll('.vt-btn').forEach(function(b){var on=b.getAttribute('data-view')===state.view;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false');});
   }
   function render(){
-    var cz=document.getElementById('customizeBtn');if(cz)cz.href='builder.html?b='+encodeURIComponent(state.brand);
     var f;
     if(state.series)f=state.series;
     else if(state.bucket!=='all'){var b=BUCKETS.filter(function(x){return x.id===state.bucket;})[0];f=b.label+' HP';}
