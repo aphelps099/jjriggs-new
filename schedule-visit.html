@@ -284,6 +284,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
   });
 
   // ---- prefill from URL ----
+  var pkg=qp.get('package');
   var label=pretty(product||imp);
   var sel=document.getElementById('qintent'),qmsg=document.getElementById('qmsg'),vmsg=document.getElementById('vmsg'),smsg=document.getElementById('smsg');
   if(imp){for(var i=0;i<sel.options.length;i++){if(/implement/i.test(sel.options[i].text)){sel.selectedIndex=i;break;}}}
@@ -294,7 +295,8 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     show('service');
     if(label) smsg.value="I need service on my "+label+".";
   } else {
-    if(label) qmsg.value="I'm interested in the "+label+".";
+    if(pkg) qmsg.value="I'd like a quote on this package:\n"+pkg;
+    else if(label) qmsg.value="I'm interested in the "+label+".";
   }
 
   // ---- Google Calendar booking ----

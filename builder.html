@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build Your Tractor Package — JJ Riggs Equipment, Colville WA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Questrial&family=Michroma&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="header.css">
+<style>
+@font-face{font-family:"Tactic Sans Bld";src:url("fonts/tactic-sans-bld.woff2") format("woff2"),url("fonts/tactic-sans-bld.woff") format("woff");font-weight:400 800;font-style:normal;font-display:swap}
+:root{--ink:#14171a;--ink-2:#1b2025;--ink-3:#0f1215;--bone:#f3f1ea;--white:#fbfbf9;--steel:#8b939c;--steel-2:#c3c8ce;--red:#cf1f2a;--red-deep:#a5151f;--green:#1d7a3c;--line:rgba(255,255,255,.12);--line-2:rgba(255,255,255,.06);--lined:rgba(20,23,26,.14);--maxw:1280px;--gut:clamp(1.4rem,5vw,4rem)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bone);color:var(--ink);line-height:1.55;font-size:17px;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}img{display:block;max-width:100%;height:auto}
+h1,h2,h3,h4{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.012em;line-height:.94}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;font-weight:600;font-size:.82rem;letter-spacing:.04em;padding:1rem 1.7rem;border:1.5px solid transparent;cursor:pointer;transition:background .18s,border-color .18s,color .18s}
+.btn-red,.btn-red:visited,.head-actions .btn-red{background:var(--red);color:#fff!important}.btn-red:hover{background:var(--red-deep)}
+.cut-tab{display:inline-block;background:var(--red);color:#fff;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:.95rem;letter-spacing:.1em;text-transform:uppercase;line-height:1;padding:.55rem 1.6rem .55rem 1.1rem;clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,0 100%)}
+
+/* hero */
+.hero{background:var(--ink);position:relative;color:#fff}
+.hero .wrap{position:relative;padding-top:4rem;padding-bottom:2.8rem}
+.hero h1{font-size:clamp(2.4rem,5.5vw,3.8rem);margin-top:1rem}
+.hero .sub{margin-top:.7rem;font-size:1.12rem;color:#d7dade;max-width:56ch}
+.steps{display:flex;gap:2rem;margin-top:1.6rem;flex-wrap:wrap}
+.stp{display:flex;align-items:center;gap:.6rem;font-size:.95rem;color:#c3c8ce}
+.stp b{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--red);color:#fff;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:.95rem}
+
+/* layout */
+.build{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:2.2rem;align-items:start;padding-top:2.4rem;padding-bottom:3rem}
+@media(max-width:980px){.build{grid-template-columns:1fr}}
+.sec-h{display:flex;align-items:baseline;gap:1rem;margin:0 0 1.2rem}
+.sec-h h2{font-size:clamp(1.4rem,2.6vw,1.9rem)}
+.sec-h .rule{flex:1;height:3px;background:linear-gradient(90deg,var(--red) 100px,var(--lined) 100px)}
+.sec-h .hint{font-size:.9rem;color:#6a7178;white-space:nowrap}
+
+/* step 1: tractor bases */
+.seg{display:inline-flex;border:1.5px solid var(--ink);margin-bottom:1.1rem}
+.seg button{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;background:#fff;color:var(--ink);border:0;padding:.65rem 1.5rem;cursor:pointer}
+.seg button.on{background:var(--ink);color:#fff}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.9rem}
+.tc{background:var(--bone);border:1px solid rgba(20,23,26,.12);padding:0 0 .9rem;cursor:pointer;text-align:center;font-family:inherit;color:var(--ink);position:relative;transition:background .15s,box-shadow .15s}
+.tc:hover{background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink),0 12px 28px rgba(20,23,26,.13);z-index:2}
+.tc.on{background:#fff;box-shadow:inset 0 0 0 2px var(--red)}
+.tc .pic img{mix-blend-mode:darken}
+.tc.on::after{content:"✓";position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+.tc .pic{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.tc .pic img{max-height:92%;object-fit:contain;padding:.5rem}
+.tc .pic .ph{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:#9aa0a6}
+.tc .nm{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.1rem;line-height:1}
+.tc .mt{font-size:.78rem;color:#6a7178;margin-top:.25rem}
+
+/* step 2: implements by mount */
+.mount{margin-top:2.4rem}
+.mount-h{display:flex;align-items:center;gap:.8rem;margin-bottom:.9rem}
+.mount-h h3{font-size:1.2rem}
+.mount-h .badge{font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;background:var(--ink);color:#fff;padding:.32rem .7rem}
+.mount-h .note{font-size:.85rem;color:#6a7178}
+/* category thumbnail tabs */
+.catrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.7rem;margin-bottom:.8rem}
+.cbtn{background:var(--bone);border:1px solid rgba(20,23,26,.12);padding:0 0 .7rem;cursor:pointer;text-align:center;font-family:inherit;color:var(--ink);position:relative;transition:background .15s,box-shadow .15s}
+.cbtn:hover{background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink),0 12px 28px rgba(20,23,26,.13);z-index:2}
+.cbtn.on{background:#fff;box-shadow:inset 0 0 0 2px var(--red)}
+.cbtn .cpic{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:.5rem}
+.cbtn .cpic img{max-height:100%;max-width:100%;object-fit:contain;mix-blend-mode:darken}
+.cbtn .cnm{font-weight:600;font-size:.85rem;line-height:1.25;padding:0 .4rem}
+.cbtn .cct{font-size:.7rem;color:#6a7178;margin-top:.15rem}
+.cbtn .added{position:absolute;top:6px;right:6px;background:var(--red);color:#fff;font-size:.68rem;font-weight:700;padding:.2rem .45rem;border-radius:10px}
+.opts{background:#fff;border:1px solid var(--lined);border-top:3px solid var(--red);padding:1rem 1.1rem;margin-bottom:1rem}
+.opts .ot{font-size:.75rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#6a7178;margin-bottom:.6rem}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{background:var(--bone);border:1.5px solid var(--lined);padding:.5rem .9rem;font-size:.9rem;cursor:pointer;font-family:inherit;color:var(--ink);transition:border-color .12s,background .12s}
+.chip:hover{border-color:var(--ink)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip.on::after{content:" ✓";color:var(--red)}
+
+/* summary rail */
+.rail{position:sticky;top:78px}
+.panel{background:#fff;border:1px solid var(--lined)}
+.p-head{background:var(--ink);color:#fff;padding:1.1rem 1.4rem}
+.p-head h3{font-size:1.25rem}
+.p-head .sub{font-size:.85rem;color:#b8bdc2;margin-top:.2rem}
+.p-base{padding:1rem 1.4rem;border-bottom:1px solid var(--lined)}
+.p-base .lbl{font-size:.72rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#6a7178}
+.p-base .val{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.4rem;margin-top:.2rem}
+.p-base .val.empty{color:#b8bdc2;font-size:1.05rem;font-family:"Questrial",sans-serif}
+.p-list{padding:.6rem 1.4rem;max-height:300px;overflow:auto}
+.p-item{display:flex;align-items:center;gap:.7rem;padding:.5rem 0;border-bottom:1px dashed var(--lined);font-size:.95rem}
+.p-item:last-child{border-bottom:0}
+.p-item .rm{margin-left:auto;background:none;border:0;color:var(--red);cursor:pointer;font-size:1rem;padding:.1rem .3rem}
+.p-empty{color:#9aa0a6;font-size:.92rem;padding:.7rem 0}
+.p-act{padding:1.1rem 1.4rem;border-top:1px solid var(--lined);display:flex;flex-direction:column;gap:.7rem}
+.p-act .btn{width:100%}
+.p-act .btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.p-call{text-align:center;font-size:.92rem;color:#5c636a}
+.p-call a{color:var(--red);font-weight:600}
+.p-fine{padding:0 1.4rem 1.1rem;font-size:.78rem;color:var(--ink);opacity:.45}
+
+/* footer */
+.site-foot{background:var(--ink-3);color:#aeb3ba;padding:48px 0 30px;font-size:14px;border-top:1px solid var(--line);text-align:left}
+.foot-min{display:flex;justify-content:space-between;gap:2.5rem;flex-wrap:wrap}
+.fm-brand .nm{font-family:"Michroma","Tactic Sans Bld",sans-serif;font-size:18px;color:#fff;margin-bottom:14px}
+.fm-brand p{color:#aeb3ba;line-height:1.7}.fm-brand a:hover{color:#fff}
+.fm-shop .t{font-family:"Michroma","Tactic Sans Bld",sans-serif;font-size:14px;color:#fff;margin-bottom:14px}
+.fm-shop ul{list-style:none}.fm-shop li{margin-bottom:.6rem}.fm-shop a{color:#aeb3ba}.fm-shop a:hover{color:#fff}
+.foot-cr{margin-top:34px;padding-top:18px;border-top:1px solid #2a2f36;font-size:12.5px;color:#777c83}
+@media(max-width:560px){.foot-min{flex-direction:column;gap:1.8rem}}
+</style>
+</head>
+<body>
+
+<div id="jjHeader" data-variant="solid" data-active="equipment"></div>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="cut-tab">Equipment · Package Builder</span>
+    <h1>Build Your Tractor Package</h1>
+    <p class="sub">Pick your tractor, add the implements for your jobs, and send the whole package to us — we'll price it as one deal.</p>
+    <div class="steps">
+      <span class="stp"><b>1</b> Choose your tractor</span>
+      <span class="stp"><b>2</b> Add implements</span>
+      <span class="stp"><b>3</b> Get one package quote</span>
+    </div>
+  </div>
+</section>
+
+<div class="build wrap">
+  <div>
+    <div class="sec-h"><h2>1 · Choose your tractor</h2><div class="rule"></div></div>
+    <div class="seg" role="tablist" aria-label="Brand">
+      <button type="button" data-brand="TYM" class="on">TYM</button>
+      <button type="button" data-brand="Bad Boy">Bad Boy</button>
+    </div>
+    <div class="tgrid" id="tgrid"></div>
+
+    <div class="mount" id="impSec">
+      <div class="sec-h"><h2>2 · Add implements</h2><div class="rule"></div><span class="hint">Tap to add — tap again to remove</span></div>
+      <div id="mounts"></div>
+    </div>
+  </div>
+
+  <aside class="rail">
+    <div class="panel">
+      <div class="p-head"><h3>Your package</h3><div class="sub">No obligation — we price the whole package for you.</div></div>
+      <div class="p-base"><div class="lbl">Tractor base</div><div class="val empty" id="pBase">Choose a tractor above</div></div>
+      <div class="p-list" id="pList"><div class="p-empty">No implements added yet.</div></div>
+      <div class="p-act">
+        <a class="btn btn-red" id="pGo" aria-disabled="true" href="#">Request Package Quote →</a>
+        <div class="p-call">Rather talk it through? <a href="tel:+15097382985">509-738-2985</a></div>
+      </div>
+      <div class="p-fine">Packages are priced individually — trades welcome. Financing available through Sheffield.</div>
+    </div>
+  </aside>
+</div>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-min">
+      <div class="fm-brand">
+        <div class="nm">JJ Riggs Equipment</div>
+        <p>685 Elm Tree Dr.<br>Colville, WA 99114<br>
+        <a href="mailto:sales@jjriggsequipment.com">sales@jjriggsequipment.com</a><br>
+        <a href="tel:+15097382985">509-738-2985</a><br>
+        Hours: Mon–Fri, 8 AM – 5 PM</p>
+      </div>
+      <nav class="fm-shop" aria-label="Shop">
+        <div class="t">Shop</div>
+        <ul>
+          <li><a href="tractors.html">Tractors</a></li>
+          <li><a href="implements.html">Implements</a></li>
+          <li><a href="mowers.html">Mowers</a></li>
+          <li><a href="services.html">Services</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="foot-cr">© 2026 JJ Riggs Equipment</div>
+  </div>
+</footer>
+
+<script src="header.js"></script>
+<script src="js/tym-models.data.js"></script>
+<script src="js/badboy-models.data.js"></script>
+<script src="implements-data.js"></script>
+<script>
+(function(){
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var TRACTORS={'TYM':(window.TYM_MODELS||[]),'Bad Boy':(window.BADBOY_MODELS||[])};
+  var IMPL=(window.JJ_IMPLEMENTS||[]);
+  var MOUNTS=[
+    {key:'Front Loader QA',title:'Front Mount',badge:'Loader quick-attach',note:'Fits tractors with a loader'},
+    {key:'3-Point Hitch',title:'Rear Mount',badge:'3-point hitch',note:'Cat 1 & Cat 2'},
+    {key:'Pull-Behind',title:'Pull-Behind',badge:'Drawbar',note:'Tows behind any tractor'},
+    {key:'Mid-Mount',title:'Mid-Mount',badge:'Belly mount',note:'Model-specific — we confirm fit'}
+  ];
+  var state={brand:'TYM',base:null,items:{},activeCat:{}};
+  /* brand handoff from category pages: builder.html?b=Bad%20Boy (or bad-boy / tym) */
+  (function(){
+    var b=new URLSearchParams(location.search).get('b');
+    if(!b)return;
+    b=b.toLowerCase().replace(/[^a-z]/g,'');
+    if(b==='badboy')state.brand='Bad Boy';else if(b==='tym')state.brand='TYM';
+    document.querySelectorAll('.seg button').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-brand')===state.brand);});
+    var mp=new URLSearchParams(location.search).get('m');
+    if(mp){var hit=TRACTORS[state.brand].filter(function(x){return String(x.model).toLowerCase()===String(mp).toLowerCase();})[0];
+      if(hit)state.base={brand:state.brand,model:hit.model,hp:hit.hp,cab:hit.cab};}
+  })();   /* items: id -> item; activeCat: mountKey -> category */
+  /* category thumbnails (same art as the implements hub) */
+  var CATIMG={
+  "Rotary Cutters":"img/bad-boy-implements/cutter-sd-4-5-6.png",
+  "Flex Wing Cutter":"img/bad-boy-implements/flex-wing-cutter.png",
+  "Finish Mower":"img/bad-boy-implements/finish-mower.png",
+  "Mid-Mount Mower Deck":"img/bad-boy-implements/mid-mower-deck.jpg",
+  "Box Blades":"img/bad-boy-implements/box-blade.png",
+  "Grader Blades":"img/bad-boy-implements/grader-blade.png",
+  "Land Graders":"img/bad-boy-implements/land-grader.png",
+  "Landscape Rakes":"img/bad-boy-implements/landscape-rake.png",
+  "Landplane Graders":"https://jjriggsequipment.com/wp-content/uploads/2024/10/land-plane-graders.jpeg",
+  "Rotary Tillers":"img/bad-boy-implements/rotary-tiller.png",
+  "Disc Harrow":"img/bad-boy-implements/disc-harrow-4-5ft.png",
+  "Front Grapples":"img/bad-boy-implements/grappler.png",
+  "Rock Buckets":"https://cdn.bfldr.com/71PUUW3G/at/stbpczxfcmfj73ftp8b6t9m/cid-mini-skid-steer-rock-bucket-attachment__82146.png",
+  "Forks & Hitches":"img/bad-boy-implements/hay-fork-trailer-hitch.png",
+  "Augers & Bits":"https://jjriggsequipment.com/wp-content/uploads/2024/10/augers-bits.jpg",
+  "Snow Pusher":"img/bad-boy-implements/snow-pusher-steel-skids.png",
+  "Snow Plows":"https://jjriggsequipment.com/wp-content/uploads/2024/10/Compact_Snow_Plow_-_IronCraft.webp",
+  "Snow Blowers":"https://jjriggsequipment.com/wp-content/uploads/2024/10/1.png",
+  "Spreaders":"img/bad-boy-implements/spreader-3-point.png"};
+
+  /* step 1 */
+  function renderTractors(){
+    var grid=document.getElementById('tgrid');
+    grid.innerHTML=TRACTORS[state.brand].slice().sort(function(a,b){return a.hp-b.hp;}).map(function(m){
+      var on=state.base&&state.base.brand===state.brand&&state.base.model===m.model;
+      return '<button class="tc'+(on?' on':'')+'" type="button" data-model="'+esc(m.model)+'">'
+        +'<span class="pic">'+(m.image?'<img src="'+m.image+'" alt="'+esc(state.brand+' '+m.model)+'" loading="lazy">':'<span class="ph">Photo coming</span>')+'</span>'
+        +'<span class="nm">'+esc(m.model)+'</span>'
+        +'<span class="mt">'+m.hp+' HP · '+(m.cab?'Cab':'Open Station')+'</span></button>';
+    }).join('');
+    grid.querySelectorAll('.tc').forEach(function(b){
+      b.addEventListener('click',function(){
+        var m=TRACTORS[state.brand].filter(function(x){return x.model===b.getAttribute('data-model');})[0];
+        var same=state.base&&state.base.brand===state.brand&&state.base.model===m.model;
+        state.base=same?null:{brand:state.brand,model:m.model,hp:m.hp,cab:m.cab};
+        renderTractors();renderSummary();
+        if(state.base)document.getElementById('impSec').scrollIntoView({behavior:'smooth',block:'start'});
+      });
+    });
+  }
+  document.querySelectorAll('.seg button').forEach(function(b){
+    b.addEventListener('click',function(){
+      state.brand=b.getAttribute('data-brand');
+      document.querySelectorAll('.seg button').forEach(function(x){x.classList.toggle('on',x===b);});
+      renderTractors();
+    });
+  });
+
+  /* step 2 */
+  function renderMounts(){
+    var host=document.getElementById('mounts');
+    host.innerHTML=MOUNTS.map(function(mo){
+      var items=IMPL.filter(function(i){return i.attach===mo.key;});
+      if(!items.length)return '';
+      var cats={};items.forEach(function(i){(cats[i.category]=cats[i.category]||[]).push(i);});
+      var names=Object.keys(cats);
+      if(!state.activeCat[mo.key]||names.indexOf(state.activeCat[mo.key])<0)state.activeCat[mo.key]=names[0];
+      var row=names.map(function(c){
+        var added=cats[c].filter(function(i){return state.items[i.id];}).length;
+        return '<button class="cbtn'+(state.activeCat[mo.key]===c?' on':'')+'" type="button" data-mount="'+esc(mo.key)+'" data-cat="'+esc(c)+'">'
+          +(added?'<span class="added">'+added+' added</span>':'')
+          +'<span class="cpic">'+(CATIMG[c]?'<img loading="lazy" src="'+CATIMG[c]+'" alt="'+esc(c)+'">':'')+'</span>'
+          +'<span class="cnm">'+esc(c)+'</span><span class="cct">'+cats[c].length+' option'+(cats[c].length===1?'':'s')+'</span></button>';
+      }).join('');
+      var ac=state.activeCat[mo.key];
+      var chips=cats[ac].map(function(i){
+        return '<button class="chip'+(state.items[i.id]?' on':'')+'" type="button" data-id="'+esc(i.id)+'">'+esc(i.name)+'</button>';
+      }).join('');
+      return '<div class="mount"><div class="mount-h"><h3>'+mo.title+'</h3><span class="badge">'+mo.badge+'</span><span class="note">'+mo.note+'</span></div>'
+        +'<div class="catrow">'+row+'</div>'
+        +'<div class="opts"><div class="ot">'+esc(ac)+' — pick your size / options</div><div class="chips">'+chips+'</div></div></div>';
+    }).join('');
+    host.querySelectorAll('.cbtn').forEach(function(b){
+      b.addEventListener('click',function(){
+        state.activeCat[b.getAttribute('data-mount')]=b.getAttribute('data-cat');
+        renderMounts();
+      });
+    });
+    host.querySelectorAll('.chip').forEach(function(ch){
+      ch.addEventListener('click',function(){
+        var id=ch.getAttribute('data-id');
+        if(state.items[id])delete state.items[id];
+        else state.items[id]=IMPL.filter(function(i){return i.id===id;})[0];
+        renderMounts();renderSummary();
+      });
+    });
+  }
+
+  /* summary */
+  function pkgText(){
+    var parts=[];
+    if(state.base)parts.push(state.base.brand+' '+state.base.model+' ('+state.base.hp+' HP, '+(state.base.cab?'Cab':'Open Station')+')');
+    Object.keys(state.items).forEach(function(id){var i=state.items[id];parts.push(i.name+' ('+i.brand+')');});
+    return parts.join('\n+ ');
+  }
+  function renderSummary(){
+    var base=document.getElementById('pBase');
+    if(state.base){base.className='val';base.textContent=state.base.brand+' '+state.base.model;}
+    else{base.className='val empty';base.textContent='Choose a tractor above';}
+    var ids=Object.keys(state.items);
+    var list=document.getElementById('pList');
+    list.innerHTML=ids.length?ids.map(function(id){
+      var i=state.items[id];
+      return '<div class="p-item"><span>'+esc(i.name)+'</span><button class="rm" type="button" data-id="'+esc(id)+'" aria-label="Remove">✕</button></div>';
+    }).join(''):'<div class="p-empty">No implements added yet.</div>';
+    list.querySelectorAll('.rm').forEach(function(b){
+      b.addEventListener('click',function(){
+        delete state.items[b.getAttribute('data-id')];
+        renderMounts();renderSummary();
+      });
+    });
+    var go=document.getElementById('pGo');
+    var ready=!!state.base;
+    go.setAttribute('aria-disabled',ready?'false':'true');
+    go.href=ready?('schedule-visit.html?package='+encodeURIComponent(pkgText())):'#';
+  }
+
+  renderTractors();renderMounts();renderSummary();
+})();
+</script>
+</body>
+</html>

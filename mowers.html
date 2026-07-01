@@ -424,7 +424,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     if(m.fuel&&m.fuel!=='Gas')bits.push(m.fuel);
     cap.innerHTML='<h2><span class="cb">Bad Boy</span> '+m.model+'</h2>'
       +'<p class="hpline">'+bits.join(' · ')+'</p>'
-      +'<div class="cap-actions"><a class="btn btn-red" href="product-template.html?type=mower&m='+encodeURIComponent(m.model)+'">View details</a>'
+      +'<div class="cap-actions"><a class="btn btn-red" href="product.html?type=mower&m='+encodeURIComponent(m.model)+'">View details</a>'
       +'<a class="btn btn-dark" href="schedule-visit.html" data-intent="schedule">Schedule a Visit</a></div>';
   }
   function renderThumbs(){var items=filtered();thumbs.innerHTML='';var wrap=document.createElement('div');wrap.className='thumb-strip-inner';
@@ -441,7 +441,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     var items=filtered();
     if(!items.length){tileGrid.innerHTML='<p style="color:#6a7077;padding:1.4rem 0">No mowers here — try another type.</p>';return;}
     tileGrid.innerHTML='<div class="tg-inner">'+items.map(function(m){
-      var href='product-template.html?type=mower&m='+encodeURIComponent(m.model);
+      var href='product.html?type=mower&m='+encodeURIComponent(m.model);
       var hl=deckLine(m.decks);if(!hl&&m.hp>0)hl=m.hp+' HP';
       return '<a class="tile" href="'+href+'">'
         +'<span class="pic"><img src="'+m.image+'" alt="Bad Boy '+m.model+' mower" loading="lazy"></span>'

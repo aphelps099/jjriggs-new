@@ -226,7 +226,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-weight:400;t
   }
   function card(m){
     var st=m.cab?'Cab':'Open Station';
-    var href='product-page-v3-preview.html?type=tractor&b='+encodeURIComponent(state.brand)+'&m='+encodeURIComponent(m.model);
+    var href='product.html?type=tractor&b='+encodeURIComponent(state.brand)+'&m='+encodeURIComponent(m.model);
     var sp='<div class="sp"><div class="v">'+m.hp+' <small>HP</small></div><div class="k">Horsepower</div></div>'
       +(m.loader_lift_lbs?'<div class="sp"><div class="v">'+m.loader_lift_lbs.toLocaleString()+' <small>LB</small></div><div class="k">Loader lift</div></div>':'<div class="sp"><div class="v">'+esc(m.drive||'4WD')+'</div><div class="k">Drive</div></div>')
       +'<div class="sp"><div class="v">'+esc(shortTrans(m.transmission))+'</div><div class="k">Transmission</div></div>'

@@ -225,7 +225,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-weight:400;t
     });
   }
   function card(m){
-    var href='product-page-v3-preview.html?type=mower&m='+encodeURIComponent(m.model);
+    var href='product.html?type=mower&m='+encodeURIComponent(m.model);
     var ds=decks(m).map(function(d){return d+'″';}).join(' · ');
     var power=m.hp>0?(m.hp+' <small>HP</small>'):'Electric';
     var sp='<div class="sp"><div class="v">'+power+'</div><div class="k">'+(m.hp>0?'Horsepower':'Power')+'</div></div>'
