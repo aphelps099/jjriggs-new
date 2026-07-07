@@ -1,0 +1,111 @@
+/* ═══════════════════════════════════════════════════════
+   JJ Riggs Motion — dark editor chrome
+   Scoped overrides on top of motion-studio.css, using the
+   site's own tokens: warm ink darks (never pure black),
+   warm off-white text, one Bad Boy Red accent, steel grays
+   for hierarchy, hairlines as transparency, sharp corners,
+   and the −13° diagonal as the repeated signature.
+   ═══════════════════════════════════════════════════════ */
+
+.ms-root.ms-riggs {
+  --ms-sand: #0f1215;   /* ink-3 — deepest chrome */
+  --ms-cream: #14171a;  /* ink — panels */
+  --ms-white: #1b2025;  /* ink-2 — lifted cards */
+  --ms-ink: #fbfbf9;    /* warm off-white text */
+  --ms-mid: #c3c8ce;    /* steel-2 */
+  --ms-muted: #8b939c;  /* steel */
+  --ms-line: rgba(255, 255, 255, 0.12);
+  --ms-royal: #cf1f2a;  /* Bad Boy Red — THE accent */
+  --ms-pool: #cf1f2a;
+  --ms-sans: 'Questrial', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+}
+
+/* Sharp corners — 4px reads engineered, not SaaS-soft */
+.ms-riggs .ms-scene-card,
+.ms-riggs .ms-btn,
+.ms-riggs .ms-input,
+.ms-riggs .ms-add-btn,
+.ms-riggs .ms-file-btn,
+.ms-riggs .ms-cue-card,
+.ms-riggs .ms-seg-btn { border-radius: 4px; }
+.ms-riggs .ms-timeline,
+.ms-riggs .ms-scene-thumb,
+.ms-riggs .ms-img-thumb,
+.ms-riggs .ms-logo-thumb { border-radius: 3px; }
+
+/* Display voice on section titles */
+.ms-riggs .ms-section-title,
+.ms-riggs .ms-scenes-title {
+  font-family: 'Tactic Sans Bld', 'Bebas Neue', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.012em;
+}
+
+/* Tech voice on the small labels */
+.ms-riggs .ms-label,
+.ms-riggs .ms-scene-kind,
+.ms-riggs .ms-section-badge {
+  font-family: 'Michroma', 'Tactic Sans Bld', sans-serif;
+  letter-spacing: 0.14em;
+  font-weight: 400;
+}
+
+.ms-riggs .ms-scene-card:hover { border-color: rgba(207, 31, 42, 0.45); }
+
+.ms-riggs .ms-scene-card.is-active {
+  box-shadow: 0 0 0 1px var(--ms-royal), 0 3px 10px rgba(207, 31, 42, 0.18);
+}
+
+.ms-riggs .ms-scene-dot { border-color: rgba(255, 255, 255, 0.18); }
+
+/* Red accent on dark chrome: hover/active text stays white */
+.ms-riggs .ms-icon-btn:hover:not(:disabled) { color: #fbfbf9; }
+.ms-riggs .ms-icon-btn.is-danger:hover:not(:disabled) { background: #a5151f; color: #fbfbf9; }
+
+.ms-riggs .ms-add-btn { border-color: rgba(207, 31, 42, 0.45); }
+.ms-riggs .ms-add-btn:hover { color: #fbfbf9; }
+
+.ms-riggs .ms-btn.is-primary {
+  color: #fbfbf9;
+  box-shadow: 0 2px 8px rgba(207, 31, 42, 0.3);
+}
+
+.ms-riggs .ms-btn.is-primary:hover:not(:disabled) {
+  color: #fbfbf9;
+  background: #a5151f;
+  box-shadow: 0 4px 14px rgba(207, 31, 42, 0.35);
+}
+
+.ms-riggs .ms-btn.is-toggled { color: #fbfbf9; }
+
+.ms-riggs .ms-tl-scene:hover { background: rgba(207, 31, 42, 0.08); }
+.ms-riggs .ms-tl-scene.is-active { background: rgba(207, 31, 42, 0.14); }
+
+.ms-riggs .ms-seg-btn:hover { border-color: rgba(207, 31, 42, 0.5); }
+.ms-riggs .ms-seg-btn.is-active { color: #fbfbf9; }
+
+.ms-riggs .ms-status.is-ok { color: #1d7a3c; }
+.ms-riggs .ms-status.is-err { color: #cf1f2a; }
+
+.ms-riggs .ms-file-btn { border-color: rgba(207, 31, 42, 0.55); }
+.ms-riggs .ms-file-btn:hover { color: #fbfbf9; }
+
+.ms-riggs .ms-swatch-custom {
+  background:
+    linear-gradient(var(--ms-white), var(--ms-white)) padding-box,
+    conic-gradient(#cf1f2a, #fbfbf9, #f3f1ea, #14171a, #cf1f2a) border-box;
+}
+
+.ms-riggs .ms-logo-thumb.is-dark-bg { background: #14171a; }
+
+.ms-riggs .ms-stage { box-shadow: 0 10px 36px rgba(0, 0, 0, 0.65); }
+
+/* The signature −13° red slash for the page header */
+.riggs-slash {
+  display: inline-block;
+  width: 8px;
+  height: 18px;
+  background: #cf1f2a;
+  transform: skewX(-13deg);
+  flex-shrink: 0;
+}
