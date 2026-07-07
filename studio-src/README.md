@@ -20,6 +20,11 @@ Red, Tactic Sans Bld / Questrial / Michroma, sharp 4px corners, and the
 - **Video scenes** — upload MP4/MOV/WebM, trim the start, match scene
   length to the clip, clip audio on/mute + volume. Text overlays with
   their own in/out timing, plus timed tip/text/caption cues.
+- **Background media on any scene** — every template (title, statement,
+  spec sheet, quote, stat, fine print, end card) takes a photo or clip
+  background: upload or reuse from the bin, Ken Burns on photos, trim +
+  audio on clips, legibility overlay + strength. Text flips to white over
+  media; a clip wins when both are set.
 - **Presenter cam** — a small talking-head clip in the lower third of any
   scene.
 - **Editing** — undo/redo, split at playhead (S), J/K/L shuttle, drag

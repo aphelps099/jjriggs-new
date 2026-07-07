@@ -823,8 +823,11 @@ function drawScene(
 ) {
   const { W, H, u, doc, assets, videos } = sc;
   const scheme = resolveScheme(scene);
-  const isImage = scene.template === 'image' && scene.imageId && assets[scene.imageId];
-  const isVideo = scene.template === 'video' && scene.videoId && videos[scene.videoId];
+  // Any scene can carry background media — a clip or a photo — not just
+  // the dedicated video/image templates. A clip wins over a photo when a
+  // scene somehow has both; the image template stays photo-only.
+  const isVideo = scene.template !== 'image' && scene.videoId && videos[scene.videoId];
+  const isImage = !isVideo && scene.imageId && assets[scene.imageId];
 
   // Background
   ctx.fillStyle = scheme.bg;
@@ -845,11 +848,11 @@ function drawScene(
   ctx.globalAlpha = 1 - xp;
   ctx.translate(0, -xp * 26 * u);
 
-  // Video scenes keep the scheme accent (brand color over footage);
-  // image scenes keep their original fixed accent for back-compat.
+  // Over footage or photos the text goes white for legibility (the
+  // overlay does the rest); the accent stays the scheme's brand color.
   const fg = (isImage || isVideo) ? '#ffffff' : scheme.fg;
   const muted = (isImage || isVideo) ? 'rgba(255,255,255,0.72)' : scheme.muted;
-  const accent = isImage ? '#8FC5D9' : scheme.accent;
+  const accent = scheme.accent;
   const frame = contentFrame(sc);
   const anchorX = scene.align === 'lower-left' ? frame.x
     : scene.align === 'lower-right' ? frame.x + frame.w

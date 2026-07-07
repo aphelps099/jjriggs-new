@@ -461,7 +461,7 @@ export default function RiggsMotionStudio() {
 
     for (const id in videosRef.current) {
       const v = videosRef.current[id].video;
-      const isMain = !!active && active.template === 'video' && active.videoId === id;
+      const isMain = !!active && active.template !== 'image' && active.videoId === id;
       const isPip = !!active && !isMain && active.pipVideoId === id;
       if (isMain || isPip) {
         const trim = isMain ? active.videoTrimStart : active.pipTrimStart;
@@ -776,7 +776,7 @@ export default function RiggsMotionStudio() {
       id: `${scene.id}-b-${Math.floor(Math.random() * 1e6)}`,
       duration: scene.duration - cut,
       transition: 'cut',
-      videoTrimStart: scene.template === 'video' ? scene.videoTrimStart + cut : scene.videoTrimStart,
+      videoTrimStart: scene.template !== 'image' && scene.videoId ? scene.videoTrimStart + cut : scene.videoTrimStart,
       pipTrimStart: scene.pipVideoId ? scene.pipTrimStart + cut : scene.pipTrimStart,
       // Text that already finished in the first half stays hidden here
       textStart: scene.textEnd > 0 && textTail <= 0
@@ -1145,6 +1145,9 @@ export default function RiggsMotionStudio() {
             videoTrimStart: 0,
             duration: Math.max(1000, asset.duration),
           });
+        } else if (target === 'main' && selected.template !== 'image') {
+          // Background clip on a non-video scene — keep the scene's timing
+          patchScene(selected.id, { videoId: asset.id, videoTrimStart: 0 });
         } else if (target === 'pip') {
           patchScene(selected.id, { pipVideoId: asset.id, pipTrimStart: 0 });
         }
@@ -1374,9 +1377,15 @@ export default function RiggsMotionStudio() {
     ? RIGGS_SCHEMES.find((s) => sameScheme(selected.customScheme, s))
     : undefined;
 
-  const durationMax = selected?.template === 'video' && selectedVideo
+  const durationMax = selectedVideo
     ? Math.max(10000, selectedVideo.duration)
     : 10000;
+
+  const selectedImage = selected?.imageId ? assetsRef.current[selected.imageId] ?? null : null;
+  const hasBgMedia = !!selected && (
+    selected.template === 'image' || selected.template === 'video'
+    || !!selectedImage || !!selectedVideo
+  );
 
   // Route keyboard shortcuts to the latest handlers (listener mounts once)
   keysRef.current = {
@@ -1534,6 +1543,21 @@ export default function RiggsMotionStudio() {
             title={`Scene ${selectedIndex + 1} — ${TEMPLATES.find((t) => t.id === selected.template)?.label}`}
             badge={TEMPLATES.find((t) => t.id === selected.template)?.hint}
           >
+            {/* Hidden pickers — reachable from every template's controls */}
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageFile(f); e.target.value = ''; }}
+            />
+            <input
+              ref={videoInputRef}
+              type="file"
+              accept="video/mp4,video/webm,video/quicktime"
+              hidden
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) handleVideoFile(f, 'main'); e.target.value = ''; }}
+            />
             {(selected.template === 'title' || selected.template === 'image' || selected.template === 'video' || selected.template === 'endcard' || selected.template === 'list' || selected.template === 'disclaimer') && (
               <Field label={selected.template === 'endcard' ? 'CTA line' : 'Kicker'}>
                 <TextInput value={selected.kicker} onChange={(v) => patchScene(selected.id, { kicker: v })} placeholder="JJ RIGGS EQUIPMENT" />
@@ -1629,13 +1653,6 @@ export default function RiggsMotionStudio() {
                       </select>
                     )}
                   </div>
-                  <input
-                    ref={imageInputRef}
-                    type="file"
-                    accept="image/*"
-                    hidden
-                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageFile(f); e.target.value = ''; }}
-                  />
                 </Field>
                 <Field label="Motion">
                   <Seg options={KEN_BURNS} value={selected.kenBurns} onChange={(v) => patchScene(selected.id, { kenBurns: v })} small />
@@ -1646,7 +1663,7 @@ export default function RiggsMotionStudio() {
             {/* Video controls */}
             {selected.template === 'video' && (
               <>
-                <Field label="Exercise clip">
+                <Field label="Walk-around clip">
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                     <button className="ms-file-btn" onClick={() => videoInputRef.current?.click()}>
                       ⬆ Upload video
@@ -1673,13 +1690,6 @@ export default function RiggsMotionStudio() {
                       </select>
                     )}
                   </div>
-                  <input
-                    ref={videoInputRef}
-                    type="file"
-                    accept="video/mp4,video/webm,video/quicktime"
-                    hidden
-                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleVideoFile(f, 'main'); e.target.value = ''; }}
-                  />
                   {videoStatus && (
                     <p className={`ms-status ${videoStatus.ok ? 'is-ok' : 'is-err'}`}>{videoStatus.msg}</p>
                   )}
@@ -1728,7 +1738,94 @@ export default function RiggsMotionStudio() {
               </>
             )}
 
-            {(selected.template === 'image' || selected.template === 'video') && (
+            {/* Background media — any scene can sit on a photo or a clip */}
+            {selected.template !== 'image' && selected.template !== 'video' && (
+              <>
+                <Field label="Background">
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    <button className="ms-file-btn" onClick={() => imageInputRef.current?.click()}>
+                      ⬆ Image
+                    </button>
+                    <button className="ms-file-btn" onClick={() => videoInputRef.current?.click()}>
+                      ⬆ Video
+                    </button>
+                  </div>
+                  {(images.length > 0 || videos.length > 0) && (
+                    <div style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
+                      {images.length > 0 && (
+                        <select
+                          className="ms-input"
+                          style={{ width: 'auto', flex: 1, minWidth: 90 }}
+                          value={selected.imageId ?? ''}
+                          onChange={(e) => patchScene(selected.id, { imageId: e.target.value || null })}
+                        >
+                          <option value="">— no image —</option>
+                          {images.map((im) => (
+                            <option key={im.id} value={im.id}>{im.name}</option>
+                          ))}
+                        </select>
+                      )}
+                      {videos.length > 0 && (
+                        <select
+                          className="ms-input"
+                          style={{ width: 'auto', flex: 1, minWidth: 90 }}
+                          value={selected.videoId ?? ''}
+                          onChange={(e) => patchScene(selected.id, { videoId: e.target.value || null, videoTrimStart: 0 })}
+                        >
+                          <option value="">— no clip —</option>
+                          {videos.map((v) => (
+                            <option key={v.id} value={v.id}>{v.name}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                  )}
+                  <p className="ms-hint">
+                    A clip wins over a photo. Text flips to white over media — the overlay
+                    below keeps it readable.
+                  </p>
+                </Field>
+                {selectedImage && !selectedVideo && (
+                  <Field label="Photo motion">
+                    <Seg options={KEN_BURNS} value={selected.kenBurns} onChange={(v) => patchScene(selected.id, { kenBurns: v })} small />
+                  </Field>
+                )}
+                {selectedVideo && (
+                  <>
+                    <Field label="Clip starts at">
+                      <Slider
+                        value={selected.videoTrimStart}
+                        onChange={(v) => patchScene(selected.id, { videoTrimStart: v })}
+                        min={0}
+                        max={Math.max(0, selectedVideo.duration - 1000)}
+                        step={100}
+                        format={(v) => fmtTime(v)}
+                      />
+                    </Field>
+                    <Field label="Clip audio">
+                      <Seg
+                        options={CLIP_SOUND_OPTS}
+                        value={selected.videoMuted ? 'mute' : 'on'}
+                        onChange={(v) => patchScene(selected.id, { videoMuted: v === 'mute' })}
+                        small
+                      />
+                    </Field>
+                    {!selected.videoMuted && (
+                      <Field label="Clip volume">
+                        <Slider
+                          value={selected.videoVolume}
+                          onChange={(v) => patchScene(selected.id, { videoVolume: v })}
+                          min={0} max={1} step={0.05}
+                          format={(v) => `${Math.round(v * 100)}%`}
+                        />
+                      </Field>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+
+            {hasBgMedia && (
               <>
                 <Field label="Overlay">
                   <Seg options={OVERLAYS} value={selected.overlay} onChange={(v) => patchScene(selected.id, { overlay: v })} small />

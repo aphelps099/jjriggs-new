@@ -116,7 +116,8 @@ export async function renderMixdown(
 
   let acc = 0;
   for (const scene of doc.scenes) {
-    if (scene.template === 'video' && scene.videoId && !scene.videoMuted) {
+    // Any non-image scene's background clip contributes its audio
+    if (scene.template !== 'image' && scene.videoId && !scene.videoMuted) {
       addClip(videos[scene.videoId]?.audioBuffer ?? null, acc, scene.videoTrimStart, scene.duration, scene.videoVolume);
     }
     // Coach-cam thumbnail audio (any template)
