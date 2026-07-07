@@ -121,7 +121,8 @@ async function syncVideosForFrame(doc: MotionDoc, t: number, videos: VideoMap): 
 
   const queue = (scene: Scene | null, sceneLocal: number) => {
     if (!scene) return;
-    if (scene.template === 'video' && scene.videoId) {
+    // Any non-image scene may carry a background clip
+    if (scene.template !== 'image' && scene.videoId) {
       const v = videos[scene.videoId];
       if (v) jobs.push(seekVideo(v.video, (scene.videoTrimStart + sceneLocal) / 1000));
     }
@@ -337,7 +338,7 @@ export async function exportWebm(
       // awaiting the seek — close enough for the WebM fallback path.
       const { index, local } = sceneAt(doc, t);
       const active = doc.scenes[index];
-      if (active?.template === 'video' && active.videoId && videos[active.videoId]) {
+      if (active && active.template !== 'image' && active.videoId && videos[active.videoId]) {
         const v = videos[active.videoId].video;
         const targetS = (active.videoTrimStart + local) / 1000;
         if (Math.abs(v.currentTime - targetS) > 0.2) v.currentTime = targetS;
