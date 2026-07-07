@@ -306,7 +306,10 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
   //  • For a TRUE inline calendar, open the schedule in Google Calendar → Share →
   //    "Embed" and paste the iframe src here instead (it ends with ?gv=true).
   // Leave blank to show the request form instead.
-  var BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules/AcZssZ3wAzQY5Fu7AwzSQCxMT3ZrtpUXdu-HXJrFT8z8NVtuZx51oImYeUPT4-tsJNJM_qD74f1qynJf?gv=true";
+  // Calendar booking is turned OFF — the visit request form is shown instead (routes to service@).
+  // To bring Google Calendar booking back, paste the schedule URL below (ends with ?gv=true).
+  // Previous link: https://calendar.google.com/calendar/appointments/schedules/AcZssZ3wAzQY5Fu7AwzSQCxMT3ZrtpUXdu-HXJrFT8z8NVtuZx51oImYeUPT4-tsJNJM_qD74f1qynJf?gv=true
+  var BOOKING_URL = "";
   if(BOOKING_URL){
     var embed=document.getElementById('bookEmbed');
     if(/[?&]gv=true/.test(BOOKING_URL)){
