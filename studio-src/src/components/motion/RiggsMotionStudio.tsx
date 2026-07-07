@@ -46,6 +46,42 @@ const CLIP_SOUND_OPTS = [
 
 // Public-asset prefix — the GitHub Pages basePath (/jjriggs-new/studio)
 const ASSET_BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+// The site root above the studio — where the inventory CSV lives
+const SITE_BASE = ASSET_BASE.replace(/\/studio\/?$/, '');
+
+/** Minimal CSV parser (quoted fields, embedded commas/newlines). */
+function parseCsv(text: string): Record<string, string>[] {
+  const rows: string[][] = [];
+  let cur: string[] = [];
+  let field = '';
+  let inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; } else inQ = false;
+      } else field += c;
+    } else if (c === '"') {
+      inQ = true;
+    } else if (c === ',') {
+      cur.push(field); field = '';
+    } else if (c === '\n' || c === '\r') {
+      if (c === '\r' && text[i + 1] === '\n') i++;
+      cur.push(field); field = '';
+      if (cur.some((f) => f.trim())) rows.push(cur);
+      cur = [];
+    } else {
+      field += c;
+    }
+  }
+  if (field || cur.length) {
+    cur.push(field);
+    if (cur.some((f) => f.trim())) rows.push(cur);
+  }
+  const [head, ...body] = rows;
+  if (!head) return [];
+  return body.map((r) => Object.fromEntries(head.map((h, i) => [h.trim(), r[i] ?? ''])));
+}
 
 /** Snap an arbitrary scale to the nearest preset id for the Seg control. */
 function nearestScaleId(scale: number): typeof TEXT_SCALES[number]['id'] {
@@ -1207,12 +1243,104 @@ export default function RiggsMotionStudio() {
   };
 
   // ── Inventory Builder ──
-  const [modPrice, setModPrice] = useState('$28,900');
+  // Price is optional by design — most units on the lot don't list one,
+  // and the builder simply skips the price scenes when it's blank.
+  const [modPrice, setModPrice] = useState('');
   const [modTitle, setModTitle] = useState('BAD BOY 4035');
   const [modSubtitle, setModSubtitle] = useState('Compact · 35 HP · Open Station');
   const [modSpecs, setModSpecs] = useState('Engine · 35 HP diesel\nTransmission · HST 3-range\nLoader · quick-attach bucket\nWarranty · see dealer for coverage');
   const [modDisclaimer, setModDisclaimer] = useState(DEFAULT_DISCLAIMER);
   const [modMode, setModMode] = useState<'replace' | 'append'>('replace');
+
+  // ── Build from URL — the site's own inventory CSV is the source ──
+  const [srcUrl, setSrcUrl] = useState('');
+  const [importStatus, setImportStatus] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [unitImageId, setUnitImageId] = useState<string | null>(null);
+  const inventoryRef = useRef<Record<string, string>[] | null>(null);
+
+  const importFromUrl = async () => {
+    setImportStatus(null);
+    const q = srcUrl.trim().toLowerCase();
+    if (!q) {
+      setImportStatus({ ok: false, msg: 'Paste a product URL or type a model name first.' });
+      return;
+    }
+    try {
+      if (!inventoryRef.current) {
+        const res = await fetch(`${SITE_BASE}/jjriggs-full-inventory.csv`);
+        if (!res.ok) throw new Error(String(res.status));
+        inventoryRef.current = parseCsv(await res.text());
+      }
+    } catch {
+      setImportStatus({ ok: false, msg: 'Could not load the site inventory CSV — is the site deployed alongside the studio?' });
+      return;
+    }
+    const rows = inventoryRef.current;
+    const qSlug = q.replace(/\s+/g, '-');
+    const row =
+      rows.find((r) => r.Slug && q.includes(r.Slug.toLowerCase()))
+      ?? rows.find((r) => (r['Product Page URL'] || '').toLowerCase().replace(/\/+$/, '') === q.replace(/\/+$/, ''))
+      ?? rows.find((r) => (r['Product Name'] || '').toLowerCase() === q)
+      // whole-word match beats substring: "t25" must hit T25, not T254
+      ?? rows.find((r) => (r['Product Name'] || '').toLowerCase().split(/\s+/).includes(q))
+      ?? rows.find((r) => q.length >= 3 && (r['Product Name'] || '').toLowerCase().includes(q))
+      ?? rows.find((r) => q.length >= 3 && (r.Slug || '').toLowerCase().includes(qSlug));
+    if (!row) {
+      setImportStatus({ ok: false, msg: 'No matching unit in the site inventory — check the URL or try the model name.' });
+      return;
+    }
+
+    setModTitle((row['Product Name'] || '').toUpperCase());
+    const oneliner = [
+      row['Sub-Category'],
+      row.HP ? `${row.HP} HP` : '',
+      row.Configuration,
+    ].filter(Boolean).join(' · ');
+    if (oneliner) setModSubtitle(oneliner);
+    const specPairs: [string, string][] = [
+      ['Engine', row.Engine ?? ''],
+      ['Drive', row.Drive ?? ''],
+      ['Transmission', row.Transmission ?? ''],
+      ['Fuel', row.Fuel ?? ''],
+      ['Weight', row['Weight (lbs)'] ? `${row['Weight (lbs)']} lbs` : ''],
+      ['Loader lift', row['Loader Lift (lbs)'] ? `${row['Loader Lift (lbs)']} lbs` : ''],
+    ];
+    const specs = specPairs
+      .filter(([, v]) => v && v.trim())
+      .slice(0, 5)
+      .map(([k, v]) => `${k} · ${v.trim()}`)
+      .join('\n');
+    if (specs) setModSpecs(specs);
+    setModPrice(''); // the inventory carries no pricing
+
+    // Catalog photo: CORS fetch → blob keeps the canvas untainted so
+    // exports still work. If the host blocks it, fill text only.
+    let photoMsg = '';
+    const imgUrl = (row['Image URL'] || '').trim();
+    if (imgUrl) {
+      try {
+        const ir = await fetch(imgUrl, { mode: 'cors' });
+        if (!ir.ok) throw new Error(String(ir.status));
+        const blob = await ir.blob();
+        const url = URL.createObjectURL(blob);
+        const img = await loadImage(url);
+        const asset: ImageAsset = {
+          id: `img-${Date.now().toString(36)}`,
+          name: `${row['Product Name']} — catalog`,
+          url,
+          img,
+        };
+        assetsRef.current[asset.id] = asset;
+        setImages((list) => [...list, asset]);
+        setUnitImageId(asset.id);
+        photoMsg = ' Catalog photo imported — the unit title will sit on it.';
+      } catch {
+        setUnitImageId(null);
+        photoMsg = ' The photo host blocked the import (CORS) — save the image and upload it manually.';
+      }
+    }
+    setImportStatus({ ok: true, msg: `Imported ${row['Product Name']}.${photoMsg}` });
+  };
 
   const buildUnit = () => {
     const priceNum = Math.round(Number(modPrice.replace(/[^0-9.]/g, ''))) || 0;
@@ -1224,7 +1352,8 @@ export default function RiggsMotionStudio() {
         duration: 2500,
         transition: 'cut',
       }),
-      // 2 — unit title (the wipe carries the −13° slash)
+      // 2 — unit title (the wipe carries the −13° slash); an imported
+      //     catalog photo becomes its backdrop, dimmed for legibility
       riggsScene('title', {
         kicker: 'JUST ARRIVED · COLVILLE WA',
         title: modTitle,
@@ -1232,6 +1361,9 @@ export default function RiggsMotionStudio() {
         anim: 'rise',
         duration: 3500,
         transition: 'wipe',
+        ...(unitImageId && assetsRef.current[unitImageId]
+          ? { imageId: unitImageId, kenBurns: 'zoom-in', overlay: 'scrim', overlayOpacity: 0.45 }
+          : {}),
       }),
       // 3 — spec sheet
       riggsScene('list', {
@@ -2095,6 +2227,23 @@ export default function RiggsMotionStudio() {
 
         {/* — Inventory Builder — */}
         <Section title="Inventory Builder" badge="Unit video wizard">
+          <Field label="Build from URL / model">
+            <TextInput
+              value={srcUrl}
+              onChange={setSrcUrl}
+              placeholder="Paste a jjriggsequipment.com product URL — or a model name"
+            />
+            <button className="ms-btn" style={{ width: '100%', marginTop: 6 }} onClick={importFromUrl}>
+              ⤓ Import from site inventory
+            </button>
+            {importStatus && (
+              <p className={`ms-status ${importStatus.ok ? 'is-ok' : 'is-err'}`}>{importStatus.msg}</p>
+            )}
+            <p className="ms-hint">
+              Looks the unit up in the site&apos;s inventory, fills the fields below, and pulls
+              the catalog photo into the image bin.
+            </p>
+          </Field>
           <div style={{ display: 'flex', gap: 6 }}>
             <div style={{ flex: 2 }}>
               <Field label="Unit / model">
@@ -2102,8 +2251,8 @@ export default function RiggsMotionStudio() {
               </Field>
             </div>
             <div style={{ flex: 1 }}>
-              <Field label="Price">
-                <TextInput value={modPrice} onChange={setModPrice} placeholder="$28,900" />
+              <Field label="Price (optional)">
+                <TextInput value={modPrice} onChange={setModPrice} placeholder="—" />
               </Field>
             </div>
           </div>
@@ -2129,8 +2278,10 @@ export default function RiggsMotionStudio() {
           </button>
           <p className="ms-hint">
             Seeds the full unit skeleton: brand sting → unit title → spec sheet → walk-around
-            video (with the price sweeping in as a lower third) → price counter → fine print →
-            end card. Then select the video scene and upload the walk-around clip.
+            video → fine print → end card. With a price set, it also sweeps in as a lower
+            third on the video and gets a counter scene; leave it blank (most units don&apos;t
+            list one) and those are simply skipped. Then select the video scene and upload
+            the walk-around clip.
           </p>
         </Section>
 
