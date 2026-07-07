@@ -58,8 +58,10 @@
 
 .ms-riggs .ms-scene-dot { border-color: rgba(255, 255, 255, 0.18); }
 
-/* Red accent on dark chrome: hover/active text stays white */
-.ms-riggs .ms-icon-btn:hover:not(:disabled) { color: #fbfbf9; }
+/* Active states are red (the guide lists them under red's jobs). The base
+   sheet fills actives with --ms-ink, which this dark theme remaps to
+   near-white — re-fill with red so labels stay legible. */
+.ms-riggs .ms-icon-btn:hover:not(:disabled) { background: var(--ms-royal); color: #fbfbf9; }
 .ms-riggs .ms-icon-btn.is-danger:hover:not(:disabled) { background: #a5151f; color: #fbfbf9; }
 
 .ms-riggs .ms-add-btn { border-color: rgba(207, 31, 42, 0.45); }
@@ -76,13 +78,21 @@
   box-shadow: 0 4px 14px rgba(207, 31, 42, 0.35);
 }
 
-.ms-riggs .ms-btn.is-toggled { color: #fbfbf9; }
+.ms-riggs .ms-btn.is-toggled {
+  background: var(--ms-royal);
+  border-color: var(--ms-royal);
+  color: #fbfbf9;
+}
 
 .ms-riggs .ms-tl-scene:hover { background: rgba(207, 31, 42, 0.08); }
 .ms-riggs .ms-tl-scene.is-active { background: rgba(207, 31, 42, 0.14); }
 
 .ms-riggs .ms-seg-btn:hover { border-color: rgba(207, 31, 42, 0.5); }
-.ms-riggs .ms-seg-btn.is-active { color: #fbfbf9; }
+.ms-riggs .ms-seg-btn.is-active {
+  background: var(--ms-royal);
+  border-color: var(--ms-royal);
+  color: #fbfbf9;
+}
 
 .ms-riggs .ms-status.is-ok { color: #1d7a3c; }
 .ms-riggs .ms-status.is-err { color: #cf1f2a; }
