@@ -403,7 +403,9 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
       var hps=list.map(function(m){return m.hp;});
       var lo=Math.floor(Math.min.apply(null,hps)),hi=Math.ceil(Math.max.apply(null,hps));
       var sorted=list.slice().sort(function(a,b){return b.hp-a.hp;});
-      var rep=sorted.filter(function(m){return m.image;})[0]||sorted[0];
+      /* size cards use an isolated studio render, never a real-lot hero photo */
+      var studio=function(m){return m.image&&/model_photo|tym-tractors/i.test(m.image);};
+      var rep=sorted.filter(studio)[0]||sorted.filter(function(m){return m.image;})[0]||sorted[0];
       var hpTxt=lo===hi?lo+' HP':lo+' – '+hi+' HP';
       return '<div class="size-card">'
         +'<img src="'+rep.image+'" alt="'+state.brand+' '+s+' tractor" loading="lazy" />'

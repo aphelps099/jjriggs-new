@@ -66,11 +66,29 @@
     document.querySelectorAll('.has-menu .nav-top[aria-expanded="true"]').forEach(function(t){t.setAttribute('aria-expanded','false');});
     head.classList.remove('nav-open');
   }
+  var megaCloseTimer=null;
+  function cancelMegaClose(){if(megaCloseTimer){clearTimeout(megaCloseTimer);megaCloseTimer=null;}}
   document.querySelectorAll('.has-menu').forEach(function(hm){
     var top=hm.querySelector('.nav-top'),sub=hm.querySelector('.submenu');
-    hm.addEventListener('mouseenter',function(){head.classList.add('nav-open');placeMega();});
-    hm.addEventListener('mouseleave',function(){if(!document.querySelector('.has-menu .submenu.open')){head.classList.remove('nav-open');}});
-    if(top&&sub){top.addEventListener('click',function(e){e.preventDefault();var open=sub.classList.contains('open');closeAll();if(!open){sub.classList.add('open');top.setAttribute('aria-expanded','true');head.classList.add('nav-open');placeMega();}});}
+    function openThis(){
+      cancelMegaClose();
+      document.querySelectorAll('.has-menu .submenu.open').forEach(function(s){if(s!==sub){s.classList.remove('open');}});
+      document.querySelectorAll('.has-menu .nav-top[aria-expanded="true"]').forEach(function(t){if(t!==top){t.setAttribute('aria-expanded','false');}});
+      head.classList.add('nav-open');
+      if(sub){sub.classList.add('open');}
+      if(top){top.setAttribute('aria-expanded','true');}
+      placeMega();
+    }
+    hm.addEventListener('mouseenter',openThis);
+    hm.addEventListener('mouseleave',function(){
+      cancelMegaClose();
+      megaCloseTimer=setTimeout(function(){
+        if(sub){sub.classList.remove('open');}
+        if(top){top.setAttribute('aria-expanded','false');}
+        if(!document.querySelector('.has-menu .submenu.open')){head.classList.remove('nav-open');}
+      },160);
+    });
+    if(top&&sub){top.addEventListener('click',function(e){e.preventDefault();cancelMegaClose();var open=sub.classList.contains('open');closeAll();if(!open){sub.classList.add('open');top.setAttribute('aria-expanded','true');head.classList.add('nav-open');placeMega();}});}
   });
   document.addEventListener('click',function(e){if(!e.target.closest('.has-menu')){closeAll();}});
   document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeAll();}});
