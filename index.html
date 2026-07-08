@@ -438,7 +438,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
         <p class="lead" id="heroLead">Bad Boy and TYM tractors, sold and serviced right here in Colville.</p>
         <div class="hero-ctas">
           <a class="btn btn-red" id="heroCta" href="tractors.html#b=bad-boy">Shop Bad Boy tractors</a>
-          <a class="btn btn-ghost" id="heroCta2" href="schedule-visit.html">Get a Quote</a>
+          <a class="btn btn-ghost" id="heroCta2" href="contact.html">Get a Quote</a>
         </div>
         <div class="hero-reviews" id="heroReviews" aria-hidden="true">
           <div class="hr-item"><span class="hr-stars" aria-hidden="true">★★★★★</span><p>"Good pricing, good service. Worth the drive."</p><span class="hr-by">Greg Krueger · Google</span></div>
@@ -570,7 +570,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
       </div>
 
       <div class="ft-cta">
-        <a class="btn btn-red" href="schedule-visit.html">Visit our lot</a>
+        <a class="btn btn-red" href="contact.html">Visit our lot</a>
       </div>
     </div>
   </section>
@@ -633,7 +633,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
             <p>Mon–Fri · 8 to 5 · <a href="tel:+15097382985">509-738-2985</a></p>
           </address>
           <div class="v-ctas" data-reveal>
-            <a class="btn btn-red" href="schedule-visit.html">Schedule a Visit</a>
+            <a class="btn btn-red" href="contact.html">Schedule a Visit</a>
             <a class="btn btn-ghost" href="https://www.google.com/maps?q=685+Elm+Tree+Dr,+Colville,+WA+99114" target="_blank" rel="noopener">Get directions</a>
           </div>
         </div>
@@ -694,9 +694,9 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
 
   /* hero category tabs — swap image, headline, primary CTA */
   var TABS=[
-    {img:'img/jjriggs-tractors-homepage-hero.jpeg', h:'The toughest tractors.<br><span class="accent">Rock-solid service.</span>', b:'Shop Bad Boy tractors', href:'tractors.html#b=bad-boy', b2:'Get a Quote', href2:'schedule-visit.html', lead:'Bad Boy and TYM tractors, sold and serviced right here in Colville.'},
-    {img:'img/bb-mowers-home.jpeg', h:'Cut clean.<br>Every <span class="accent">pass.</span>', b:'Shop mowers', href:'mowers.html', b2:'Get a Quote', href2:'schedule-visit.html', pos:'50% 78%', zoom:1.15, lead:'Bad Boy zero-turns, stand-ons, and walk-behinds — serviced locally.'},
-    {img:'img/implements-glamour-shot.jpeg', h:'The right tool<br>for the <span class="accent">job.</span>', b:'Shop implements', href:'implements.html', b2:'Get a Quote', href2:'schedule-visit.html', lead:'IronCraft and Braber attachments for every job on your land.'},
+    {img:'img/jjriggs-tractors-homepage-hero.jpeg', h:'The toughest tractors.<br><span class="accent">Rock-solid service.</span>', b:'Shop Bad Boy tractors', href:'tractors.html#b=bad-boy', b2:'Get a Quote', href2:'contact.html', lead:'Bad Boy and TYM tractors, sold and serviced right here in Colville.'},
+    {img:'img/bb-mowers-home.jpeg', h:'Cut clean.<br>Every <span class="accent">pass.</span>', b:'Shop mowers', href:'mowers.html', b2:'Get a Quote', href2:'contact.html', pos:'50% 78%', zoom:1.15, lead:'Bad Boy zero-turns, stand-ons, and walk-behinds — serviced locally.'},
+    {img:'img/implements-glamour-shot.jpeg', h:'The right tool<br>for the <span class="accent">job.</span>', b:'Shop implements', href:'implements.html', b2:'Get a Quote', href2:'contact.html', lead:'IronCraft and Braber attachments for every job on your land.'},
     {img:'img/tym-gold-dealer.jpg', h:'Don\'t take our<br><span class="accent">word for it.</span>', b:'View services', href:'services.html', b2:'View reviews', href2:'#reviews', lead:'Rated 4.8★ across 43 Google reviews — honest, local service folks drive in from Spokane to Republic for.', pos:'50% 38%'}
   ];
   var img=document.getElementById('heroImg'),h1=document.getElementById('hero-h1'),
@@ -720,7 +720,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
     h1.innerHTML=t.h;
     cta.innerHTML=t.b+'';
     cta.setAttribute('href',t.href);
-    if(cta2){cta2.textContent=t.b2||'Get a Quote';cta2.setAttribute('href',t.href2||'schedule-visit.html');}
+    if(cta2){cta2.textContent=t.b2||'Get a Quote';cta2.setAttribute('href',t.href2||'contact.html');}
     copy.classList.remove('hero-fade');void copy.offsetWidth;copy.classList.add('hero-fade');
     tabs.forEach(function(el,k){el.setAttribute('aria-selected',k===i?'true':'false')});
     restartProg();

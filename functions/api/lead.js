@@ -1,5 +1,5 @@
 // Cloudflare Pages Function — POST /api/lead
-// Receives a JSON lead from the schedule-visit.html forms and emails it via Resend.
+// Receives a JSON lead from the contact.html forms and emails it via Resend.
 //
 // Required env var (set in Cloudflare Pages → Settings → Environment variables):
 //   RESEND_API_KEY   your Resend API key
