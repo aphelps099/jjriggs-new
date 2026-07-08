@@ -54,8 +54,13 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "Invalid request" }, 400);
   }
 
-  // Honeypot — bots fill hidden "company" field; silently accept and drop.
-  if (data.company) return json({ ok: true });
+  // Honeypot — bots fill the hidden "hp_trap" field; silently accept and drop.
+  // Renamed from "company": Chrome autofill recognizes "company" as an
+  // organization field and silently fills it for real users, which dropped
+  // their leads. "hp_trap" matches no autofill heuristic. The old "company"
+  // value is deliberately IGNORED (not trapped) so cached pages + autofill
+  // can't drop real customers — Turnstile is the real spam gate.
+  if (data.hp_trap) return json({ ok: true });
 
   // Turnstile — spam protection. Enforced only when TURNSTILE_SECRET_KEY is set
   // (Pages → Settings → Environment variables), so forms keep working before the
@@ -104,7 +109,7 @@ export async function onRequestPost({ request, env }) {
   const order = ["type", "name", "phone", "email", "interest", "equipment",
     "servicetype", "urgency", "date", "time", "product", "message"];
   const rows = order
-    .filter((k) => data[k] && String(data[k]).trim() && k !== "company")
+    .filter((k) => data[k] && String(data[k]).trim() && k !== "company" && k !== "hp_trap")
     .map((k) => [FIELD_LABELS[k] || k, String(data[k]).trim()]);
 
   const text = rows.map(([k, v]) => `${k}: ${v}`).join("\n");
