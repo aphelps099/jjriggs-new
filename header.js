@@ -37,7 +37,7 @@
   +'<li><a class="nav-top'+cur('service')+'" href="services.html">Service</a></li>'
   +'<li><a class="nav-top'+cur('financing')+'" href="financing.html">Financing</a></li>'
   +'</ul></nav>'
-  +'<div class="head-actions"><a class="btn btn-red" href="schedule-visit.html" data-intent="schedule">Get a Quote</a>'
+  +'<div class="head-actions"><a class="btn btn-red" href="contact.html" data-intent="schedule">Get a Quote</a>'
   +'<button class="burger" id="burger" aria-label="Open menu" aria-controls="mobileMenu" aria-expanded="false"><span></span><span></span><span></span></button></div>'
   +'</div>'
   +'<nav class="mobile-menu" id="mobileMenu" aria-label="Mobile"><ul>'
@@ -47,7 +47,7 @@
   +'<li><a href="https://colvillesheds.com/" target="_blank" rel="noopener">Sheds</a></li>'
   +'<li><a href="services.html">Service &amp; Repair</a></li>'
   +'<li><a href="financing.html">Financing</a></li>'
-  +'<li><a href="schedule-visit.html" data-intent="schedule">Get a Quote</a></li>'
+  +'<li><a href="contact.html" data-intent="schedule">Get a Quote</a></li>'
   +'<li><a href="tel:+15097382985">Call 509-738-2985</a></li>'
   +'</ul></nav></header>';
 

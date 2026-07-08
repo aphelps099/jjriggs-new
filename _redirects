@@ -1,0 +1,6 @@
+# Cloudflare Pages redirects
+# Page renamed: schedule-visit -> contact (keep old URLs alive for bookmarks
+# and inbound links from the old WordPress site).
+/schedule-visit       /contact   301
+/schedule-visit.html  /contact   301
+/schedule-visit/      /contact   301

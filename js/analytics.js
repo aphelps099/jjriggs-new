@@ -6,8 +6,8 @@
      - page_view               (default GA4)
      - call_click              (any tel: link clicked)
      - directions_click        (Google Maps link clicked)
-     - schedule_book_click     (any link/button to /schedule-visit/ from another page)
-     - schedule_view           (page_view when /schedule-visit/ loads)
+     - schedule_book_click     (any link/button to /contact/ from another page)
+     - schedule_view           (page_view when /contact/ loads)
      - service_quote_click     (any link/button to /service/#quote)
      - book_widget_open        (when the Google Appointment iframe becomes visible)
      - form_submit             (manual form fallback on schedule page)
@@ -59,8 +59,11 @@
   }
 
   onReady(function(){
-    // schedule_view: when the schedule page itself loads
-    if (location.pathname.indexOf('/schedule-visit') !== -1 ||
+    // schedule_view: when the contact page itself loads
+    // (also matches the legacy /schedule-visit path during the redirect window)
+    if (location.pathname.indexOf('/contact') !== -1 ||
+        /contact\.html$/.test(location.pathname) ||
+        location.pathname.indexOf('/schedule-visit') !== -1 ||
         /schedule-visit\.html$/.test(location.pathname)) {
       track('schedule_view');
     }
@@ -83,6 +86,8 @@
         return;
       }
       if (intent === 'schedule' ||
+          href.indexOf('/contact') !== -1 ||
+          /contact\.html/.test(href) ||
           href.indexOf('/schedule-visit') !== -1 ||
           /schedule-visit\.html/.test(href)) {
         track('schedule_book_click', { label: label });
