@@ -1,0 +1,23 @@
+User-agent: *
+# internal/dev assets that ship in the repo but aren't site pages
+Disallow: /node_modules/
+Disallow: /tools/
+Disallow: /studio/
+Disallow: /studio-src/
+Disallow: /csv-inventory/
+Disallow: /JJ-RIGGS-ADS-BUILDER/
+Disallow: /MyWebfontsKit/
+Disallow: /font-sample/
+Disallow: /jjriggs_lot_images/
+Disallow: /bb-tractor-images/
+# work-in-progress / preview pages
+Disallow: /builder.html
+Disallow: /test-combined.html
+Disallow: /index-redesign.html
+Disallow: /mowers-v2-preview.html
+Disallow: /tractors-v2-preview.html
+Disallow: /product-page-v2-preview.html
+Disallow: /tractor-template-new.html
+Allow: /
+
+Sitemap: https://jjriggsequipment.com/sitemap.xml

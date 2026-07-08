@@ -1,6 +1,90 @@
-# Cloudflare Pages redirects
-# Page renamed: schedule-visit -> contact (keep old URLs alive for bookmarks
-# and inbound links from the old WordPress site).
+# Cloudflare Pages redirects — first matching rule wins.
+#
+# SEO MIGRATION MAP (WordPress -> static, same domain).
+# Every URL Google has indexed on the old WordPress site 301s to its best
+# new home so no ranking equity is lost at cutover. Sources use a trailing
+# splat (*) so both /path and /path/ forms match.
+# TODO(Phase 2): port the blog posts + town landing pages + privacy/terms
+# as real pages on this site, then retire their redirects below.
+
+# --- internal rename: schedule-visit -> contact ---
 /schedule-visit       /contact   301
 /schedule-visit.html  /contact   301
 /schedule-visit/      /contact   301
+
+# --- WP category & core pages ---
+/branson-tym-tractors*   /tractors   301
+/bad-boy-mowers*         /mowers     301
+/jj-riggs-services*      /services   301
+/catalog*                /           301
+
+# --- WP service subpages (before any broader /services rule) ---
+/services/financing*           /financing   301
+/services/contact*             /contact     301
+/services/repairs*             /services    301
+/services/welding-fabrication* /services    301
+/services/part-replacement*    /services    301
+/services/delivery*            /services    301
+
+# --- WP lead pages ---
+/request-a-quote*         /contact   301
+/schedule-service-repair* /contact   301
+
+# --- sheds moved to their own site ---
+/sheds* https://colvillesheds.com/ 301
+
+# --- blog posts (port as real pages in Phase 2, then remove) ---
+/best-bad-boy-mower-tractor-for-ne-washington*                 /tractors    301
+/compact-tractor-vs-zero-turn-mower-for-2-10-acres*            /tractors    301
+/best-tractor-snow-removal-northeast-washington*               /implements  301
+/tractor-sizing-guide-for-northeast-washington-acreage-owners* /tractors    301
+
+# (town landing pages ported as real pages 2026-07-08 — no redirects needed:
+#  /colville-tractors, /kettle-falls-tractors, /chewelah-tractors serve directly)
+
+# --- legal (TODO: create real privacy/terms pages, then update) ---
+/privacy-policy*  /   301
+/terms-of-use*    /   301
+
+# --- old /equipment/ product pages -> new product pages ---
+# TYM tractors (mapped from the url fields in js/tym-models.data.js)
+/equipment/branson-tym-t224-sub-compact-tractor*  /product?type=tractor&m=T224     301
+/equipment/tym-t3025-24hp*                        /product?type=tractor&m=T3025H   301
+/equipment/tym-t3025c-24hp*                       /product?type=tractor&m=T3025CH  301
+/equipment/branson-tym-t474-2-compact-tractor*    /product?type=tractor&m=T474H    301
+/equipment/branson-tym-t474c-compact-tractor*     /product?type=tractor&m=T474CH   301
+/equipment/branson-tym-t494-compact-tractor*      /product?type=tractor&m=T494H    301
+/equipment/branson-tym-t494c-compact-tractor*     /product?type=tractor&m=T494CH   301
+/equipment/branson-tym-t574-compact-tractor*      /product?type=tractor&m=T574H    301
+/equipment/branson-tym-t574c-compact-tractor*     /product?type=tractor&m=T574CH   301
+/equipment/tym-t4058p-58hp*                       /product?type=tractor&m=T4058P   301
+/equipment/t4058c*                                /product?type=tractor&m=T4058PC  301
+/equipment/tym-t5075-74hp*                        /product?type=tractor&m=T5075    301
+/equipment/branson-tym-t115-utility-tractor*      /product?type=tractor&m=T115     301
+/equipment/branson-tym-t130-utility-tractor*      /product?type=tractor&m=T130     301
+
+# Bad Boy mowers (old slug -> current model; Magnum/Avenger were renamed
+# to MZ Magnum/ZT Avenger by Bad Boy)
+/equipment/bad-boy-rogue-commercial-mower*  /product?type=mower&m=Rogue             301
+/equipment/bad-boy-rebel-x-mower*           /product?type=mower&m=Rebel%20X         301
+/equipment/bad-boy-rebel-mower*             /product?type=mower&m=Rebel             301
+/equipment/bad-boy-revolt-sd-mower*         /product?type=mower&m=Revolt%20SD       301
+/equipment/bad-boy-revolt-mower*            /product?type=mower&m=Revolt            301
+/equipment/bad-boy-raider-mower*            /product?type=mower&m=Raider            301
+/equipment/bad-boy-e-magnum-mower*          /product?type=mower&m=E-Magnum          301
+/equipment/bad-boy-renegade-gas-mower*      /product?type=mower&m=Renegade%20Gas    301
+/equipment/bad-boy-renegade-diesel-mower*   /product?type=mower&m=Renegade%20Diesel 301
+/equipment/bad-boy-zt-elite-mower*          /product?type=mower&m=ZT%20Elite        301
+/equipment/bad-boy-maverick-hd-mower*       /product?type=mower&m=Maverick%20HD     301
+/equipment/bad-boy-maverick-mower*          /product?type=mower&m=Maverick          301
+/equipment/bad-boy-magnum-mower*            /product?type=mower&m=MZ%20Magnum       301
+/equipment/bad-boy-avenger-mower*           /product?type=mower&m=ZT%20Avenger      301
+# old "MZ" model is ambiguous (MZ Rambler vs MZ Magnum today) -> category
+/equipment/bad-boy-mz-mower*                /mowers 301
+
+# implements sold as equipment pages -> implements catalog
+/equipment/light-weight-snow-blower*    /implements 301
+/equipment/ironcraft-compact-snow-plow* /implements 301
+
+# discontinued Branson-era models & anything else under /equipment/
+/equipment/* /tractors 301

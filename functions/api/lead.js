@@ -121,12 +121,26 @@ export async function onRequestPost({ request, env }) {
       .join("") +
     `</table>`;
 
-  const to = env.LEAD_TO || "sales@jjriggsequipment.com";
+  // Route by request type: quotes -> sales, visits & service -> service.
+  // env.LEAD_TO (if set) forces ALL mail to one address — handy for testing
+  // before the sending domain is verified in Resend.
+  const TYPE_TO = {
+    quote:   env.LEAD_TO_QUOTE   || "sales@jjriggsequipment.com",
+    visit:   env.LEAD_TO_SERVICE || "service@jjriggsequipment.com",
+    service: env.LEAD_TO_SERVICE || "service@jjriggsequipment.com",
+  };
+  const to = env.LEAD_TO || TYPE_TO[type] || "sales@jjriggsequipment.com";
+  // BCC every incoming lead (comma-separate for multiple). Dealer notification only.
+  // Set LEAD_BCC="" to disable (needed for Resend test mode, which rejects a
+  // BCC to any address other than your own account email).
+  const bccRaw = env.LEAD_BCC !== undefined ? env.LEAD_BCC : "aaronphelps.c@gmail.com";
+  const bcc = bccRaw.split(",").map((s) => s.trim()).filter(Boolean);
   const from = env.LEAD_FROM || "JJ Riggs Website <onboarding@resend.dev>";
   const replyContact = env.LEAD_REPLY_TO || "sales@jjriggsequipment.com";
 
+  const RESEND_URL = env.RESEND_API_URL || "https://api.resend.com/emails";
   async function sendEmail(payload) {
-    return fetch("https://api.resend.com/emails", {
+    return fetch(RESEND_URL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${env.RESEND_API_KEY}`,
@@ -140,6 +154,7 @@ export async function onRequestPost({ request, env }) {
   const res = await sendEmail({
     from,
     to: [to],
+    ...(bcc.length ? { bcc } : {}),
     reply_to: email,
     subject,
     text,

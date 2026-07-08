@@ -1,0 +1,63 @@
+#!/usr/bin/env node
+// Generates sitemap.xml from the site's data files.
+// Run after any model add/remove/rename:  node tools/generate-sitemap.mjs
+// (Zero-build site: the generated sitemap.xml is committed, not built on deploy.)
+
+import { readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const ORIGIN = "https://jjriggsequipment.com";
+
+// Load a window.* data file without a browser.
+function load(file) {
+  const w = {};
+  new Function("window", readFileSync(join(root, file), "utf8"))(w);
+  return w;
+}
+
+const tym = load("js/tym-models.data.js").TYM_MODELS || [];
+const badboy = load("js/badboy-models.data.js").BADBOY_MODELS || [];
+const mowers = load("js/mower-models.data.js").MOWER_MODELS || [];
+
+const urls = [];
+const add = (path, priority) => urls.push({ loc: ORIGIN + path, priority });
+
+// Core pages
+add("/", "1.0");
+add("/tractors", "0.9");
+add("/mowers", "0.9");
+add("/implements", "0.9");
+add("/services", "0.8");
+add("/financing", "0.8");
+add("/contact", "0.8");
+
+// Town landing pages (local SEO)
+add("/colville-tractors", "0.8");
+add("/kettle-falls-tractors", "0.8");
+add("/chewelah-tractors", "0.8");
+
+// Product pages (query URLs are valid sitemap entries; & must be XML-escaped)
+for (const m of [...tym, ...badboy]) {
+  add(`/product?type=tractor&m=${encodeURIComponent(m.model)}`, "0.7");
+}
+for (const m of mowers) {
+  add(`/product?type=mower&m=${encodeURIComponent(m.model)}`, "0.7");
+}
+
+const esc = (s) => s.replace(/&/g, "&amp;");
+const today = new Date().toISOString().slice(0, 10);
+const xml =
+  `<?xml version="1.0" encoding="UTF-8"?>\n` +
+  `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+  urls
+    .map(
+      (u) =>
+        `  <url><loc>${esc(u.loc)}</loc><lastmod>${today}</lastmod><priority>${u.priority}</priority></url>`
+    )
+    .join("\n") +
+  `\n</urlset>\n`;
+
+writeFileSync(join(root, "sitemap.xml"), xml);
+console.log(`sitemap.xml written: ${urls.length} URLs`);
