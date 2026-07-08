@@ -57,6 +57,36 @@ export async function onRequestPost({ request, env }) {
   // Honeypot — bots fill hidden "company" field; silently accept and drop.
   if (data.company) return json({ ok: true });
 
+  // Turnstile — spam protection. Enforced only when TURNSTILE_SECRET_KEY is set
+  // (Pages → Settings → Environment variables), so forms keep working before the
+  // real widget/secret exist. Explicit verification failures are rejected;
+  // a siteverify OUTAGE fails open — losing a real customer lead costs more
+  // than letting one spam email through.
+  if (env.TURNSTILE_SECRET_KEY) {
+    const token = (data.turnstile || "").trim();
+    if (!token) {
+      return json({ ok: false, error: "Security check missing — please reload the page and try again, or call 509-738-2985." }, 403);
+    }
+    try {
+      const vr = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          secret: env.TURNSTILE_SECRET_KEY,
+          response: token,
+          remoteip: request.headers.get("CF-Connecting-IP") || undefined,
+        }),
+      });
+      const v = await vr.json();
+      if (!v.success) {
+        console.log("Turnstile rejected", v["error-codes"]);
+        return json({ ok: false, error: "Security check failed — please reload the page and try again, or call 509-738-2985." }, 403);
+      }
+    } catch (e) {
+      console.log("Turnstile siteverify unreachable — failing open", String(e));
+    }
+  }
+
   const name = (data.name || "").trim();
   const email = (data.email || "").trim();
   if (!name || !email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
