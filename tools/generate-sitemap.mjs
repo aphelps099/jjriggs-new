@@ -33,6 +33,11 @@ add("/services", "0.8");
 add("/financing", "0.8");
 add("/contact", "0.8");
 
+// Town landing pages (local SEO)
+add("/colville-tractors", "0.8");
+add("/kettle-falls-tractors", "0.8");
+add("/chewelah-tractors", "0.8");
+
 // Product pages (query URLs are valid sitemap entries; & must be XML-escaped)
 for (const m of [...tym, ...badboy]) {
   add(`/product?type=tractor&m=${encodeURIComponent(m.model)}`, "0.7");

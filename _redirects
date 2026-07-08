@@ -39,10 +39,8 @@
 /best-tractor-snow-removal-northeast-washington*               /implements  301
 /tractor-sizing-guide-for-northeast-washington-acreage-owners* /tractors    301
 
-# --- town landing pages (port as real pages in Phase 2, then remove) ---
-/colville-tractors*      /tractors   301
-/kettle-falls-tractors*  /tractors   301
-/chewelah-tractors*      /tractors   301
+# (town landing pages ported as real pages 2026-07-08 — no redirects needed:
+#  /colville-tractors, /kettle-falls-tractors, /chewelah-tractors serve directly)
 
 # --- legal (TODO: create real privacy/terms pages, then update) ---
 /privacy-policy*  /   301
