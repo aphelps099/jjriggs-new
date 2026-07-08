@@ -366,7 +366,9 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
       prev=document.getElementById('carPrev'),next=document.getElementById('carNext'),vp=document.getElementById('carViewport'),
       tileGrid=document.getElementById('tileGrid'),stageEl=document.getElementById('stage');
 
-  function models(){return DATA[state.brand].slice().sort(function(a,b){return a.hp-b.hp;});}
+  /* hp order, but a model's explicit numeric `sort` field overrides its hp
+     (e.g. T2025P displays between T224 and T3025H per Andrew). */
+  function models(){return DATA[state.brand].slice().sort(function(a,b){return (a.sort!=null?a.sort:a.hp)-(b.sort!=null?b.sort:b.hp);});}
   function bucketsWithModels(){var ms=models();return BUCKETS.filter(function(b){return b.id==='all'||ms.some(function(m){return m.hp>=b.min&&m.hp<=b.max;});});}
   function filtered(){
     if(state.series){

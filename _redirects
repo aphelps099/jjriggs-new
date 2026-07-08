@@ -48,6 +48,8 @@
 
 # --- old /equipment/ product pages -> new product pages ---
 # TYM tractors (mapped from the url fields in js/tym-models.data.js)
+/equipment/tym-t3035-35hp*                        /product?type=tractor&m=T3035H   301
+/equipment/tym-t3035c-35hp*                       /product?type=tractor&m=T3035CH  301
 /equipment/branson-tym-t224-sub-compact-tractor*  /product?type=tractor&m=T224     301
 /equipment/tym-t3025-24hp*                        /product?type=tractor&m=T3025H   301
 /equipment/tym-t3025c-24hp*                       /product?type=tractor&m=T3025CH  301
