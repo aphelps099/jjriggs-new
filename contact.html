@@ -6,6 +6,8 @@
 <title>Contact JJ Riggs Equipment — Get a Quote, Visit or Service | Colville WA</title>
 <meta name="description" content="Request a quote from JJ Riggs Equipment in Colville, WA, or schedule a time to visit the lot. Tell us what you need and we'll get right back to you." />
 <link rel="icon" href="https://jjriggsequipment.com/wp-content/uploads/2024/09/cropped-favicon2-270x270.png" />
+<!-- Cloudflare Turnstile — spam protection on the lead forms (explicit render; see jjTurnstileInit below) -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=jjTurnstileInit&render=explicit" async defer></script>
 
 <link rel="preconnect" href="https://api.fontshare.com" />
 <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
@@ -44,6 +46,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 /* QUOTE + ANDREW */
 .quote-sec{background:var(--bone);color:var(--ink);padding:clamp(2.4rem,5vw,3.6rem) 0}
 .qcard{background:#fff;border:1px solid #d9d5c8;border-top:4px solid var(--red);padding:clamp(1.5rem,3.5vw,2.6rem)}
+.ts-slot{margin:.3rem 0 1.1rem;min-height:65px}.ts-slot:empty{min-height:0;margin:0}
 .qcard h2{font-family:"Michroma","Tactic Sans Bld",sans-serif;text-transform:none;letter-spacing:0;font-size:clamp(1.3rem,2.4vw,1.7rem);color:var(--ink);margin-bottom:.4rem}
 .qcard .sub{color:#5a6066;font-size:.95rem;margin-bottom:1.4rem}
 /* tabs — segmented, obvious */
@@ -166,6 +169,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
               </div>
               <div class="field full"><label for="qmsg">What do you need?</label><textarea id="qmsg" name="message" placeholder="Tell us a little about the job, your tractor, or the model you're eyeing."></textarea></div>
             </div>
+            <div class="ts-slot" data-action="quote"></div>
             <button class="btn btn-red" type="submit">Send request</button>
           </form>
         </div>
@@ -196,6 +200,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
               </div>
               <div class="field full"><label for="vmsg">What do you want to see?</label><textarea id="vmsg" name="message" placeholder="Let us know which models or implements you'd like to look at so we can have them ready."></textarea></div>
             </div>
+            <div class="ts-slot" data-action="visit"></div>
             <button class="btn btn-red" type="submit">Request a visit</button>
           </form>
           </div>
@@ -229,6 +234,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
               </div>
               <div class="field full"><label for="smsg">What's going on?</label><textarea id="smsg" name="message" placeholder="Describe the problem, the noise, the warning light, or the service you need."></textarea></div>
             </div>
+            <div class="ts-slot" data-action="service"></div>
             <button class="btn btn-red" type="submit">Request service</button>
           </form>
         </div>
@@ -327,6 +333,24 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     document.getElementById('bookFallback').hidden=true;
   }
 
+  // ---- Turnstile (spam protection) ----
+  // ONE place to change the site key. Create the real widget at
+  // dash.cloudflare.com → Turnstile → Add site (domains: jjriggs-new.pages.dev
+  // + jjriggsequipment.com), then paste its Site Key here and set
+  // TURNSTILE_SECRET_KEY in Pages → Settings → Environment variables.
+  // '1x00000000000000000000AA' is Cloudflare's public TEST key — always passes,
+  // renders a "testing only" widget, and the server skips verification until
+  // the real secret is configured.
+  var TS_SITE_KEY='1x00000000000000000000AA';
+  var tsWidgets={};
+  window.jjTurnstileInit=function(){
+    document.querySelectorAll('.ts-slot').forEach(function(slot){
+      var form=slot.closest('form');
+      if(!form)return;
+      tsWidgets[form.id]=turnstile.render(slot,{sitekey:TS_SITE_KEY,action:slot.dataset.action||'lead',theme:'light'});
+    });
+  };
+
   // ---- submit handlers ----
   var DONE='<div class="qdone"><h3>Thanks — your request is in.</h3><p>We\'ll be in touch shortly, usually the same day. Need it sooner? Call <a href="tel:+15097382985" style="color:var(--red);font-weight:600">509-738-2985</a>.</p></div>';
   function setErr(form,txt){
@@ -343,11 +367,21 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
       if(!name.value.trim()){name.focus();return;}
       if(!email.value||!email.checkValidity()){email.focus();return;}
       setErr(form,'');
+      // Turnstile token — required when the widget is live on the page.
+      var tsToken='';
+      if(window.turnstile&&tsWidgets[formId]!==undefined){
+        tsToken=turnstile.getResponse(tsWidgets[formId])||'';
+        if(!tsToken){
+          setErr(form,'One second — the security check hasn\'t finished yet. Give it a moment and hit the button again.');
+          return;
+        }
+      }
       var btn=form.querySelector('button[type=submit]'),orig=btn.textContent;
       btn.disabled=true;btn.textContent='Sending…';
       var payload={type:type};
       new FormData(form).forEach(function(v,k){payload[k]=v;});
       if(product)payload.product=product;
+      if(tsToken)payload.turnstile=tsToken;
       fetch('/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
         .then(function(r){return r.json().catch(function(){return {ok:r.ok};});})
         .then(function(d){
@@ -356,6 +390,8 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
         })
         .catch(function(err){
           btn.disabled=false;btn.textContent=orig;
+          // Turnstile tokens are single-use — get a fresh one for the retry.
+          if(window.turnstile&&tsWidgets[formId]!==undefined)turnstile.reset(tsWidgets[formId]);
           setErr(form,(err&&err.message&&err.message!=='fail'?err.message:'Something went wrong sending that.')+' Please call 509-738-2985 and we\'ll take care of you.');
         });
     });

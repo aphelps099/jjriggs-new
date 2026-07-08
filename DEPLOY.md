@@ -40,6 +40,7 @@ The `functions/` folder is picked up automatically, so `POST /api/lead` works on
 | `LEAD_FROM` | No | From header. Default `JJ Riggs Website <onboarding@resend.dev>`. After DNS verify, use e.g. `JJ Riggs Equipment <quotes@jjriggsequipment.com>`. |
 | `LEAD_REPLY_TO` | No | Reply-to on customer confirmation emails. Default `sales@jjriggsequipment.com`. |
 | `SEND_CONFIRMATIONS` | No | `on` (default) sends the customer auto-reply; set `off` to disable. |
+| `TURNSTILE_SECRET_KEY` | No | Cloudflare Turnstile secret for spam protection on `/api/lead`. Create a widget at dash.cloudflare.com → Turnstile (domains: the pages.dev domain + jjriggsequipment.com), set this to its **Secret Key**, and paste its **Site Key** into `TS_SITE_KEY` in `contact.html`. Until set, verification is skipped (honeypot still active). |
 
 After changing env vars, redeploy (or push) for them to take effect.
 
