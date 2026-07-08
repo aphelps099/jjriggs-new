@@ -131,8 +131,10 @@ export async function onRequestPost({ request, env }) {
   };
   const to = env.LEAD_TO || TYPE_TO[type] || "sales@jjriggsequipment.com";
   // BCC every incoming lead (comma-separate for multiple). Dealer notification only.
-  const bcc = (env.LEAD_BCC || "aaronphelps.c@gmail.com")
-    .split(",").map((s) => s.trim()).filter(Boolean);
+  // Set LEAD_BCC="" to disable (needed for Resend test mode, which rejects a
+  // BCC to any address other than your own account email).
+  const bccRaw = env.LEAD_BCC !== undefined ? env.LEAD_BCC : "aaronphelps.c@gmail.com";
+  const bcc = bccRaw.split(",").map((s) => s.trim()).filter(Boolean);
   const from = env.LEAD_FROM || "JJ Riggs Website <onboarding@resend.dev>";
   const replyContact = env.LEAD_REPLY_TO || "sales@jjriggsequipment.com";
 
