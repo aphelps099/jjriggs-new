@@ -5,7 +5,7 @@ description: Workflow for auditing, scouting, and crawling JJ Riggs product/inve
 
 # JJ Riggs Inventory Scout
 
-The dealership (Andrew Alluis, JJ Riggs Equipment) has no organized inventory-update process — the site's biggest operational problem. This skill covers auditing what data exists, scouting what's missing, and keeping the keyed data files in sync. Strategy background: `INVENTORY-PIPELINE-PLAN.md` (Google Sheet pipeline spec), `perplexity-product-data-prompt.md` (extraction prototype), `CHANGE-SUMMARY-2026-07-01.md` (how reconciliations are reported).
+The dealership (Andrew Alluis, JJ Riggs Equipment) has no organized inventory-update process — the site's biggest operational problem. This skill covers auditing what data exists, scouting what's missing, and keeping the keyed data files in sync. Strategy background: `INVENTORY-HANDOFF.md` (CURRENT system state — read first), `INVENTORY-PIPELINE-PLAN.md` (Google Sheet pipeline spec), `perplexity-product-data-prompt.md` (extraction prototype), `CHANGE-SUMMARY-2026-07-01.md` (how reconciliations are reported).
 
 ## Cardinal rules
 
