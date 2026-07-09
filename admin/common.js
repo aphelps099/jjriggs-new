@@ -17,6 +17,15 @@ window.JJ = (function () {
     return statusP.then(s => ({ extract: !!s.extract, publish: !!s.publish }));
   }
 
+  // an error field can be a plain string (our endpoints) or an object like
+  // Anthropic's {type,message} — unwrap to a readable string, never [object Object]
+  function errMsg(j, status) {
+    const e = j && j.error;
+    if (!e) return 'request failed (' + status + ')';
+    if (typeof e === 'string') return e;
+    return e.message || e.type || JSON.stringify(e);
+  }
+
   async function extract(payload) {
     const st = await status();
     if (st.extract) {
@@ -24,7 +33,7 @@ window.JJ = (function () {
         method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload),
       });
       const j = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(j.error || ('extract failed (' + r.status + ')'));
+      if (!r.ok) throw new Error('Anthropic: ' + errMsg(j, r.status));
       return j;
     }
     const key = localStorage.getItem('jj_claudekey');
@@ -59,7 +68,7 @@ window.JJ = (function () {
       });
       const j = await r.json().catch(() => ({}));
       (j.log || []).forEach(say);
-      if (!r.ok) throw new Error(j.error || ('publish failed (' + r.status + ')'));
+      if (!r.ok) throw new Error(errMsg(j, r.status));
       return j;
     }
     if (!localStorage.getItem('jj_ghtoken')) throw new Error('NEEDS_TOKEN');

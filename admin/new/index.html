@@ -121,11 +121,14 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
   <section class="card locked" id="s4">
     <h2><span class="n">4</span>Review &amp; publish</h2>
     <div id="previewBox"></div>
-    <div class="grid2" style="margin:1rem 0">
-      <div><label>Branch</label><input type="text" id="branch"></div>
-      <div><label>Commit message</label><input type="text" id="commitmsg"></div>
-    </div>
-    <button class="btn" id="pubbtn" onclick="publish()">Publish to preview branch</button>
+    <p class="muted" style="margin:1rem 0 .3rem">This creates a <b>preview to check first</b> — nothing changes on the real jjriggs site until it's approved. You'll get a preview link when it's done.</p>
+    <button class="btn" id="pubbtn" onclick="publish()" style="margin-top:.5rem">Publish for review ›</button>
+    <details style="margin-top:1.1rem"><summary class="muted" style="cursor:pointer;font-size:.84rem">Advanced (names this auto-fills for you)</summary>
+      <div class="grid2" style="margin:.7rem 0 0">
+        <div><label>Preview name</label><input type="text" id="branch"></div>
+        <div><label>Change note</label><input type="text" id="commitmsg"></div>
+      </div>
+    </details>
     <div class="log" id="publog" style="margin-top:1rem;display:none"></div>
     <div id="sheetRow"></div>
   </section>
