@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Photo Editor — JJ Riggs Equipment (internal)</title>
+<meta name="robots" content="noindex,nofollow" />
+<link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet" />
+<style>
+:root{--ink:#14171a;--ink-2:#1b2025;--bone:#f3f1ea;--white:#fbfbf9;--steel:#8b939c;--steel-2:#c3c8ce;--red:#cf1f2a;--red-deep:#a5151f;--green:#1d7a3c;--amber:#a06a00}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Questrial",system-ui,sans-serif;background:var(--bone);color:var(--ink);line-height:1.5;font-size:16px}
+header.bar{background:var(--ink);color:#fff;padding:.9rem 0;position:sticky;top:0;z-index:30}
+header.bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+header.bar .t{font-family:"Michroma",sans-serif;font-size:1.05rem}
+header.bar .t small{display:block;font-family:"Questrial";color:var(--steel);font-size:.8rem;letter-spacing:.05em}
+header.bar a{color:#fff}
+.wrap{max-width:1280px;margin:0 auto;padding:0 clamp(1rem,3vw,2.4rem)}
+h2{font-family:"Michroma",sans-serif;font-size:1.05rem;margin-bottom:.6rem}
+.card{background:#fff;border:1px solid #d9d5c8;border-top:4px solid var(--red);padding:1.2rem 1.3rem;margin-bottom:1.2rem}
+.btn{display:inline-flex;align-items:center;gap:.5rem;font-family:inherit;font-weight:600;font-size:.9rem;letter-spacing:.03em;padding:.7rem 1.2rem;border:1.5px solid transparent;cursor:pointer;background:var(--red);color:#fff;text-decoration:none}
+.btn:hover{background:var(--red-deep)}
+.btn.ghost{background:transparent;border-color:rgba(20,23,26,.35);color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:.45rem .85rem;font-size:.8rem}
+input[type=text],input[type=password],input[type=search]{font-family:inherit;font-size:1rem;padding:.6rem .7rem;border:1.5px solid #c9c5b8;background:#fff;width:100%}
+label{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:#6a7077;font-weight:600;display:block;margin-bottom:.3rem}
+.muted{color:#6a7077;font-size:.92rem}
+.pill{display:inline-block;padding:.15rem .55rem;font-size:.75rem;letter-spacing:.04em;border:1px solid}
+.pill.ok{color:var(--green);border-color:var(--green)}
+.pill.err{color:var(--red-deep);border-color:var(--red-deep)}
+.pill.warn{color:var(--amber);border-color:var(--amber)}
+.log{font-family:ui-monospace,monospace;font-size:.8rem;background:var(--ink);color:#cfe3cf;padding:.9rem;max-height:280px;overflow:auto;white-space:pre-wrap}
+
+/* ---- layout: sidebar + editor ---- */
+.layout{display:grid;grid-template-columns:320px 1fr;gap:1.2rem;align-items:start;margin:1.4rem auto 6.5rem}
+.side{position:sticky;top:4.6rem;max-height:calc(100vh - 6rem);display:flex;flex-direction:column;background:#fff;border:1px solid #d9d5c8;min-width:0;overflow:hidden}
+.side .search{padding:.8rem;border-bottom:1px solid #e4e0d4}
+.side .list{overflow:auto}
+.side .ghead{font-family:"Michroma",sans-serif;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:#6a7077;padding:.7rem .8rem .3rem;position:sticky;top:0;background:#fff}
+.prod{display:flex;align-items:center;gap:.65rem;width:100%;text-align:left;padding:.5rem .8rem;border:0;background:none;cursor:pointer;font-family:inherit;font-size:.95rem;border-left:4px solid transparent}
+.prod:hover{background:#faf9f3}
+.prod.on{background:#f6efe9;border-left-color:var(--red)}
+.prod .th{width:52px;height:40px;flex:none;background:#eee9dd;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:.6rem;color:#9a9484}
+.prod .th img{width:100%;height:100%;object-fit:cover}
+.prod .nm{flex:1;min-width:0}
+.prod .nm b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod .nm small{color:#6a7077;font-size:.76rem}
+.prod .ct{flex:none;font-size:.74rem;color:#6a7077}
+.prod .dirty{flex:none;width:9px;height:9px;border-radius:50%;background:var(--amber);display:none}
+.prod.edited .dirty{display:block}
+
+/* ---- editor pane ---- */
+.pane{min-width:0}
+.phead{display:flex;align-items:baseline;gap:.9rem;flex-wrap:wrap;margin-bottom:1rem}
+.phead h1{font-family:"Michroma",sans-serif;font-size:1.35rem}
+.phead .kind{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#6a7077}
+.phead .grow{flex:1}
+.mainbox{display:grid;grid-template-columns:minmax(220px,420px) 1fr;gap:1.2rem;align-items:start}
+.mainimg{position:relative;background:#eee9dd;border:1px solid #d9d5c8;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.mainimg img{width:100%;height:100%;object-fit:contain;background:#fff}
+.mainimg .none{color:#9a9484;text-align:center;font-size:.95rem;padding:1rem}
+.mainimg .tag{position:absolute;top:.6rem;left:.6rem;background:var(--red);color:#fff;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;padding:.25rem .6rem;font-weight:700}
+.gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.8rem;margin-top:.8rem}
+.gcard{background:#fff;border:1px solid #d9d5c8;position:relative}
+.gcard .im{aspect-ratio:4/3;background:#f4f2ea;overflow:hidden;display:block;width:100%}
+.gcard .im img{width:100%;height:100%;object-fit:cover}
+.gcard .num{position:absolute;top:.35rem;left:.35rem;background:rgba(20,23,26,.78);color:#fff;font-size:.7rem;padding:.1rem .45rem}
+.gcard .new{position:absolute;top:.35rem;right:.35rem;background:var(--green);color:#fff;font-size:.66rem;letter-spacing:.05em;padding:.12rem .45rem;text-transform:uppercase;font-weight:700}
+.gcard .ops{display:flex;border-top:1px solid #e4e0d4}
+.gcard .ops button{flex:1;border:0;background:none;font-family:inherit;font-size:.98rem;padding:.5rem .1rem;cursor:pointer;color:#4a5057;line-height:1}
+.gcard .ops button:hover{background:#f6efe9;color:var(--ink)}
+.gcard .ops button.del:hover{background:#fbf0f0;color:var(--red-deep)}
+.gcard .ops button:disabled{opacity:.25;cursor:default;background:none}
+.dropzone{border:2px dashed #c9c5b8;background:#faf9f3;color:#6a7077;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;padding:1.1rem;min-height:132px;font-size:.95rem;gap:.2rem}
+.dropzone:hover,.dropzone.over{border-color:var(--red);color:var(--ink);background:#fdf7f5}
+.dropzone>b{font-size:1.6rem;line-height:1;color:var(--red)}
+.removedbar{margin-top:1rem;border-top:1px dashed #d9d5c8;padding-top:.9rem}
+.rm-strip{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.5rem}
+.rm-chip{display:flex;align-items:center;gap:.5rem;border:1px solid #e0c9c9;background:#fbf4f4;padding:.3rem .5rem;font-size:.82rem}
+.rm-chip img{width:44px;height:33px;object-fit:cover;filter:grayscale(.7);opacity:.75}
+.rm-chip button{border:0;background:none;color:var(--red-deep);font-family:inherit;font-weight:700;cursor:pointer;font-size:.82rem;text-decoration:underline}
+.note{background:#fdf8ec;border:1px solid #e7d9ae;padding:.6rem .8rem;font-size:.88rem;color:#6a5a1f;margin-top:.8rem}
+
+/* ---- empty state ---- */
+.empty{padding:3.5rem 1rem;text-align:center;color:#6a7077}
+.empty .big{font-family:"Michroma",sans-serif;color:var(--ink);font-size:1.15rem;margin-bottom:1rem}
+.empty ol{display:inline-block;text-align:left;margin:0 auto;padding-left:1.3rem;line-height:2}
+
+/* ---- publish bar ---- */
+.pubbar{position:fixed;left:0;right:0;bottom:0;background:var(--ink);color:#fff;padding:.7rem 0;z-index:40;transform:translateY(110%);transition:transform .25s}
+.pubbar.on{transform:none}
+.pubbar .wrap{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.pubbar .sum{flex:1;font-size:.95rem}
+.pubbar .sum b{color:#ffd7d9}
+dialog{border:1px solid #d9d5c8;padding:0;max-width:680px;width:94vw}
+dialog::backdrop{background:rgba(20,23,26,.55)}
+.dbody{padding:1.4rem}
+.chg-list{margin:.7rem 0 0}
+.chg-list .row{display:flex;gap:.7rem;padding:.5rem 0;border-bottom:1px solid #eee9dd;font-size:.93rem}
+.chg-list .row b{flex:none;min-width:170px}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .side{position:static;max-height:290px}
+  .mainbox{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header class="bar"><div class="wrap">
+  <div class="t">Photo Editor <small>fix product page photos · nothing changes on the site until you publish &amp; merge</small></div>
+  <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+    <a class="btn ghost sm" href="/admin/">⇤ Inventory Builder</a>
+    <button class="btn ghost sm" onclick="document.getElementById('settings').showModal()">⚙ Settings</button>
+  </div>
+</div></header>
+
+<div class="wrap layout">
+
+  <!-- product picker -->
+  <aside class="side">
+    <div class="search"><input type="search" id="q" placeholder="Search products… (e.g. 4025, grapple)" aria-label="Search products"></div>
+    <div class="list" id="prodlist"></div>
+  </aside>
+
+  <!-- editor -->
+  <main class="pane" id="pane">
+    <div class="card empty">
+      <div class="big">Pick a product on the left</div>
+      <ol>
+        <li><b>Choose</b> the tractor, mower, or implement whose photos need fixing.</li>
+        <li><b>Add</b> new photos (drag &amp; drop), <b>remove</b> wrong ones, <b>★ star</b> the one that should lead the page.</li>
+        <li><b>Publish</b> — you get a preview link to check before anything goes live.</li>
+      </ol>
+      <p class="muted" style="margin-top:1rem">Photos are resized in your browser automatically. Removing a photo here never breaks anything — it just comes off the page, and you can restore it before publishing.</p>
+    </div>
+  </main>
+</div>
+
+<!-- sticky publish bar -->
+<div class="pubbar" id="pubbar">
+  <div class="wrap">
+    <div class="sum" id="pubsum"></div>
+    <button class="btn ghost sm" style="border-color:rgba(255,255,255,.4);color:#fff" onclick="revertAll()">Discard all</button>
+    <button class="btn" onclick="openReview()">Review &amp; publish ›</button>
+  </div>
+</div>
+
+<!-- review / publish dialog -->
+<dialog id="review">
+  <div class="dbody">
+    <h2>Review changes</h2>
+    <p class="muted">This is everything that will change. Publishing puts it on a <b>preview branch</b> — the live site only changes after you check the preview and merge.</p>
+    <div class="chg-list" id="chglist"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.1rem">
+      <div><label>Branch</label><input type="text" id="branch"></div>
+      <div><label>Commit message</label><input type="text" id="commitmsg" value="Photo updates via photo editor"></div>
+    </div>
+    <div style="display:flex;gap:.6rem;margin-top:1.1rem;flex-wrap:wrap">
+      <button class="btn" id="gobtn" onclick="publish()">Publish to preview branch</button>
+      <button class="btn ghost" onclick="document.getElementById('review').close()">Back</button>
+    </div>
+    <div class="log" id="publog" style="margin-top:1rem;display:none"></div>
+  </div>
+</dialog>
+
+<dialog id="settings">
+  <div class="dbody">
+    <h2>Settings</h2>
+    <p class="muted">Stored only in this browser (localStorage), never committed anywhere. Same token the Inventory Builder uses.</p>
+    <div style="margin-top:.9rem"><label>GitHub fine-grained token (repo: aphelps099/jjriggs-new, Contents: read/write)</label><input type="password" id="ghtoken"></div>
+    <div style="margin-top:1.1rem;display:flex;gap:.6rem">
+      <button class="btn sm" onclick="saveSettings()">Save</button>
+      <button class="btn ghost sm" onclick="document.getElementById('settings').close()">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- live site data — the current truth we edit against -->
+<script src="/js/tym-models.data.js"></script>
+<script src="/js/badboy-models.data.js"></script>
+<script src="/js/mower-models.data.js"></script>
+<script src="/implements-data.js"></script>
+<script src="/js/badboy-tractor-images.data.js"></script>
+<script src="/js/uploads-gallery.data.js"></script>
+<script src="/js/tractor-features.data.js"></script>
+<script src="/js/mower-features.data.js"></script>
+
+<script>
+'use strict';
+const OWNER='aphelps099', REPO='jjriggs-new', BASE_BRANCH='main';
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const slugify=s=>String(s).toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+// display src: repo-relative paths need a leading / because this page lives at /admin/photos/
+const disp=p=>!p?'':(/^(https?:|data:)/.test(p)?p:'/'+p);
+
+/* ---------- what the current uploads-gallery file holds (merge target on publish) ---------- */
+window.UPLOADS_CURRENT={};
+fetch('/js/uploads-gallery.data.js').then(r=>r.text()).then(t=>{
+  const m=t.match(/Object\.assign\(window\.TRACTOR_GALLERY\|\|\{\},\s*(\{[\s\S]*\})\)/);
+  if(m){try{window.UPLOADS_CURRENT=JSON.parse(m[1]);}catch(e){}}
+}).catch(()=>{});
+
+/* ---------- product catalog (kinds mirror how the live pages read data) ---------- */
+const KINDS={
+  tym:{label:'TYM Tractors',arr:()=>window.TYM_MODELS||[],imgField:'image',file:'js/tym-models.data.js',global:'TYM_MODELS',
+    galKey:m=>'TYM|'+m.model,name:m=>m.model,sub:m=>(m.hp?m.hp+' HP · ':'')+(m.cab?'Cab':'Open Station'),
+    live:m=>'/product.html?type=tractor&b=TYM&m='+encodeURIComponent(m.model)},
+  badboy:{label:'Bad Boy Tractors',arr:()=>window.BADBOY_MODELS||[],imgField:'image',file:'js/badboy-models.data.js',global:'BADBOY_MODELS',
+    galKey:m=>'Bad Boy|'+m.model,name:m=>m.model,sub:m=>(m.hp?m.hp+' HP · ':'')+(m.cab?'Cab':'Open Station'),
+    live:m=>'/product.html?type=tractor&b=Bad%20Boy&m='+encodeURIComponent(m.model)},
+  mowers:{label:'Bad Boy Mowers',arr:()=>window.MOWER_MODELS||[],imgField:'image',file:'js/mower-models.data.js',global:'MOWER_MODELS',
+    galKey:null,name:m=>m.model,sub:m=>[m.cat,m.type].filter(Boolean).join(' '),
+    live:m=>'/product.html?type=mower&m='+encodeURIComponent(m.model)},
+  implements:{label:'Implements',arr:()=>window.JJ_IMPLEMENTS||[],imgField:'img',file:'implements-data.js',global:'JJ_IMPLEMENTS',
+    galKey:null,name:m=>m.name,sub:m=>m.category,
+    live:m=>'/implements/'+slugify(m.category)+'/'}
+};
+const GA=()=>window.TRACTOR_GALLERY||{};
+
+/* ---------- state ----------
+   W[id]  working copy  {main, gallery:[...], removed:[{src,from}]}
+   B[id]  baseline snapshot (what the site has now) for change detection
+   NEW    repo path -> {b64, dataURL}   photos added this session          */
+const W={}, B={}, NEW={};
+let CUR=null, seq=0;
+const pid=(kind,i)=>kind+':'+i;
+const model=id=>{const[k,i]=id.split(':');return KINDS[k].arr()[+i];};
+const kindOf=id=>id.split(':')[0];
+const hasGallery=id=>!!KINDS[kindOf(id)].galKey;
+
+function baseline(id){
+  const k=KINDS[kindOf(id)],m=model(id);
+  const main=m[k.imgField]||null;
+  // gallery as the live page computes it (deduped, main excluded — page prepends main itself)
+  let gal=[];
+  if(k.galKey){gal=(GA()[k.galKey(m)]||[]).filter((u,i,a)=>u&&u!==main&&a.indexOf(u)===i);}
+  return{main,gallery:gal};
+}
+function ensure(id){
+  if(!W[id]){const b=baseline(id);B[id]={main:b.main,gallery:b.gallery.slice()};W[id]={main:b.main,gallery:b.gallery.slice(),removed:[]};}
+  return W[id];
+}
+function isDirty(id){
+  if(!W[id])return false;
+  return W[id].main!==B[id].main||JSON.stringify(W[id].gallery)!==JSON.stringify(B[id].gallery);
+}
+const dirtyIds=()=>Object.keys(W).filter(isDirty);
+
+/* ---------- sidebar ---------- */
+function renderList(){
+  const q=(document.getElementById('q').value||'').toLowerCase().trim();
+  const el=document.getElementById('prodlist');let html='';
+  for(const[kind,k]of Object.entries(KINDS)){
+    const items=k.arr().map((m,i)=>({m,i}))
+      .filter(({m})=>!q||(k.name(m)+' '+(k.sub(m)||'')+' '+(m.brand||'')).toLowerCase().includes(q));
+    if(!items.length)continue;
+    html+='<div class="ghead">'+esc(k.label)+'</div>'+items.map(({m,i})=>{
+      const id=pid(kind,i),st=W[id]||baseline(id);
+      const n=(st.main?1:0)+(st.gallery?st.gallery.length:(hasGallery(id)?baseline(id).gallery.length:0));
+      const th=st.main?'<img src="'+esc(disp(NEW[st.main]?NEW[st.main].dataURL:st.main))+'" alt="" loading="lazy">':'no photo';
+      return '<button class="prod'+(CUR===id?' on':'')+(isDirty(id)?' edited':'')+'" onclick="openProduct(\''+id+'\')">'
+        +'<span class="th">'+th+'</span><span class="nm"><b>'+esc(k.name(m))+'</b><small>'+esc(k.sub(m)||'')+'</small></span>'
+        +'<span class="ct">'+n+' 📷</span><span class="dirty" title="edited"></span></button>';
+    }).join('');
+  }
+  el.innerHTML=html||'<p class="muted" style="padding:1rem">No products match.</p>';
+}
+document.getElementById('q').oninput=renderList;
+
+/* ---------- editor pane ---------- */
+function openProduct(id){CUR=id;ensure(id);renderPane();renderList();}
+function imgTag(src){const n=NEW[src];return '<img src="'+esc(n?n.dataURL:disp(src))+'" alt="">';}
+
+function renderPane(){
+  const id=CUR;if(!id)return;
+  const k=KINDS[kindOf(id)],m=model(id),w=W[id];
+  const galHtml=w.gallery.map((src,i)=>
+    '<div class="gcard"><span class="im">'+imgTag(src)+'</span><span class="num">'+(i+2)+'</span>'+(NEW[src]?'<span class="new">new</span>':'')
+    +'<div class="ops">'
+    +'<button title="Make this the main photo" onclick="makeMain('+i+')">★</button>'
+    +'<button title="Move earlier" onclick="move('+i+',-1)" '+(i===0?'disabled':'')+'>‹</button>'
+    +'<button title="Move later" onclick="move('+i+',1)" '+(i===w.gallery.length-1?'disabled':'')+'>›</button>'
+    +'<button class="del" title="Remove from this page" onclick="removeImg('+i+')">✕</button>'
+    +'</div></div>').join('');
+
+  const removedHtml=w.removed.length?'<div class="removedbar"><b style="font-size:.9rem">Removed this session</b> <span class="muted">— gone from the page when you publish. Change your mind?</span>'
+    +'<div class="rm-strip">'+w.removed.map((r,i)=>'<span class="rm-chip">'+imgTag(r.src)+'<button onclick="restoreImg('+i+')">Restore</button></span>').join('')+'</div></div>':'';
+
+  // the live page pads galleries under 3 photos with feature-section images — warn so deletions aren't confusing
+  let padNote='';
+  const total=(w.main?1:0)+w.gallery.length;
+  if(total<3){
+    const FE=kindOf(id)==='mowers'?(window.MOWER_FEATURES||{})[m.model]:(k.galKey?(window.TRACTOR_FEATURES||{})[k.galKey(m)]:null);
+    if(FE&&FE.items&&FE.items.some(it=>it.image))
+      padNote='<div class="note">Heads up: with fewer than 3 photos, the live page automatically adds photos from the Features section below the gallery. Removing photos here won\'t leave the page empty.</div>';
+    else if(total===0)
+      padNote='<div class="note">No photos left — the page will show the “Photo coming to the lot” placeholder with the phone number. That\'s always better than a wrong photo.</div>';
+  }
+
+  const mainInner=w.main
+    ?'<span class="tag">Main photo</span>'+imgTag(w.main)
+    :'<div class="none"><b>No main photo</b><br>Add one below'+(w.gallery.length?' or ★ star a gallery photo':'')+'</div>';
+
+  document.getElementById('pane').innerHTML=
+   '<div class="phead"><div><div class="kind">'+esc(k.label)+(m.brand&&kindOf(id)==='implements'?' · '+esc(m.brand):'')+'</div><h1>'+esc(k.name(m))+'</h1></div>'
+   +'<div class="grow"></div>'
+   +(isDirty(id)?'<button class="btn ghost sm" onclick="revertProduct(\''+id+'\')">↩ Undo my changes</button>':'')
+   +'<a class="btn ghost sm" href="'+esc(k.live(m))+'" target="_blank" rel="noopener">See live page ↗</a></div>'
+
+   +'<div class="card"><h2>Main photo</h2>'
+   +'<p class="muted">This is the first photo customers see'+(hasGallery(id)?'':' — this page shows one photo')+'. To swap it, star (★) a gallery photo or drop a replacement below.</p>'
+   +'<div class="mainbox" style="margin-top:.9rem"><div class="mainimg">'+mainInner+'</div>'
+   +'<div><div class="dropzone" id="dz"><b>+</b><span><b style="font-size:1rem;color:var(--ink)">Add photos</b> — drop them here or click</span>'
+   +'<span class="muted">'+(hasGallery(id)?'First photo added becomes the main photo if there isn\'t one; the rest join the gallery.':'One photo per '+(kindOf(id)==='mowers'?'mower':'implement')+' — a new photo replaces the current one.')+' Photos are resized automatically. Only use shots of <b>this exact model &amp; configuration</b>.</span></div>'
+   +(w.main?'<div style="margin-top:.7rem"><button class="btn ghost sm" onclick="removeMain()">✕ Remove main photo</button></div>':'')
+   +'</div></div>'
+   +(hasGallery(id)
+      ?'<h2 style="margin-top:1.4rem">Gallery <span class="muted" style="font-family:Questrial;font-size:.85rem;text-transform:none;letter-spacing:0">— shown in this order after the main photo</span></h2>'
+        +(w.gallery.length?'<div class="gal-grid">'+galHtml+'</div>':'<p class="muted" style="margin-top:.5rem">No gallery photos yet — add some above.</p>')
+      :'')
+   +padNote+removedHtml+'</div>';
+
+  wireDropzone();
+  updatePubbar();
+}
+
+/* ---------- photo ops (all undoable until publish) ---------- */
+function makeMain(i){const w=W[CUR];const nw=w.gallery.splice(i,1)[0];if(w.main)w.gallery.splice(i,0,w.main);w.main=nw;renderPane();renderList();}
+function move(i,d){const w=W[CUR];const j=i+d;if(j<0||j>=w.gallery.length)return;const t=w.gallery[i];w.gallery[i]=w.gallery[j];w.gallery[j]=t;renderPane();}
+function removeImg(i){const w=W[CUR];const src=w.gallery.splice(i,1)[0];w.removed.push({src,from:'gallery'});renderPane();renderList();}
+function removeMain(){const w=W[CUR];if(!w.main)return;w.removed.push({src:w.main,from:'main'});w.main=w.gallery.shift()||null;renderPane();renderList();}
+function restoreImg(i){const w=W[CUR];const r=w.removed.splice(i,1)[0];
+  if(r.from==='main'&&!w.main)w.main=r.src;
+  else if(hasGallery(CUR))w.gallery.push(r.src);
+  else if(!w.main)w.main=r.src;
+  else w.removed.splice(i,0,r); // nowhere to put it back (single-photo page already has one)
+  renderPane();renderList();}
+function revertProduct(id){delete W[id];delete B[id];ensure(id);if(CUR===id)renderPane();renderList();updatePubbar();}
+function revertAll(){if(!confirm('Throw away every unpublished change?'))return;for(const id of Object.keys(W)){delete W[id];delete B[id];}for(const p of Object.keys(NEW))delete NEW[p];if(CUR){ensure(CUR);renderPane();}renderList();updatePubbar();}
+
+/* ---------- add photos (browser-side resize, same as the builder) ---------- */
+function resizeImage(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{
+  const MAX=1400;const sc=Math.min(1,MAX/Math.max(img.width,img.height));
+  const c=document.createElement('canvas');c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',0.85));};
+  img.onerror=rej;img.src=r.result;};r.readAsDataURL(file);});}
+function wireDropzone(){
+  const el=document.getElementById('dz');if(!el)return;
+  el.onclick=()=>{const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.multiple=hasGallery(CUR);inp.onchange=()=>addFiles(inp.files);inp.click();};
+  el.ondragover=e=>{e.preventDefault();el.classList.add('over');};
+  el.ondragleave=()=>el.classList.remove('over');
+  el.ondrop=e=>{e.preventDefault();el.classList.remove('over');addFiles(e.dataTransfer.files);};
+}
+async function addFiles(files){
+  const id=CUR,w=W[id],k=KINDS[kindOf(id)],m=model(id);
+  let list=[...files].filter(f=>/^image\//.test(f.type));
+  if(!list.length)return;
+  if(!hasGallery(id)&&list.length>1){alert('This page shows a single photo — using the first one you dropped.');list=list.slice(0,1);}
+  for(const f of list){
+    const dataURL=await resizeImage(f);
+    const base=kindOf(id)==='implements'?slugify(m.name):slugify((kindOf(id)==='mowers'?'bad-boy-':'')+m.model);
+    const path='img/uploads/'+base+'-'+Date.now().toString(36)+(seq++)+'.jpg';
+    NEW[path]={b64:dataURL.split(',')[1],dataURL};
+    if(!hasGallery(id)){if(w.main)w.removed.push({src:w.main,from:'main'});w.main=path;}
+    else if(!w.main)w.main=path;
+    else w.gallery.push(path);
+  }
+  renderPane();renderList();
+}
+
+/* ---------- change summary + publish bar ---------- */
+function describe(id){
+  const w=W[id],b=B[id],k=KINDS[kindOf(id)],m=model(id),bits=[];
+  const cur=new Set([w.main,...w.gallery].filter(Boolean)),base=new Set([b.main,...b.gallery].filter(Boolean));
+  const added=[...cur].filter(x=>!base.has(x)).length,removed=[...base].filter(x=>!cur.has(x)).length;
+  if(w.main!==b.main)bits.push('new main photo');
+  if(added)bits.push(added+' photo'+(added>1?'s':'')+' added');
+  if(removed)bits.push(removed+' removed');
+  if(!added&&!removed&&w.main===b.main)bits.push('order changed');
+  else if(hasGallery(id)&&JSON.stringify(w.gallery.filter(x=>base.has(x)))!==JSON.stringify(b.gallery.filter(x=>cur.has(x))))bits.push('order changed');
+  return{label:(kindOf(id)==='implements'?m.category+' — ':'')+k.name(m),text:bits.join(', ')};
+}
+function updatePubbar(){
+  const ids=dirtyIds();
+  document.getElementById('pubbar').classList.toggle('on',ids.length>0);
+  if(ids.length){
+    const nNew=Object.keys(NEW).filter(p=>referenced(p)).length;
+    document.getElementById('pubsum').innerHTML='<b>'+ids.length+' product'+(ids.length>1?'s':'')+'</b> edited'+(nNew?' · '+nNew+' new photo'+(nNew>1?'s':''):'')+' — nothing is live yet';
+  }
+}
+// is a path used anywhere in the final (post-edit) state of the whole site?
+function referenced(path){
+  for(const[kind,k]of Object.entries(KINDS)){
+    const arr=k.arr();
+    for(let i=0;i<arr.length;i++){
+      const id=pid(kind,i);
+      const st=W[id]||null;
+      const main=st?st.main:arr[i][k.imgField];
+      if(main===path)return true;
+      if(k.galKey){
+        const gal=st?st.gallery:(GA()[k.galKey(arr[i])]||[]);
+        if(gal.includes(path))return true;
+      }
+    }
+  }
+  return false;
+}
+
+/* ---------- generate files ---------- */
+function genFiles(){
+  const files={};
+  const touched={tym:false,badboy:false,mowers:false,implements:false};
+  const galleryOverrides={};
+  for(const id of dirtyIds()){
+    const kind=kindOf(id),k=KINDS[kind],w=W[id];
+    if(w.main!==B[id].main)touched[kind]=true;
+    if(k.galKey&&JSON.stringify(w.gallery)!==JSON.stringify(B[id].gallery))
+      galleryOverrides[k.galKey(model(id))]=w.gallery.slice();
+  }
+  const withEdits=kind=>{
+    const k=KINDS[kind];
+    return k.arr().map((m,i)=>{
+      const id=pid(kind,i);if(!W[id])return m;
+      const c={...m};
+      if(W[id].main)c[k.imgField]=W[id].main;else delete c[k.imgField];
+      return c;
+    });
+  };
+  if(touched.tym)files['js/tym-models.data.js']='window.TYM_MODELS='+JSON.stringify(withEdits('tym'))+';';
+  if(touched.badboy)files['js/badboy-models.data.js']='window.BADBOY_MODELS='+JSON.stringify(withEdits('badboy'))+';';
+  if(touched.mowers)files['js/mower-models.data.js']='window.MOWER_MODELS='+JSON.stringify(withEdits('mowers'))+';';
+  if(touched.implements){
+    const impl=withEdits('implements');
+    const counts={};impl.forEach(i=>counts[i.category]=(counts[i.category]||0)+1);
+    const cats=(window.JJ_CATEGORIES||[]).map(c=>({...c,count:counts[c.category]||0}));
+    files['implements-data.js']='window.JJ_IMPLEMENTS='+JSON.stringify(impl)+';\n'
+      +'window.JJ_CATEGORIES='+JSON.stringify(cats)+';\n'
+      +'window.JJ_GROUP_ORDER='+JSON.stringify(window.JJ_GROUP_ORDER||[])+';';
+  }
+  if(Object.keys(galleryOverrides).length){
+    files['js/uploads-gallery.data.js']='// Gallery entries managed by /admin/photos/ (and the /admin/ builder photo upload).\n'
+      +'// Loads AFTER js/badboy-tractor-images.data.js, so a key here OVERRIDES that\n'
+      +'// model\'s hand-maintained gallery — never edit that file from admin tools.\n'
+      +'window.TRACTOR_GALLERY=Object.assign(window.TRACTOR_GALLERY||{}, '
+      +JSON.stringify({...(window.UPLOADS_CURRENT||{}),...galleryOverrides})+');';
+  }
+  // photos to upload: new files still referenced after all edits
+  const uploads={};for(const[p,v]of Object.entries(NEW))if(referenced(p))uploads[p]=v.b64;
+  // photos to delete from the repo: session-removed img/uploads/* files nothing references anymore
+  const dels=new Set();
+  for(const id of dirtyIds())for(const r of W[id].removed)
+    if(r.src&&r.src.startsWith('img/uploads/')&&!NEW[r.src]&&!referenced(r.src))dels.add(r.src);
+  return{files,uploads,deletions:[...dels]};
+}
+
+/* ---------- review dialog ---------- */
+function openReview(){
+  const ids=dirtyIds();if(!ids.length)return;
+  const g=genFiles();
+  document.getElementById('chglist').innerHTML=
+    ids.map(id=>{const d=describe(id);return '<div class="row"><b>'+esc(d.label)+'</b><span>'+esc(d.text)+'</span></div>';}).join('')
+    +'<div class="row"><b>Files</b><span class="muted">'+Object.keys(g.files).map(esc).join(' · ')
+    +(Object.keys(g.uploads).length?' · '+Object.keys(g.uploads).length+' photo upload'+(Object.keys(g.uploads).length>1?'s':''):'')
+    +(g.deletions.length?' · '+g.deletions.length+' unused upload file'+(g.deletions.length>1?'s':'')+' deleted':'')+'</span></div>';
+  document.getElementById('branch').value='builder/photos-'+new Date().toISOString().slice(0,10);
+  document.getElementById('publog').style.display='none';
+  document.getElementById('gobtn').disabled=false;
+  document.getElementById('review').showModal();
+}
+
+/* ---------- publish (same GitHub flow as the builder) ---------- */
+async function gh(path,opts={}){
+  const t=localStorage.getItem('jj_ghtoken');if(!t)throw new Error('Add your GitHub token in Settings (⚙, top right) first');
+  const r=await fetch('https://api.github.com/repos/'+OWNER+'/'+REPO+path,{...opts,headers:{
+    'Authorization':'Bearer '+t,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(opts.headers||{})}});
+  const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(path+' → '+r.status+' '+(j.message||''));return j;
+}
+async function publish(){
+  const log=document.getElementById('publog');log.style.display='block';log.textContent='';
+  const say=s=>{log.textContent+=s+'\n';log.scrollTop=1e9;};
+  const btn=document.getElementById('gobtn');btn.disabled=true;
+  try{
+    const branch=document.getElementById('branch').value.trim();
+    const msg=document.getElementById('commitmsg').value.trim()||'Photo updates via photo editor';
+    const{files,uploads,deletions}=genFiles();
+    say('base: '+BASE_BRANCH+' → branch: '+branch);
+    const ref=await gh('/git/ref/heads/'+BASE_BRANCH);
+    try{await gh('/git/refs',{method:'POST',body:JSON.stringify({ref:'refs/heads/'+branch,sha:ref.object.sha})});say('branch created');}
+    catch(e){say('branch exists — updating it');}
+    for(const[path,b64]of Object.entries(uploads)){
+      let sha;try{sha=(await gh('/contents/'+path+'?ref='+branch)).sha;}catch(e){}
+      await gh('/contents/'+path,{method:'PUT',body:JSON.stringify({message:msg+' — photo '+path,branch,content:b64,...(sha?{sha}:{})})});
+      say('uploaded '+path);
+    }
+    for(const[path,content]of Object.entries(files)){
+      let sha;try{sha=(await gh('/contents/'+path+'?ref='+branch)).sha;}catch(e){}
+      await gh('/contents/'+path,{method:'PUT',body:JSON.stringify({message:msg+' — '+path,branch,
+        content:btoa(unescape(encodeURIComponent(content))),...(sha?{sha}:{})})});
+      say('committed '+path);
+    }
+    for(const path of deletions){
+      try{const cur=await gh('/contents/'+path+'?ref='+branch);
+        await gh('/contents/'+path,{method:'DELETE',body:JSON.stringify({message:msg+' — remove unused '+path,branch,sha:cur.sha})});
+        say('deleted '+path);
+      }catch(e){say('skip delete '+path+' ('+e.message+')');}
+    }
+    say('\n✓ Published to the preview branch.');
+    say('Preview (after Cloudflare builds): https://'+branch.replace(/[^a-z0-9-]/g,'-')+'.jjriggs-new.pages.dev');
+    say('Open a PR to make it live: https://github.com/'+OWNER+'/'+REPO+'/compare/'+BASE_BRANCH+'...'+encodeURIComponent(branch)+'?expand=1');
+    say('\nThis editor still shows the site as it is today — reload the page after the PR merges.');
+  }catch(e){say('ERROR: '+e.message);btn.disabled=false;}
+}
+
+/* ---------- settings ---------- */
+function loadSettings(){const v=localStorage.getItem('jj_ghtoken');if(v)document.getElementById('ghtoken').value=v;}
+function saveSettings(){localStorage.setItem('jj_ghtoken',document.getElementById('ghtoken').value.trim());document.getElementById('settings').close();}
+
+/* ---------- boot ---------- */
+loadSettings();renderList();
+window.addEventListener('beforeunload',e=>{if(dirtyIds().length){e.preventDefault();e.returnValue='';}});
+</script>
+</body>
+</html>
