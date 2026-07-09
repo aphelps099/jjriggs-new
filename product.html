@@ -414,7 +414,7 @@ main .sec{max-width:920px}
   /* admin-only edit pencil: appears when this browser has used the admin
      tools (GitHub token in localStorage) — customers never see it */
   try{
-    if(localStorage.getItem('jj_ghtoken')){
+    if(localStorage.getItem('jj_ghtoken')||localStorage.getItem('jj_admin')){
       var kind=p.type==='Mower'?'mowers':(p.brand==='TYM'?'tym':'badboy');
       var pen=document.createElement('a');
       pen.href='/admin/photos/?open='+encodeURIComponent(kind+'|'+p.model);

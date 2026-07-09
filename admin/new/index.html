@@ -17,6 +17,8 @@ header.bar .wrap{display:flex;align-items:center;justify-content:space-between;g
 header.bar .t{font-family:"Michroma",sans-serif;font-size:1.05rem}
 header.bar .t small{display:block;font-family:"Questrial";color:var(--steel);font-size:.8rem;letter-spacing:.05em}
 header.bar a{color:#fff}
+header.bar .btn.ghost{border-color:rgba(255,255,255,.45);color:#fff}
+header.bar .btn.ghost:hover{background:#fff;color:var(--ink)}
 h2{font-family:"Michroma",sans-serif;font-size:1.1rem;margin-bottom:.6rem}
 h2 .n{display:inline-flex;width:1.7em;height:1.7em;align-items:center;justify-content:center;background:var(--red);color:#fff;border-radius:50%;font-size:.85rem;margin-right:.55rem;vertical-align:middle}
 .card{background:#fff;border:1px solid #d9d5c8;border-top:4px solid var(--red);padding:1.3rem 1.4rem;margin-bottom:1.3rem}
@@ -132,7 +134,7 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
 
 <dialog id="settings">
   <h2>Settings &amp; keys</h2>
-  <p class="muted">Stored only in this browser (localStorage), never committed anywhere. Same keys as the Inventory Builder.</p>
+  <p class="muted"><b>Fallback only.</b> Once Aaron finishes the one-time server setup (ADMIN-ACCESS-SETUP.md), these stay empty — the site holds the keys and nobody pastes anything. If you do use them: stored only in this browser (localStorage), saved per device and per web address.</p>
   <div style="margin-top:.9rem"><label>GitHub fine-grained token (repo: aphelps099/jjriggs-new, Contents: read/write)</label><input type="password" id="ghtoken"></div>
   <div style="margin-top:.9rem"><label>Anthropic API key (for the fact fetch)</label><input type="password" id="claudekey"></div>
   <div style="margin-top:.9rem"><label>Extraction model</label>
@@ -152,10 +154,11 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
 <script src="/js/badboy-models.data.js"></script>
 <script src="/js/mower-models.data.js"></script>
 <script src="/implements-data.js"></script>
+<script src="/admin/common.js"></script>
 
 <script>
 'use strict';
-const OWNER='aphelps099', REPO='jjriggs-new', BASE_BRANCH='main';
+const OWNER=JJ.OWNER, REPO=JJ.REPO, BASE_BRANCH=JJ.BASE_BRANCH;
 const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const slugify=s=>String(s).toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 
@@ -230,8 +233,12 @@ function checkDup(){
   if(!S.kind)return;
   const v=(document.getElementById('model').value||'').trim().toLowerCase();if(!v)return;
   const k=KINDMETA[S.kind];
-  const hit=k.arr().find(m=>String(m.model||m.name||'').toLowerCase()===v);
-  if(hit)el.innerHTML='<span class="pill warn">Already on the site</span> <span class="muted">“'+esc(hit.model||hit.name)+'” exists — to change its photos use the <a href="/admin/photos/">Photo editor</a>; to change its specs use the sheet + <a href="/admin/">builder</a>.</span>';
+  const names=m=>String(m.model||m.name||'').toLowerCase();
+  const hit=k.arr().find(m=>names(m)===v);
+  if(hit){el.innerHTML='<span class="pill warn">Already on the site</span> <span class="muted">“'+esc(hit.model||hit.name)+'” exists — to change its photos use the <a href="/admin/photos/">Photo editor</a>; to change its specs use the sheet + <a href="/admin/">builder</a>.</span>';return;}
+  // near-miss: "4025" when the site has "4025H" (or vice versa) is usually the SAME machine
+  const near=v.length>=3?k.arr().filter(m=>names(m).includes(v)||v.includes(names(m))).slice(0,4):[];
+  if(near.length)el.innerHTML='<span class="pill warn">Similar model already on the site</span> <span class="muted">'+near.map(m=>'“'+esc(m.model||m.name)+'”').join(', ')+' — make sure this isn\'t the same machine under a slightly different name. One tractor must never have two pages.</span>';
 }
 
 async function fetchAndExtract(){
@@ -240,8 +247,9 @@ async function fetchAndExtract(){
   const model=(document.getElementById('model').value||'').trim();
   const url=(document.getElementById('murl').value||'').trim();
   if(!model||!url){st.innerHTML='<span class="pill err">Model name and manufacturer URL are both required</span>';return;}
-  const key=localStorage.getItem('jj_claudekey');
-  if(!key){st.innerHTML='<span class="pill err">Add your Anthropic API key in Settings (⚙) first</span>';return;}
+  const srv=await JJ.status();
+  if(!srv.extract&&!localStorage.getItem('jj_claudekey')){
+    st.innerHTML='<span class="pill err">'+esc(JJ.explain(new Error('NEEDS_KEY')))+'</span>';return;}
 
   document.getElementById('fetchBtn').disabled=true;
   st.textContent='Fetching '+url+' …';
@@ -255,11 +263,9 @@ async function fetchAndExtract(){
   const flds=FIELDS[S.kind].map(x=>x.f);
   const claudemodel=localStorage.getItem('jj_claudemodel')||'claude-sonnet-5';
   const imgList=(page.images||[]).slice(0,50).map((im,i)=>i+': '+im.src+(im.alt?' | alt: '+im.alt:'')).join('\n');
-  let res;
+  let data;
   try{
-    res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{
-      'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:claudemodel,max_tokens:1600,messages:[{role:'user',content:
+    data=await JJ.extract({model:claudemodel,max_tokens:1600,messages:[{role:'user',content:
 `You are filling a dealer-site product template for the ${KINDMETA[S.kind].label} "${model}" from its manufacturer page. Return ONLY JSON:
 {"fields":{...}, "suggested_images":[{"i":<index>,"why":"..."}]}
 
@@ -272,9 +278,8 @@ PAGE TITLE: ${page.title}
 IMAGE CANDIDATES:
 ${imgList}
 PAGE TEXT:
-${(page.text||'').slice(0,20000)}`}]})});
-  }catch(e){st.innerHTML='<span class="pill err">Claude request failed: '+esc(e)+'</span>';document.getElementById('fetchBtn').disabled=false;return;}
-  const data=await res.json();
+${(page.text||'').slice(0,20000)}`}]});
+  }catch(e){st.innerHTML='<span class="pill err">Claude request failed: '+esc(JJ.explain(e))+'</span>';document.getElementById('fetchBtn').disabled=false;return;}
   if(data.error){st.innerHTML='<span class="pill err">Claude: '+esc(data.error.message||JSON.stringify(data.error))+'</span>';document.getElementById('fetchBtn').disabled=false;return;}
   let out={};
   try{out=JSON.parse((data.content[0].text.match(/\{[\s\S]*\}/)||['{}'])[0]);}
@@ -409,13 +414,7 @@ function sheetRowFor(item){
   return['Active',g(item.group),g(item.category),item.name,'',g(item.brand),g(item.attach),g(item.hitch),g(item.duty),g(item.width),g(item.widthIn),g(item.weight),g(item.hpMin),g(item.hpMax),g(item.price),g(item.img),'',g(item.fitNote),g(item.sku),''].join('\t');
 }
 
-/* ---------- publish ---------- */
-async function gh(path,opts={}){
-  const t=localStorage.getItem('jj_ghtoken');if(!t)throw new Error('Add your GitHub token in Settings (⚙) first');
-  const r=await fetch('https://api.github.com/repos/'+OWNER+'/'+REPO+path,{...opts,headers:{
-    'Authorization':'Bearer '+t,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(opts.headers||{})}});
-  const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(path+' → '+r.status+' '+(j.message||''));return j;
-}
+/* ---------- publish (server-first via /api/admin/publish, legacy fallback) ---------- */
 async function publish(){
   const log=document.getElementById('publog');log.style.display='block';log.textContent='';
   const say=s=>{log.textContent+=s+'\n';log.scrollTop=1e9;};
@@ -455,20 +454,8 @@ async function publish(){
         +'window.TRACTOR_GALLERY=Object.assign(window.TRACTOR_GALLERY||{}, '+JSON.stringify(cur)+');';
     }
 
-    say('base: '+BASE_BRANCH+' → branch: '+branch);
-    const ref=await gh('/git/ref/heads/'+BASE_BRANCH);
-    try{await gh('/git/refs',{method:'POST',body:JSON.stringify({ref:'refs/heads/'+branch,sha:ref.object.sha})});say('branch created');}
-    catch(e){say('branch exists — updating it');}
-    for(let i=0;i<paths.length;i++){
-      await gh('/contents/'+paths[i],{method:'PUT',body:JSON.stringify({message:msg+' — photo',branch,content:S.photoData[srcs[i]].split(',')[1]})});
-      say('uploaded '+paths[i]);
-    }
-    for(const[path,content]of Object.entries(files)){
-      let sha;try{sha=(await gh('/contents/'+path+'?ref='+branch)).sha;}catch(e){}
-      await gh('/contents/'+path,{method:'PUT',body:JSON.stringify({message:msg+' — '+path,branch,
-        content:btoa(unescape(encodeURIComponent(content))),...(sha?{sha}:{})})});
-      say('committed '+path);
-    }
+    const photos={};paths.forEach((p,i)=>{photos[p]=S.photoData[srcs[i]].split(',')[1];});
+    await JJ.publish({branch,message:msg,files,photos},say);
     say('\n✓ Published. The regenerate Action is rebuilding pages now.');
     say('Preview (after Cloudflare builds): https://'+branch.replace(/[^a-z0-9-]/g,'-')+'.jjriggs-new.pages.dev');
     say('Open a PR: https://github.com/'+OWNER+'/'+REPO+'/compare/'+BASE_BRANCH+'...'+encodeURIComponent(branch)+'?expand=1');
@@ -477,7 +464,7 @@ async function publish(){
       +'<p class="muted" style="margin:.3rem 0 .6rem">Copy this row and paste it into the <b>'+(S.kind==='mowers'?'Mowers':S.kind==='implements'?'Implements':'Tractors')+'</b> tab of the JJ Riggs Inventory Master sheet (click the first empty row, then paste — the tabs line up with the columns). Skip this and the next sheet import will think this product was removed.</p>'
       +'<textarea readonly id="tsv">'+esc(sheetRowFor(item))+'</textarea>'
       +'<button class="btn sm" style="margin-top:.5rem" onclick="navigator.clipboard.writeText(document.getElementById(\'tsv\').value).then(()=>this.textContent=\'✓ Copied\')">Copy row for the sheet</button></div>';
-  }catch(e){say('ERROR: '+e.message);btn.disabled=false;}
+  }catch(e){say('ERROR: '+JJ.explain(e));btn.disabled=false;}
 }
 
 /* ---------- misc ---------- */
