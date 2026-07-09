@@ -44,6 +44,12 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 @media(max-width:760px){.ch-photo{display:none}}
 
 /* BODY */
+/* browse-by-category strip (links to the static category pages) */
+.cat-strip{background:var(--bone);color:var(--ink);padding:clamp(1.4rem,3vw,2rem) 0 0}
+.cat-strip .cs-label{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:#9a948a;font-weight:600;margin-bottom:.6rem}
+.cat-chips{display:flex;gap:.55rem;flex-wrap:wrap}
+.cat-chip{display:inline-block;border:1.5px solid rgba(20,23,26,.3);color:var(--ink);padding:.5rem .95rem;font-size:.9rem;background:#fff}
+.cat-chip:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
 .imp-body{background:var(--bone);color:var(--ink);padding:clamp(1.8rem,3.5vw,2.6rem) 0 clamp(2.4rem,5vw,3.6rem)}
 
 /* BRAND FILTER — inline logo toggles */
@@ -123,6 +129,13 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
       <span class="cut-tab">Equipment · Implements</span>
       <h1>Implements</h1>
       <p class="lead">Attachments for every job. Front-mount fits all tractors; 3-point comes in Cat 1 &amp; Cat 2.</p>
+    </div>
+  </section>
+
+  <section class="cat-strip" aria-label="Browse implements by category">
+    <div class="wrap">
+      <div class="cs-label">Browse by category</div>
+      <div class="cat-chips" id="catStrip"></div>
     </div>
   </section>
 
@@ -298,6 +311,15 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
   }
 
   chips();jchips();render();
+})();
+</script>
+<script>
+(function(){/* category strip -> static category pages */
+  var slug=function(s){return String(s).toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');};
+  var el=document.getElementById('catStrip');if(!el)return;
+  el.innerHTML=(window.JJ_CATEGORIES||[]).map(function(c){
+    return '<a class="cat-chip" href="implements/'+slug(c.category)+'/">'+c.category+'</a>';
+  }).join('');
 })();
 </script>
 </body>
