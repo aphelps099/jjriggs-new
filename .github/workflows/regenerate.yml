@@ -1,0 +1,37 @@
+name: Regenerate generated pages
+
+# When inventory data changes (e.g. committed by the /admin/ builder),
+# rerun the generators so category pages + sitemap stay in sync, and
+# push the results back to the same branch.
+on:
+  push:
+    paths:
+      - "js/tym-models.data.js"
+      - "js/badboy-models.data.js"
+      - "js/mower-models.data.js"
+      - "implements-data.js"
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    # avoid infinite loop when this workflow's own commit lands
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Regenerate
+        run: |
+          node tools/generate-implement-pages.mjs
+          node tools/generate-sitemap.mjs
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add implements/ sitemap.xml
+          git diff --cached --quiet || git commit -m "Regenerate category pages + sitemap from data change"
+          git push
