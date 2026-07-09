@@ -131,14 +131,17 @@ details{margin:.4rem 0}summary{cursor:pointer;font-weight:600}
   <!-- STEP 5 -->
   <section class="step" id="step-publish">
     <div class="card">
-      <h2>Publish to a preview branch</h2>
-      <p class="muted">Commits the regenerated data files to a <b>builder branch</b> on GitHub (never main). A GitHub Action then rebuilds the category pages + sitemap, Cloudflare builds a preview URL, and you merge only when it looks right. Needs your GitHub token in Settings.</p>
-      <div class="grid2" style="margin:.9rem 0">
-        <div><label>Branch name</label><input type="text" id="branch" value=""></div>
-        <div><label>Commit message</label><input type="text" id="commitmsg" value="Inventory update via builder"></div>
-      </div>
-      <div id="filelist" class="muted"></div>
-      <button class="btn" id="pubbtn" onclick="publish()" style="margin-top:.8rem">Publish to branch</button>
+      <h2>Publish</h2>
+      <p class="muted">Publishes the regenerated data files — <b>live on the site in about a minute</b>. The regenerate Action rebuilds category pages + sitemap automatically. Prefer to check first? Open Advanced and publish to a preview branch instead.</p>
+      <div id="filelist" class="muted" style="margin:.9rem 0 0"></div>
+      <button class="btn" id="pubbtn" onclick="publish()" style="margin-top:.8rem">Publish to the live site ›</button>
+      <details style="margin-top:1rem"><summary class="muted" style="cursor:pointer;font-size:.84rem">Advanced — make a preview instead of going live</summary>
+        <label style="display:flex;align-items:center;gap:.5rem;margin:.7rem 0 .5rem;font-size:.9rem;text-transform:none;letter-spacing:0;color:var(--ink)"><input type="checkbox" id="previewMode" style="width:auto"> Publish to a preview branch (check it, then merge to go live)</label>
+        <div class="grid2">
+          <div><label>Preview name</label><input type="text" id="branch" value=""></div>
+          <div><label>Change note</label><input type="text" id="commitmsg" value="Inventory update via builder"></div>
+        </div>
+      </details>
       <div class="log" id="publog" style="margin-top:1rem;display:none"></div>
     </div>
   </section>
@@ -340,19 +343,15 @@ async function enrich(i){
   const g=S.gaps[i];
   const srv=await JJ.status();
   if(!srv.extract&&!localStorage.getItem('jj_claudekey')){alert(JJ.explain(new Error('NEEDS_KEY')));return;}
-  const panel=document.getElementById('enrichPanel');panel.innerHTML='<p class="muted">Fetching '+esc(g.url)+' …</p>';
-  const page=await (await fetch('/api/fetch-page?url='+encodeURIComponent(g.url))).json();
-  if(page.error){panel.innerHTML='<span class="pill err">'+esc(page.error)+'</span>';return;}
-  panel.innerHTML='<p class="muted">Extracting with Claude…</p>';
-  const model=localStorage.getItem('jj_claudemodel')||'claude-sonnet-5';
-  const data=await JJ.extract({model,max_tokens:1200,messages:[{role:'user',content:
-`Extract product data for "${g.key}" from this manufacturer page text. Return ONLY JSON with these keys (null when the page does not state it — NEVER guess or infer): ${JSON.stringify(g.miss)}. Rules: verbatim values; numbers as numbers (weight lbs, widths inches, hp plain); blurb = the page's own 1-2 sentence intro, lightly trimmed; fitNote = fitment/compatibility statement if any.
-PAGE TITLE: ${page.title}
-PAGE TEXT:
-${page.text.slice(0,20000)}`}]});
-  if(data.error){panel.innerHTML='<span class="pill err">Claude: '+esc(data.error.message||JSON.stringify(data.error))+'</span>';return;}
-  const raw=(data.content&&data.content[0]&&data.content[0].text)||'';
-  let draft={};try{draft=JJ.parseJSON(raw);}catch(e){panel.innerHTML='<span class="pill err">Could not parse extraction — '+esc(e.message)+'</span><div class="log">'+esc(raw.slice(0,1800)||'(empty)')+'</div>';return;}
+  const panel=document.getElementById('enrichPanel');panel.innerHTML='<p class="muted">Reading '+esc(g.url)+' …</p>';
+  let draft={};
+  try{
+    const out=await JJ.extractProduct({
+      url:g.url, name:g.key, fields:g.miss, want_images:false,
+      model:localStorage.getItem('jj_claudemodel')||'claude-sonnet-5',
+    });
+    draft=out.fields||{};
+  }catch(e){panel.innerHTML='<span class="pill err">'+esc(JJ.explain(e))+'</span>'+(e.detail?'<div class="log" style="margin-top:.4rem">'+esc(e.detail)+'</div>':'');return;}
   panel.innerHTML='<h3 style="margin-top:1rem">'+esc(g.key)+' — review before applying <span class="pill info">source: '+esc(g.url)+'</span></h3>'+
    '<div class="kv" style="font-weight:700"><div>field</div><div>current</div><div>extracted</div><div>apply?</div></div>'+
    g.miss.map(f=>'<div class="kv"><div class="k">'+esc(f)+'</div><div class="cur">'+esc(g.obj[f]??'—')+'</div><div>'+esc(draft[f]??'(not stated on page)')+'</div>'+
@@ -460,12 +459,20 @@ async function publish(){
   const log=document.getElementById('publog');log.style.display='block';log.textContent='';
   const say=s=>{log.textContent+=s+'\n';log.scrollTop=1e9;};
   try{
+    const preview=document.getElementById('previewMode').checked;
     const branch=document.getElementById('branch').value.trim();
     const msg=document.getElementById('commitmsg').value.trim()||'Inventory update via builder';
-    await JJ.publish({branch,message:msg,files:genFiles(),photos:S.photos},say);
-    say('\n✓ Published. The regenerate Action is now rebuilding category pages.');
-    say('Preview (after Cloudflare builds): https://'+branch.replace(/[^a-z0-9-]/g,'-')+'.jjriggs-new.pages.dev');
-    say('Open a PR: https://github.com/'+OWNER+'/'+REPO+'/compare/'+BASE_BRANCH+'...'+encodeURIComponent(branch)+'?expand=1');
+    const files=genFiles();
+    await JJ.publish({target:preview?'preview':'live',branch,message:msg,files,photos:S.photos},say);
+    if(preview){
+      say('\n✓ Published to the preview branch. The regenerate Action is rebuilding category pages.');
+      say('Preview (after Cloudflare builds): https://'+branch.replace(/[^a-z0-9-]/g,'-')+'.jjriggs-new.pages.dev');
+      say('Open a PR to make it live: https://github.com/'+OWNER+'/'+REPO+'/compare/'+BASE_BRANCH+'...'+encodeURIComponent(branch)+'?expand=1');
+    }else{
+      say('\n✓ Published. The regenerate Action is rebuilding category pages.');
+      const fp=Object.keys(files)[0];
+      if(fp)await JJ.waitLive(fp,files[fp],say);
+    }
   }catch(e){say('ERROR: '+JJ.explain(e));}
 }
 const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
