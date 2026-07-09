@@ -349,10 +349,10 @@ async function enrich(i){
 `Extract product data for "${g.key}" from this manufacturer page text. Return ONLY JSON with these keys (null when the page does not state it — NEVER guess or infer): ${JSON.stringify(g.miss)}. Rules: verbatim values; numbers as numbers (weight lbs, widths inches, hp plain); blurb = the page's own 1-2 sentence intro, lightly trimmed; fitNote = fitment/compatibility statement if any.
 PAGE TITLE: ${page.title}
 PAGE TEXT:
-${page.text.slice(0,20000)}`},{role:'assistant',content:'{'}]});
+${page.text.slice(0,20000)}`}]});
   if(data.error){panel.innerHTML='<span class="pill err">Claude: '+esc(data.error.message||JSON.stringify(data.error))+'</span>';return;}
   const raw=(data.content&&data.content[0]&&data.content[0].text)||'';
-  let draft={};try{draft=JJ.parseJSON(raw,'{');}catch(e){panel.innerHTML='<span class="pill err">Could not parse extraction — '+esc(e.message)+'</span><div class="log">'+esc(raw.slice(0,1800)||'(empty)')+'</div>';return;}
+  let draft={};try{draft=JJ.parseJSON(raw);}catch(e){panel.innerHTML='<span class="pill err">Could not parse extraction — '+esc(e.message)+'</span><div class="log">'+esc(raw.slice(0,1800)||'(empty)')+'</div>';return;}
   panel.innerHTML='<h3 style="margin-top:1rem">'+esc(g.key)+' — review before applying <span class="pill info">source: '+esc(g.url)+'</span></h3>'+
    '<div class="kv" style="font-weight:700"><div>field</div><div>current</div><div>extracted</div><div>apply?</div></div>'+
    g.miss.map(f=>'<div class="kv"><div class="k">'+esc(f)+'</div><div class="cur">'+esc(g.obj[f]??'—')+'</div><div>'+esc(draft[f]??'(not stated on page)')+'</div>'+
