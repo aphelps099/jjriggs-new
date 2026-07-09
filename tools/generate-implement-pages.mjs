@@ -1,0 +1,229 @@
+#!/usr/bin/env node
+// Generates one static category page per implement category:
+//   implements/<slug>/index.html   (e.g. /implements/front-grapples/)
+// from implements-data.js — REAL products only. Missing photos render the
+// "Photo coming to the lot" placeholder; prices render "Call for price".
+// Rows are grouped into styles: a leading size token (4', 60") is stripped
+// from the name; rows sharing the remaining style name become one card
+// with a sizes table. Rerun after any implements data change:
+//   node tools/generate-implement-pages.mjs
+
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const w = {};
+new Function("window", readFileSync(join(root, "implements-data.js"), "utf8"))(w);
+const ITEMS = w.JJ_IMPLEMENTS || [];
+const CATS = w.JJ_CATEGORIES || [];
+
+const slug = (s) => s.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const SIZE_RE = /^\s*(\d+(?:\.\d+)?\s*')\s+|^\s*(\d+\s*")\s+/;
+
+// group items: category -> style -> size rows
+const byCat = new Map();
+for (const it of ITEMS) {
+  const m = (it.name || "").match(SIZE_RE);
+  const style = m ? it.name.replace(SIZE_RE, "") : it.name;
+  const size = m ? (m[1] || m[2]).replace(/\s+/g, "") : (it.widthIn != null ? `${it.widthIn}"` : it.width != null ? `${it.width}'` : "One size");
+  if (!byCat.has(it.category)) byCat.set(it.category, new Map());
+  const styles = byCat.get(it.category);
+  if (!styles.has(style)) styles.set(style, []);
+  styles.get(style).push({ ...it, _size: size });
+}
+
+const catMeta = Object.fromEntries(CATS.map((c) => [c.category, c]));
+const allCats = [...byCat.keys()];
+
+const fmtW = (it) => (it.widthIn != null ? `${it.widthIn}"` : it.width != null ? `${it.width}'` : "—");
+const fmtHp = (it) => (it.hpMin || it.hpMax ? `${it.hpMin || "?"}–${it.hpMax || "?"} HP` : "—");
+
+const styleCard = (style, rows) => {
+  const f = rows[0];
+  const img = f.img && !/^https?:/.test(f.img) ? f.img : null; // local repo images only, never hotlinks
+  const badges = [f.brand, f.duty, f.attach, f.hitch].filter(Boolean).map((b) => `<span class="badge">${esc(b)}</span>`).join("");
+  // fitNotes are customer-facing; drop internal cruft like "Same page as ERG60"
+  const notes = [...new Set(rows.map((r) => r.fitNote).filter(Boolean))]
+    .filter((t) => !/same page as/i.test(t));
+  return `      <article class="style-card">
+        <div class="sc-media">${img ? `<img src="../../${esc(img)}" alt="${esc(f.brand)} ${esc(style)}" loading="lazy" />` : `<div class="ph"><span>Photo coming<br>to the lot</span></div>`}</div>
+        <div class="sc-body">
+          <h2>${esc(style)}</h2>
+          <div class="badges">${badges}</div>
+          <table class="sizes">
+            <thead><tr><th>Size</th><th>Width</th><th>Weight</th><th>Fits</th><th>Price</th></tr></thead>
+            <tbody>
+${rows.map((r) => `              <tr><td>${esc(r._size)}</td><td>${esc(fmtW(r))}</td><td>${r.weight ? esc(r.weight) + " lbs" : "—"}</td><td>${esc(fmtHp(r))}</td><td><a href="tel:+15097382985" class="callprice">Call for price</a></td></tr>`).join("\n")}
+            </tbody>
+          </table>
+          ${notes.length ? `<p class="fitnote">${esc(notes.join(" "))}</p>` : ""}
+          <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
+        </div>
+      </article>`;
+};
+
+const page = (cat, styles) => {
+  const meta = catMeta[cat] || {};
+  const s = slug(cat);
+  const count = [...styles.values()].reduce((n, r) => n + r.length, 0);
+  const others = allCats.filter((c) => c !== cat);
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${esc(cat)} — Tractor Implements | JJ Riggs Equipment, Colville WA</title>
+<meta name="description" content="${esc(meta.blurb || `${cat} for compact and utility tractors, sold and serviced at JJ Riggs Equipment in Colville, WA.`)}" />
+<link rel="canonical" href="https://jjriggsequipment.com/implements/${s}/" />
+<link rel="icon" href="https://jjriggsequipment.com/wp-content/uploads/2024/09/cropped-favicon2-270x270.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../header.css" />
+
+<style>
+@font-face{font-family:"Tactic Sans Bld";src:url("../../fonts/tactic-sans-bld.woff2") format("woff2"),url("../../fonts/tactic-sans-bld.woff") format("woff");font-weight:400 800;font-style:normal;font-display:swap}
+:root{--ink:#14171a;--ink-2:#1b2025;--ink-3:#0f1215;--bone:#f3f1ea;--white:#fbfbf9;--steel:#8b939c;--steel-2:#c3c8ce;--red:#cf1f2a;--red-deep:#a5151f;--line:rgba(255,255,255,.12);--line-2:rgba(255,255,255,.06);--lined:rgba(20,23,26,.32);--maxw:1280px;--gut:clamp(1.4rem,5vw,4rem)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,system-ui,-apple-system,sans-serif;background:var(--ink);color:var(--white);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}img{display:block;max-width:100%;height:auto}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
+h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.012em;line-height:.92}
+.lead{color:var(--steel-2);font-weight:400;font-size:clamp(1rem,1.5vw,1.14rem);line-height:1.55}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;font-weight:600;font-size:.82rem;letter-spacing:.04em;padding:.85rem 1.5rem;border:1.5px solid transparent;cursor:pointer;transition:background .18s,border-color .18s,color .18s}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:var(--red-deep)}
+.btn-ghost{border-color:rgba(255,255,255,.7);color:#fff;text-transform:uppercase;letter-spacing:.07em}.btn-ghost:hover{background:#fff;color:var(--red);border-color:#fff}
+.cut-tab{display:inline-block;background:var(--red);color:#fff;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:clamp(.78rem,1vw,.9rem);letter-spacing:.08em;text-transform:uppercase;line-height:1;padding:.46rem 1.3rem .46rem .95rem;clip-path:polygon(0 0,100% 0,calc(100% - 13px) 100%,0 100%)}
+
+.cat-head{background:var(--ink);color:#fff;padding:clamp(1.8rem,3.4vw,2.6rem) 0 clamp(1.5rem,2.8vw,2.1rem)}
+.cat-head h1{font-family:"Michroma","Tactic Sans Bld",sans-serif;text-transform:none;font-size:clamp(1.7rem,3.6vw,2.8rem);line-height:1.08;letter-spacing:-.01em;margin:.5rem 0 .55rem}
+.cat-head .lead{max-width:62ch;margin:0 0 1rem}
+.crumb{font-size:.85rem;color:var(--steel)}.crumb a{color:var(--steel-2)}.crumb a:hover{color:#fff}
+
+.cat-list{background:var(--bone);color:var(--ink);padding:clamp(2rem,4.4vw,3.2rem) 0}
+.style-card{display:grid;grid-template-columns:280px 1fr;gap:clamp(1.2rem,2.6vw,2rem);background:#fff;border:1px solid #d9d5c8;border-top:4px solid var(--red);padding:clamp(1.2rem,2.6vw,1.8rem);margin-bottom:1.4rem}
+.sc-media img{width:100%;aspect-ratio:4/3;object-fit:cover;border:1px solid #e2ded2}
+.ph{display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;background:var(--bone);border:1px dashed #c9c5b8;text-align:center;color:#9a948a;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:.95rem;line-height:1.4}
+.sc-body h2{font-family:"Michroma","Tactic Sans Bld",sans-serif;text-transform:none;letter-spacing:0;font-size:clamp(1.15rem,2vw,1.5rem);color:var(--ink);margin-bottom:.55rem}
+.badges{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.9rem}
+.badge{border:1px solid rgba(20,23,26,.25);color:#4a5057;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;padding:.3rem .6rem}
+table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9rem}
+.sizes th{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:#6a7077;text-align:left;padding:.45rem .6rem;border-bottom:2px solid var(--ink)}
+.sizes td{padding:.55rem .6rem;border-bottom:1px solid #e4e0d4;color:#2c3237}
+.sizes tr:last-child td{border-bottom:0}
+.callprice{color:var(--red);font-weight:600}.callprice:hover{color:var(--red-deep)}
+.fitnote{color:#5a6066;font-size:.92rem;line-height:1.55;margin-bottom:1rem}
+@media(max-width:760px){.style-card{grid-template-columns:1fr}.sizes{font-size:.92rem}.sizes th,.sizes td{padding:.4rem .35rem}}
+
+.more-cats{background:#fff;color:var(--ink);padding:clamp(1.8rem,4vw,2.8rem) 0}
+.more-cats h2{font-family:"Michroma","Tactic Sans Bld",sans-serif;text-transform:none;letter-spacing:0;font-size:clamp(1.2rem,2.2vw,1.6rem);color:var(--ink);margin-bottom:1rem}
+.cat-chips{display:flex;gap:.6rem;flex-wrap:wrap}
+.cat-chip{display:inline-block;border:1.5px solid rgba(20,23,26,.3);color:var(--ink);padding:.55rem 1rem;font-size:.9rem}
+.cat-chip:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.ctaband{position:relative;background-color:var(--red);background-image:linear-gradient(155deg,rgba(207,31,42,.92),rgba(165,21,31,.95)),url('../../img/rocks-bg.jpg');background-size:cover;background-position:center;color:#fff;overflow:hidden;text-align:center}
+.ctaband .wrap{position:relative;z-index:1;padding:clamp(2rem,4vw,3rem) 0}
+.ctaband h2{font-size:clamp(1.7rem,4vw,2.8rem);color:#fff;line-height:.9;letter-spacing:-.02em}
+.ctaband .cs-sub{color:#ffe0e1;font-size:clamp(.98rem,1.5vw,1.1rem);max-width:54ch;margin:.7rem auto 0}
+.ctaband .cs-actions{display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap;margin-top:1.3rem}
+
+.site-foot{background:var(--ink-3);color:#aeb3ba;padding:48px 0 30px;font-size:14px;border-top:1px solid var(--line)}
+.foot-min{display:flex;justify-content:space-between;gap:2.5rem;flex-wrap:wrap}
+.fm-brand .nm{font-family:"Michroma","Tactic Sans Bld",sans-serif;font-size:18px;color:#fff;margin-bottom:14px}
+.fm-brand p{color:#aeb3ba;line-height:1.7}.fm-brand a:hover{color:#fff}
+.fm-shop .t{font-family:"Michroma","Tactic Sans Bld",sans-serif;font-size:14px;color:#fff;margin-bottom:14px}
+.fm-shop ul{list-style:none}.fm-shop li{margin-bottom:.6rem}
+.fm-shop a{color:#aeb3ba}.fm-shop a:hover{color:#fff}
+.foot-cr{margin-top:34px;padding-top:18px;border-top:1px solid #2a2f36;font-size:12.5px;color:#777c83}
+@media(max-width:560px){.foot-min{flex-direction:column;gap:1.8rem}}
+</style>
+</head>
+
+<body>
+<div id="jjHeader" data-variant="solid" data-active="equipment"></div>
+
+<main id="main">
+
+  <section class="cat-head">
+    <div class="wrap">
+      <span class="cut-tab">Implements · ${esc(meta.group || "Attachments")}</span>
+      <h1>${esc(cat)}</h1>
+      <p class="lead">${esc(meta.blurb || "")}</p>
+      <p class="crumb"><a href="../../implements.html">← All implements</a> &nbsp;·&nbsp; ${count} size${count === 1 ? "" : "s"} across ${styles.size} style${styles.size === 1 ? "" : "s"}</p>
+    </div>
+  </section>
+
+  <section class="cat-list">
+    <div class="wrap">
+${[...styles.entries()].map(([st, rows]) => styleCard(st, rows)).join("\n")}
+    </div>
+  </section>
+
+  <section class="more-cats">
+    <div class="wrap">
+      <h2>More implement categories</h2>
+      <div class="cat-chips">
+${others.map((c) => `        <a class="cat-chip" href="../${slug(c)}/">${esc(c)}</a>`).join("\n")}
+      </div>
+    </div>
+  </section>
+
+  <section class="ctaband">
+    <div class="wrap">
+      <h2>Not sure what fits your tractor?</h2>
+      <p class="cs-sub">Tell us your model and the job — we'll match the implement, the size, and the hitch. No pressure, just answers.</p>
+      <div class="cs-actions">
+        <a class="btn btn-ghost" href="tel:+15097382985">Call 509-738-2985</a>
+        <a class="btn btn-ghost" href="../../contact.html">Get a Quote</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-min">
+      <div class="fm-brand">
+        <div class="nm">JJ Riggs Equipment</div>
+        <p>685 Elm Tree Dr.<br>Colville, WA 99114<br>
+        <a href="mailto:sales@jjriggsequipment.com">sales@jjriggsequipment.com</a><br>
+        <a href="tel:+15097382985">509-738-2985</a><br>
+        Hours: Mon–Fri, 8 AM – 5 PM</p>
+      </div>
+      <nav class="fm-shop" aria-label="Shop">
+        <div class="t">Shop</div>
+        <ul>
+          <li><a href="../../tractors.html">Tractors</a></li>
+          <li><a href="../../implements.html">Implements</a></li>
+          <li><a href="../../mowers.html">Mowers</a></li>
+          <li><a href="../../services.html">Services</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="foot-cr">© 2026 JJ Riggs Equipment</div>
+  </div>
+</footer>
+
+<script src="../../header.js"></script>
+<script src="../../js/analytics.js"></script>
+</body>
+</html>
+`;
+};
+
+let n = 0;
+for (const [cat, styles] of byCat) {
+  const dir = join(root, "implements", slug(cat));
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "index.html"), page(cat, styles));
+  n++;
+}
+console.log(`${n} category pages written under implements/`);
