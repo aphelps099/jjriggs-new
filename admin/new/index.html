@@ -167,7 +167,6 @@ const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 const slugify=s=>String(s).toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 
 /* ---------- voice + field definitions per kind ---------- */
-const VOICE=`JJ Riggs voice rules for the blurb: 1-2 short sentences rewritten from the manufacturer's own copy — never new claims. Sharp and plain-spoken, like a dealer who knows the equipment. No hype, no exclamation points, no emoji. Say "Open Station", never "Open". Prefer a middot (·) or a colon over an em-dash. Example blurbs: "Nimble sub-compact for homeowners. Easy in tight spaces." / "Compact but capable, the T3025H delivers best-in-class lift capacity with a no-regeneration TYM engine."`;
 
 const FIELDS={
   tym:[
@@ -256,45 +255,23 @@ async function fetchAndExtract(){
     st.innerHTML='<span class="pill err">'+esc(JJ.explain(new Error('NEEDS_KEY')))+'</span>';return;}
 
   document.getElementById('fetchBtn').disabled=true;
-  st.textContent='Fetching '+url+' …';
-  let page;
-  try{page=await (await fetch('/api/fetch-page?url='+encodeURIComponent(url))).json();}
-  catch(e){st.innerHTML='<span class="pill err">Proxy error: '+esc(e)+'</span>';document.getElementById('fetchBtn').disabled=false;return;}
-  if(page.error){st.innerHTML='<span class="pill err">'+esc(page.error)+'</span>';document.getElementById('fetchBtn').disabled=false;return;}
-  S.page=page;
-
-  st.textContent='Reading the page with Claude …';
-  const flds=FIELDS[S.kind].map(x=>x.f);
-  const claudemodel=localStorage.getItem('jj_claudemodel')||'claude-sonnet-5';
-  const imgList=(page.images||[]).slice(0,50).map((im,i)=>i+': '+im.src+(im.alt?' | alt: '+im.alt:'')).join('\n');
-  let data;
+  st.textContent='Reading the manufacturer page — usually 10-30 seconds …';
+  let out;
   try{
-    data=await JJ.extract({model:claudemodel,max_tokens:1600,messages:[{role:'user',content:
-`You are filling a dealer-site product template for the ${KINDMETA[S.kind].label} "${model}" from its manufacturer page. Return ONLY JSON:
-{"fields":{...}, "suggested_images":[{"i":<index>,"why":"..."}]}
-
-"fields" keys (null when the page does not state it — NEVER guess or infer): ${JSON.stringify(flds)}
-Rules: verbatim values; numbers as plain numbers (weights lbs, widths inches, hp plain); decks = comma-separated inches. ${VOICE}
-
-"suggested_images": from the numbered candidate list below, up to 6 indexes most likely to show EXACTLY this model and configuration (match model numbers and cab/open-station in alt text and filenames; when unsure, leave it out — a human picks the final photos). Order best-first.
-
-PAGE TITLE: ${page.title}
-IMAGE CANDIDATES:
-${imgList}
-PAGE TEXT:
-${(page.text||'').slice(0,20000)}`}]});
-  }catch(e){st.innerHTML='<span class="pill err">Claude request failed: '+esc(JJ.explain(e))+'</span>';document.getElementById('fetchBtn').disabled=false;return;}
-  if(data.error){st.innerHTML='<span class="pill err">Claude: '+esc(data.error.message||JSON.stringify(data.error))+'</span>';document.getElementById('fetchBtn').disabled=false;return;}
-  let out={};
-  const raw=(data.content&&data.content[0]&&data.content[0].text)||'';
-  // the balanced-brace scanner tolerates fences / trailing prose on its own
-  try{out=JJ.parseJSON(raw);}
-  catch(e){st.innerHTML='<span class="pill err">Could not read the extraction — '+esc(e.message)+'</span>'
-    +'<details style="margin-top:.5rem"><summary class="muted" style="cursor:pointer">show what Claude returned</summary><div class="log" style="margin-top:.4rem">'+esc(raw.slice(0,1800)||'(empty)')+'</div></details>';
-    document.getElementById('fetchBtn').disabled=false;return;}
-
+    out=await JJ.extractProduct({
+      url, name:model,
+      fields:FIELDS[S.kind].map(x=>x.f),
+      want_images:true,
+      model:localStorage.getItem('jj_claudemodel')||'claude-sonnet-5',
+    });
+  }catch(e){
+    st.innerHTML='<span class="pill err">'+esc(JJ.explain(e))+'</span>'
+      +(e.detail?'<details style="margin-top:.5rem"><summary class="muted" style="cursor:pointer">show details</summary><div class="log" style="margin-top:.4rem">'+esc(e.detail)+'</div></details>':'');
+    document.getElementById('fetchBtn').disabled=false;return;
+  }
+  S.page={url:out.source.url,title:out.source.title,images:out.images||[]};
   S.draft=out.fields||{};
-  S.suggested=(out.suggested_images||[]).map(s=>s.i).filter(i=>page.images[i]);
+  S.suggested=(out.suggested_images||[]).map(s=>s.i).filter(i=>S.page.images[i]);
   st.innerHTML='<span class="pill ok">Fetched — check every field below</span>';
   document.getElementById('fetchBtn').disabled=false;
   renderFields();
