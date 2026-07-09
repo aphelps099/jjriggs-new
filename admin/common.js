@@ -86,11 +86,30 @@ window.JJ = (function () {
     return { ok: true };
   }
 
+  // Pull the first complete JSON object out of a model reply. A greedy
+  // /\{[\s\S]*\}/ swallows any trailing brace in prose and breaks; this scans
+  // for the first balanced object (string-aware). Pass prefill='{' when the
+  // request prefilled the assistant turn with an opening brace.
+  function parseJSON(text, prefill) {
+    const s = (prefill || '') + String(text == null ? '' : text);
+    const start = s.indexOf('{');
+    if (start < 0) throw new Error('no JSON object in the model reply');
+    let depth = 0, inStr = false, esc = false;
+    for (let i = start; i < s.length; i++) {
+      const c = s[i];
+      if (inStr) { if (esc) esc = false; else if (c === '\\') esc = true; else if (c === '"') inStr = false; continue; }
+      if (c === '"') inStr = true;
+      else if (c === '{') depth++;
+      else if (c === '}') { if (--depth === 0) return JSON.parse(s.slice(start, i + 1)); }
+    }
+    throw new Error('the model reply was cut off before the JSON closed');
+  }
+
   const NEED_MSG = {
     NEEDS_KEY: 'Fact-fetch isn\'t set up on this device. Best fix (one-time, by Aaron): the server setup in ADMIN-ACCESS-SETUP.md — then nobody ever pastes keys. Fallback: paste an Anthropic API key in ⚙ Settings.',
     NEEDS_TOKEN: 'Publishing isn\'t set up on this device. Best fix (one-time, by Aaron): the server setup in ADMIN-ACCESS-SETUP.md — then nobody ever pastes keys. Fallback: paste a GitHub token in ⚙ Settings.',
   };
   const explain = e => NEED_MSG[e.message] || e.message;
 
-  return { OWNER, REPO, BASE_BRANCH, status, extract, publish, explain };
+  return { OWNER, REPO, BASE_BRANCH, status, extract, publish, explain, parseJSON };
 })();
