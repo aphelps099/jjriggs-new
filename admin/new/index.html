@@ -278,12 +278,16 @@ PAGE TITLE: ${page.title}
 IMAGE CANDIDATES:
 ${imgList}
 PAGE TEXT:
-${(page.text||'').slice(0,20000)}`}]});
+${(page.text||'').slice(0,20000)}`},{role:'assistant',content:'{'}]});
   }catch(e){st.innerHTML='<span class="pill err">Claude request failed: '+esc(JJ.explain(e))+'</span>';document.getElementById('fetchBtn').disabled=false;return;}
   if(data.error){st.innerHTML='<span class="pill err">Claude: '+esc(data.error.message||JSON.stringify(data.error))+'</span>';document.getElementById('fetchBtn').disabled=false;return;}
   let out={};
-  try{out=JSON.parse((data.content[0].text.match(/\{[\s\S]*\}/)||['{}'])[0]);}
-  catch(e){st.innerHTML='<span class="pill err">Could not parse the extraction</span>';document.getElementById('fetchBtn').disabled=false;return;}
+  const raw=(data.content&&data.content[0]&&data.content[0].text)||'';
+  // assistant turn was prefilled with '{', so the reply continues the object
+  try{out=JJ.parseJSON(raw,'{');}
+  catch(e){st.innerHTML='<span class="pill err">Could not read the extraction — '+esc(e.message)+'</span>'
+    +'<details style="margin-top:.5rem"><summary class="muted" style="cursor:pointer">show what Claude returned</summary><div class="log" style="margin-top:.4rem">'+esc(raw.slice(0,1800)||'(empty)')+'</div></details>';
+    document.getElementById('fetchBtn').disabled=false;return;}
 
   S.draft=out.fields||{};
   S.suggested=(out.suggested_images||[]).map(s=>s.i).filter(i=>page.images[i]);
