@@ -50,6 +50,17 @@ for (const it of ITEMS) {
   styles.get(style).push({ ...it, _size: size });
 }
 
+// sort size rows within each style numerically (feet normalized to inches;
+// unparseable / "One size" rows last) so tables read 6", 9", 12" not 12", 6", 9"
+const sizeInches = (s) => {
+  const m = String(s || "").match(/(\d+(?:\.\d+)?)\s*(["'])/);
+  if (!m) return Infinity;
+  return m[2] === "'" ? +m[1] * 12 : +m[1];
+};
+for (const styles of byCat.values())
+  for (const rows of styles.values())
+    rows.sort((a, b) => sizeInches(a._size) - sizeInches(b._size));
+
 const catMeta = Object.fromEntries(CATS.map((c) => [c.category, c]));
 const allCats = [...byCat.keys()];
 
