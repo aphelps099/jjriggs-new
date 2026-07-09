@@ -15,11 +15,11 @@ window.JJ_CATEGORIES=[
 {"category":"Snow Pusher","group":"Snow","img":"img/bad-boy-implements/snow-pusher-steel-skids.png","blurb":"Push snow fast and clean off lots and driveways.","count":7},
 {"category":"Spreaders","group":"Spreading & seeding","img":"img/bad-boy-implements/spreader-3-point.png","blurb":"Spread seed, fertilizer, and ice-melt evenly.","count":2},
 {"category":"Rock Buckets","group":"Material handling","img":"https://cdn.bfldr.com/71PUUW3G/at/stbpczxfcmfj73ftp8b6t9m/cid-mini-skid-steer-rock-bucket-attachment__82146.png","blurb":"Sift rock, roots and debris from soil — skeleton tines let dirt fall through while you keep the rock.","count":3},
-{"category":"Snow Plows","group":"Snow","img":"https://cdn.bfldr.com/71PUUW3G/at/4q598rbqwwgn9kfwpbmmq3g/CID_Compact_Tractor_Hydraulic_Snow_Plow.png","blurb":"Angle and roll snow off driveways and lots with hydraulic plows, compact through heavy-duty.","count":6},
+{"category":"Snow Plows","group":"Snow","img":"img/implements/cid-compact-tractor-hydraulic-snow-plow.png","blurb":"Angle and roll snow off driveways and lots with hydraulic plows, compact through heavy-duty.","count":6},
 {"category":"Ballast Boxes","group":"Material handling","img":"https://jjriggsequipment.com/wp-content/uploads/2024/10/hay-spear.jpg","blurb":"Add rear weight for safe lifting and steady traction. Fill with sand, gravel, or concrete.","count":1},
 {"category":"Loader Buckets","group":"Material handling","img":"https://cdn.bfldr.com/71PUUW3G/at/j4vvnp3gxwtfjgrv6wfcbm/84-tractor-bucktet-hi-rez-b_wfinal.png?auto=webp&format=png","blurb":"Move dirt, gravel, feed, and debris with your front loader.","count":1},
 {"category":"Post Hole Diggers","group":"Dirt work & grading","img":"https://cdn.bfldr.com/71PUUW3G/at/nq4z5kswtvpjw76jps66mf8/Post_Hole_Digger_1.png?auto=webp&format=jpg&height=1202&width=800","blurb":"Dig clean, straight holes for posts and footings. Auger sizes to match the job.","count":4},
-{"category":"Snow Blowers","group":"Snow","img":"https://cdn.bfldr.com/71PUUW3G/at/4q598rbqwwgn9kfwpbmmq3g/CID_Compact_Tractor_Hydraulic_Snow_Plow.png","blurb":"Throw snow clear of driveways and lots. Two-stage 3-point blowers for compact and utility tractors.","count":6},
+{"category":"Snow Blowers","group":"Snow","img":"","blurb":"Throw snow clear of driveways and lots. Two-stage 3-point blowers for compact and utility tractors.","count":6},
 {"category":"Subsoilers & Middle Busters","group":"Tillage","img":"https://jjriggsequipment.com/wp-content/uploads/2024/09/Tillers.webp","blurb":"Break hardpan and open planting furrows. Simple, tough 3-point tillage tools.","count":2}
 ];
 window.JJ_IMPLEMENTS=[
