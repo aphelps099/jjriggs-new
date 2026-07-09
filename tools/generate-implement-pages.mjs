@@ -20,14 +20,30 @@ const CATS = w.JJ_CATEGORIES || [];
 
 const slug = (s) => s.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-const SIZE_RE = /^\s*(\d+(?:\.\d+)?\s*')\s+|^\s*(\d+\s*")\s+/;
+// size tokens live at the start (4' Box Blade, 60" Rock Bucket), in trailing
+// parens (Large Front Grapple (70")), bare at the end (Hydraulic Snow Plow 72"),
+// or embedded (1025H 60" Mid-Mount Mower Deck) — extract them all into the
+// sizes table so titles stay clean.
+const SIZE_RES = [
+  /^\s*(\d+(?:\.\d+)?\s*')\s+/,   // leading feet
+  /^\s*(\d+\s*")\s+/,             // leading inches
+  /\s*\((\d+(?:\.\d+)?\s*["'])\)\s*$/, // trailing parens
+  /\s+(\d+(?:\.\d+)?\s*["'])\s*$/,     // trailing bare
+  /\s(\d+(?:\.\d+)?\s*")\s/,           // embedded (mower decks)
+];
+function splitSize(name) {
+  for (const re of SIZE_RES) {
+    const m = (name || "").match(re);
+    if (m) return { style: name.replace(re, " ").replace(/\s{2,}/g, " ").trim(), size: m[1].replace(/\s+/g, "") };
+  }
+  return { style: name, size: null };
+}
 
 // group items: category -> style -> size rows
 const byCat = new Map();
 for (const it of ITEMS) {
-  const m = (it.name || "").match(SIZE_RE);
-  const style = m ? it.name.replace(SIZE_RE, "") : it.name;
-  const size = m ? (m[1] || m[2]).replace(/\s+/g, "") : (it.widthIn != null ? `${it.widthIn}"` : it.width != null ? `${it.width}'` : "One size");
+  const { style, size: parsed } = splitSize(it.name);
+  const size = parsed || (it.widthIn != null ? `${it.widthIn}"` : it.width != null ? `${it.width}'` : "One size");
   if (!byCat.has(it.category)) byCat.set(it.category, new Map());
   const styles = byCat.get(it.category);
   if (!styles.has(style)) styles.set(style, []);
@@ -37,7 +53,7 @@ for (const it of ITEMS) {
 const catMeta = Object.fromEntries(CATS.map((c) => [c.category, c]));
 const allCats = [...byCat.keys()];
 
-const fmtW = (it) => (it.widthIn != null ? `${it.widthIn}"` : it.width != null ? `${it.width}'` : "—");
+const fmtW = (it) => (it.widthIn != null ? `${it.widthIn}"` : it.width != null ? `${it.width}'` : /["']$/.test(it._size || "") ? it._size : "—");
 const fmtHp = (it) => (it.hpMin || it.hpMax ? `${it.hpMin || "?"}–${it.hpMax || "?"} HP` : "—");
 
 const styleCard = (style, rows) => {
@@ -46,7 +62,7 @@ const styleCard = (style, rows) => {
   const badges = [f.brand, f.duty, f.attach, f.hitch].filter(Boolean).map((b) => `<span class="badge">${esc(b)}</span>`).join("");
   // fitNotes are customer-facing; drop internal cruft like "Same page as ERG60"
   const notes = [...new Set(rows.map((r) => r.fitNote).filter(Boolean))]
-    .filter((t) => !/same page as/i.test(t));
+    .filter((t) => !/same page as|verify/i.test(t));
   return `      <article class="style-card">
         <div class="sc-media">${img ? `<img src="../../${esc(img)}" alt="${esc(f.brand)} ${esc(style)}" loading="lazy" />` : `<div class="ph"><span>Photo coming<br>to the lot</span></div>`}</div>
         <div class="sc-body">
