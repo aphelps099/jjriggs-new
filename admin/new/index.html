@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>New Product — JJ Riggs Equipment (internal)</title>
+<meta name="robots" content="noindex,nofollow" />
+<link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet" />
+<style>
+:root{--ink:#14171a;--ink-2:#1b2025;--bone:#f3f1ea;--white:#fbfbf9;--steel:#8b939c;--steel-2:#c3c8ce;--red:#cf1f2a;--red-deep:#a5151f;--green:#1d7a3c;--amber:#a06a00}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Questrial",system-ui,sans-serif;background:var(--bone);color:var(--ink);line-height:1.5;font-size:16px}
+.wrap{max-width:980px;margin:0 auto;padding:0 clamp(1rem,3vw,2.4rem)}
+header.bar{background:var(--ink);color:#fff;padding:.9rem 0;margin-bottom:1.6rem}
+header.bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;max-width:980px}
+header.bar .t{font-family:"Michroma",sans-serif;font-size:1.05rem}
+header.bar .t small{display:block;font-family:"Questrial";color:var(--steel);font-size:.8rem;letter-spacing:.05em}
+header.bar a{color:#fff}
+h2{font-family:"Michroma",sans-serif;font-size:1.1rem;margin-bottom:.6rem}
+h2 .n{display:inline-flex;width:1.7em;height:1.7em;align-items:center;justify-content:center;background:var(--red);color:#fff;border-radius:50%;font-size:.85rem;margin-right:.55rem;vertical-align:middle}
+.card{background:#fff;border:1px solid #d9d5c8;border-top:4px solid var(--red);padding:1.3rem 1.4rem;margin-bottom:1.3rem}
+.card.locked{opacity:.5;pointer-events:none;border-top-color:#c9c5b8}
+.btn{display:inline-flex;align-items:center;gap:.5rem;font-family:inherit;font-weight:600;font-size:.9rem;letter-spacing:.03em;padding:.7rem 1.2rem;border:1.5px solid transparent;cursor:pointer;background:var(--red);color:#fff;text-decoration:none}
+.btn:hover{background:var(--red-deep)}
+.btn.ghost{background:transparent;border-color:rgba(20,23,26,.35);color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:.45rem .85rem;font-size:.8rem}
+input[type=text],input[type=password],input[type=number],select,textarea{font-family:inherit;font-size:1rem;padding:.6rem .7rem;border:1.5px solid #c9c5b8;background:#fff;width:100%}
+textarea{min-height:74px;resize:vertical}
+label{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:#6a7077;font-weight:600;display:block;margin-bottom:.3rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+.muted{color:#6a7077;font-size:.92rem}
+.pill{display:inline-block;padding:.15rem .55rem;font-size:.75rem;letter-spacing:.04em;border:1px solid}
+.pill.ok{color:var(--green);border-color:var(--green)}
+.pill.err{color:var(--red-deep);border-color:var(--red-deep)}
+.pill.warn{color:var(--amber);border-color:var(--amber)}
+.pill.info{color:#2a5da8;border-color:#2a5da8}
+.log{font-family:ui-monospace,monospace;font-size:.8rem;background:var(--ink);color:#cfe3cf;padding:.9rem;max-height:260px;overflow:auto;white-space:pre-wrap}
+.kindpick{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.8rem;margin:.4rem 0 1rem}
+.kindpick button{font-family:inherit;font-size:.95rem;padding:1rem .8rem;border:1.5px solid #c9c5b8;background:#fff;cursor:pointer;text-align:center}
+.kindpick button b{display:block;font-family:"Michroma",sans-serif;font-size:.82rem;margin-bottom:.25rem}
+.kindpick button.on{border-color:var(--red);background:#fdf7f5;box-shadow:inset 0 0 0 1.5px var(--red)}
+.fieldrow{display:grid;grid-template-columns:170px 1fr;gap:.4rem .9rem;align-items:start;padding:.55rem 0;border-bottom:1px solid #eee9dd}
+.fieldrow .k{font-weight:600;color:#4a5057;font-size:.9rem;padding-top:.6rem}
+.fieldrow .src{grid-column:2;font-size:.78rem;color:#8a8f96}
+@media(max-width:700px){.fieldrow{grid-template-columns:1fr}.fieldrow .src{grid-column:1}}
+.imgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.8rem;margin-top:.8rem}
+.imcard{position:relative;border:2px solid #d9d5c8;background:#fff;cursor:pointer;padding:0}
+.imcard .im{aspect-ratio:4/3;overflow:hidden;display:block;background:#f4f2ea}
+.imcard img{width:100%;height:100%;object-fit:cover}
+.imcard .alt{display:block;font-size:.72rem;color:#6a7077;padding:.3rem .45rem;border-top:1px solid #eee9dd;min-height:2.1em;line-height:1.3;overflow:hidden}
+.imcard.on{border-color:var(--red)}
+.imcard .ord{position:absolute;top:.4rem;left:.4rem;background:var(--red);color:#fff;width:1.6em;height:1.6em;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+.imcard .ai{position:absolute;top:.4rem;right:.4rem;background:#2a5da8;color:#fff;font-size:.64rem;letter-spacing:.05em;padding:.14rem .45rem;text-transform:uppercase;font-weight:700}
+.preview{display:flex;gap:1.1rem;align-items:flex-start;background:#faf9f3;border:1px solid #e4e0d4;padding:1rem;flex-wrap:wrap}
+.preview .pi{width:210px;flex:none;background:#fff;border:1px solid #d9d5c8;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.preview .pi img{width:100%;height:100%;object-fit:contain}
+.preview .pt{flex:1;min-width:220px}
+.preview .pt .nm{font-family:"Michroma",sans-serif;font-size:1.05rem}
+.preview .pt .specline{color:#4a5057;font-size:.92rem;margin:.25rem 0 .5rem}
+.sheetbox{background:#f2f8f3;border:1px solid #bcd9c2;padding:1rem;margin-top:1rem}
+.sheetbox textarea{font-family:ui-monospace,monospace;font-size:.76rem;min-height:56px;white-space:pre;overflow-x:auto}
+dialog{border:1px solid #d9d5c8;padding:1.4rem;max-width:560px;width:92vw}
+dialog::backdrop{background:rgba(20,23,26,.55)}
+</style>
+</head>
+<body>
+<header class="bar"><div class="wrap">
+  <div class="t">New Product <small>fetch the facts, keep only what's true, pick real photos · publishes to a preview branch</small></div>
+  <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+    <a class="btn ghost sm" href="/admin/photos/">📷 Photo editor</a>
+    <a class="btn ghost sm" href="/admin/">⇤ Inventory Builder</a>
+    <button class="btn ghost sm" onclick="document.getElementById('settings').showModal()">⚙ Settings &amp; keys</button>
+  </div>
+</div></header>
+
+<div class="wrap">
+
+  <!-- STEP 1 -->
+  <section class="card" id="s1">
+    <h2><span class="n">1</span>What are we adding?</h2>
+    <div class="kindpick" id="kindpick">
+      <button data-k="tym"><b>TYM Tractor</b><span class="muted">tym.world</span></button>
+      <button data-k="badboy"><b>Bad Boy Tractor</b><span class="muted">badboycountry.com</span></button>
+      <button data-k="mowers"><b>Bad Boy Mower</b><span class="muted">badboymowers.com</span></button>
+      <button data-k="implements"><b>Implement</b><span class="muted">CID · Bad Boy · IronCraft · Braber</span></button>
+    </div>
+    <div class="grid2">
+      <div><label id="modelLabel">Model name (exactly as the manufacturer writes it)</label><input type="text" id="model" placeholder="e.g. T4058P, MZ Magnum, 72&quot; Root Grapple"></div>
+      <div><label>Manufacturer product page URL</label><input type="text" id="murl" placeholder="https://tym.world/en-us/products/…"></div>
+    </div>
+    <div class="grid2" id="kindExtras" style="margin-top:1rem"></div>
+    <div id="dupWarn" style="margin-top:.8rem"></div>
+    <button class="btn" id="fetchBtn" style="margin-top:1rem" onclick="fetchAndExtract()">Fetch the facts ›</button>
+    <div id="fetchStatus" class="muted" style="margin-top:.6rem"></div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="card locked" id="s2">
+    <h2><span class="n">2</span>Check the facts</h2>
+    <p class="muted">Everything below came from the manufacturer's page — <b>nothing is invented</b>. Blank means the page doesn't say. Fix anything that's wrong; the blurb is drafted in the JJ Riggs voice from the manufacturer's own copy, so read it out loud once.</p>
+    <div id="fields" style="margin-top:.8rem"></div>
+    <button class="btn" style="margin-top:1.1rem" onclick="toPhotos()">Looks right — pick photos ›</button>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="card locked" id="s3">
+    <h2><span class="n">3</span>Pick the photos</h2>
+    <p class="muted" id="photoHelp"></p>
+    <div id="imgrid" class="imgrid"></div>
+    <p class="muted" style="margin-top:.8rem">Nothing usable here? Skip photos — the page shows a branded “Photo coming to the lot” placeholder, and you can add your own shots later in the <a href="/admin/photos/">Photo editor</a>. A placeholder always beats a wrong photo.</p>
+    <button class="btn" style="margin-top:.8rem" onclick="toReview()">Continue ›</button>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="card locked" id="s4">
+    <h2><span class="n">4</span>Review &amp; publish</h2>
+    <div id="previewBox"></div>
+    <div class="grid2" style="margin:1rem 0">
+      <div><label>Branch</label><input type="text" id="branch"></div>
+      <div><label>Commit message</label><input type="text" id="commitmsg"></div>
+    </div>
+    <button class="btn" id="pubbtn" onclick="publish()">Publish to preview branch</button>
+    <div class="log" id="publog" style="margin-top:1rem;display:none"></div>
+    <div id="sheetRow"></div>
+  </section>
+
+</div>
+
+<dialog id="settings">
+  <h2>Settings &amp; keys</h2>
+  <p class="muted">Stored only in this browser (localStorage), never committed anywhere. Same keys as the Inventory Builder.</p>
+  <div style="margin-top:.9rem"><label>GitHub fine-grained token (repo: aphelps099/jjriggs-new, Contents: read/write)</label><input type="password" id="ghtoken"></div>
+  <div style="margin-top:.9rem"><label>Anthropic API key (for the fact fetch)</label><input type="password" id="claudekey"></div>
+  <div style="margin-top:.9rem"><label>Extraction model</label>
+    <select id="claudemodel">
+      <option value="claude-sonnet-5">claude-sonnet-5 (best quality)</option>
+      <option value="claude-haiku-4-5-20251001">claude-haiku-4-5 (cheapest)</option>
+    </select>
+  </div>
+  <div style="margin-top:1.1rem;display:flex;gap:.6rem">
+    <button class="btn sm" onclick="saveSettings()">Save</button>
+    <button class="btn ghost sm" onclick="document.getElementById('settings').close()">Close</button>
+  </div>
+</dialog>
+
+<!-- live site data: duplicate check, categories, publish merge -->
+<script src="/js/tym-models.data.js"></script>
+<script src="/js/badboy-models.data.js"></script>
+<script src="/js/mower-models.data.js"></script>
+<script src="/implements-data.js"></script>
+
+<script>
+'use strict';
+const OWNER='aphelps099', REPO='jjriggs-new', BASE_BRANCH='main';
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const slugify=s=>String(s).toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+
+/* ---------- voice + field definitions per kind ---------- */
+const VOICE=`JJ Riggs voice rules for the blurb: 1-2 short sentences rewritten from the manufacturer's own copy — never new claims. Sharp and plain-spoken, like a dealer who knows the equipment. No hype, no exclamation points, no emoji. Say "Open Station", never "Open". Prefer a middot (·) or a colon over an em-dash. Example blurbs: "Nimble sub-compact for homeowners. Easy in tight spaces." / "Compact but capable, the T3025H delivers best-in-class lift capacity with a no-regeneration TYM engine."`;
+
+const FIELDS={
+  tym:[
+    {f:'hp',label:'Horsepower',type:'number'},
+    {f:'series',label:'Series',type:'select',opts:['Sub-Compact','Compact','Utility']},
+    {f:'engine',label:'Engine'},
+    {f:'transmission',label:'Transmission'},
+    {f:'drive',label:'Drive'},
+    {f:'loader_lift_lbs',label:'Loader lift (lbs)',type:'number'},
+    {f:'fuel',label:'Fuel'},
+    {f:'blurb',label:'Blurb (JJ Riggs voice)',type:'textarea'},
+  ],
+  mowers:[
+    {f:'cat',label:'Class',type:'select',opts:['Residential','Commercial']},
+    {f:'type',label:'Type',type:'select',opts:['Zero Turn','Stand-On','Walk-Behind']},
+    {f:'engine',label:'Engine(s)'},
+    {f:'hp',label:'Horsepower',type:'number'},
+    {f:'decks',label:'Deck sizes (inches, comma-separated)'},
+    {f:'fuel',label:'Fuel'},
+    {f:'drive',label:'Drive system'},
+    {f:'transmission',label:'Transmission'},
+    {f:'price',label:'Starting price (leave blank → “Call for price”)',type:'number'},
+    {f:'blurb',label:'Blurb (JJ Riggs voice)',type:'textarea'},
+  ],
+  implements:[
+    {f:'brand',label:'Brand',type:'select',opts:['Bad Boy','CID','IronCraft','Braber']},
+    {f:'category',label:'Category',type:'select',opts:[]}, // filled from JJ_CATEGORIES
+    {f:'duty',label:'Duty',type:'select',opts:['','Standard','Heavy','Extreme']},
+    {f:'attach',label:'Attach system (e.g. Skid steer quick attach)'},
+    {f:'hitch',label:'Hitch (e.g. Cat 1 3-point)'},
+    {f:'widthIn',label:'Width (inches)',type:'number'},
+    {f:'width',label:'Width (feet) — only if the page states feet',type:'number'},
+    {f:'weight',label:'Weight (lbs)',type:'number'},
+    {f:'hpMin',label:'Min tractor HP',type:'number'},
+    {f:'hpMax',label:'Max tractor HP',type:'number'},
+    {f:'price',label:'Price (leave blank → “Call for price”)',type:'number'},
+    {f:'sku',label:'SKU / part number'},
+    {f:'fitNote',label:'Fitment note (customer-facing)'},
+  ],
+};
+FIELDS.badboy=FIELDS.tym.map(x=>x.f==='series'?{f:'series_name',label:'Series name (e.g. 40 Series)'}:x);
+
+const KINDMETA={
+  tym:{label:'TYM tractor',file:'js/tym-models.data.js',global:'TYM_MODELS',arr:()=>window.TYM_MODELS||[],imgField:'image',galBrand:'TYM',maxPhotos:5},
+  badboy:{label:'Bad Boy tractor',file:'js/badboy-models.data.js',global:'BADBOY_MODELS',arr:()=>window.BADBOY_MODELS||[],imgField:'image',galBrand:'Bad Boy',maxPhotos:5},
+  mowers:{label:'Bad Boy mower',file:'js/mower-models.data.js',global:'MOWER_MODELS',arr:()=>window.MOWER_MODELS||[],imgField:'image',galBrand:null,maxPhotos:1},
+  implements:{label:'implement',file:'implements-data.js',global:'JJ_IMPLEMENTS',arr:()=>window.JJ_IMPLEMENTS||[],imgField:'img',galBrand:null,maxPhotos:1},
+};
+FIELDS.implements.find(x=>x.f==='category').opts=(window.JJ_CATEGORIES||[]).map(c=>c.category);
+
+/* ---------- state ---------- */
+const S={kind:null,page:null,draft:{},picked:[],photoData:{}}; // photoData: candidate src -> resized dataURL
+
+/* ---------- step 1 ---------- */
+document.querySelectorAll('#kindpick button').forEach(b=>b.onclick=()=>{
+  S.kind=b.dataset.k;
+  document.querySelectorAll('#kindpick button').forEach(x=>x.classList.toggle('on',x===b));
+  const ex=document.getElementById('kindExtras');
+  ex.innerHTML=(S.kind==='tym'||S.kind==='badboy')
+    ?'<div><label>Operator station</label><select id="station"><option>Open Station</option><option>Cab</option></select></div>'
+    :'';
+  checkDup();
+});
+document.getElementById('model').oninput=checkDup;
+function checkDup(){
+  const el=document.getElementById('dupWarn');el.innerHTML='';
+  if(!S.kind)return;
+  const v=(document.getElementById('model').value||'').trim().toLowerCase();if(!v)return;
+  const k=KINDMETA[S.kind];
+  const hit=k.arr().find(m=>String(m.model||m.name||'').toLowerCase()===v);
+  if(hit)el.innerHTML='<span class="pill warn">Already on the site</span> <span class="muted">“'+esc(hit.model||hit.name)+'” exists — to change its photos use the <a href="/admin/photos/">Photo editor</a>; to change its specs use the sheet + <a href="/admin/">builder</a>.</span>';
+}
+
+async function fetchAndExtract(){
+  const st=document.getElementById('fetchStatus');
+  if(!S.kind){st.innerHTML='<span class="pill err">Pick what you\'re adding first</span>';return;}
+  const model=(document.getElementById('model').value||'').trim();
+  const url=(document.getElementById('murl').value||'').trim();
+  if(!model||!url){st.innerHTML='<span class="pill err">Model name and manufacturer URL are both required</span>';return;}
+  const key=localStorage.getItem('jj_claudekey');
+  if(!key){st.innerHTML='<span class="pill err">Add your Anthropic API key in Settings (⚙) first</span>';return;}
+
+  document.getElementById('fetchBtn').disabled=true;
+  st.textContent='Fetching '+url+' …';
+  let page;
+  try{page=await (await fetch('/api/fetch-page?url='+encodeURIComponent(url))).json();}
+  catch(e){st.innerHTML='<span class="pill err">Proxy error: '+esc(e)+'</span>';document.getElementById('fetchBtn').disabled=false;return;}
+  if(page.error){st.innerHTML='<span class="pill err">'+esc(page.error)+'</span>';document.getElementById('fetchBtn').disabled=false;return;}
+  S.page=page;
+
+  st.textContent='Reading the page with Claude …';
+  const flds=FIELDS[S.kind].map(x=>x.f);
+  const claudemodel=localStorage.getItem('jj_claudemodel')||'claude-sonnet-5';
+  const imgList=(page.images||[]).slice(0,50).map((im,i)=>i+': '+im.src+(im.alt?' | alt: '+im.alt:'')).join('\n');
+  let res;
+  try{
+    res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{
+      'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:claudemodel,max_tokens:1600,messages:[{role:'user',content:
+`You are filling a dealer-site product template for the ${KINDMETA[S.kind].label} "${model}" from its manufacturer page. Return ONLY JSON:
+{"fields":{...}, "suggested_images":[{"i":<index>,"why":"..."}]}
+
+"fields" keys (null when the page does not state it — NEVER guess or infer): ${JSON.stringify(flds)}
+Rules: verbatim values; numbers as plain numbers (weights lbs, widths inches, hp plain); decks = comma-separated inches. ${VOICE}
+
+"suggested_images": from the numbered candidate list below, up to 6 indexes most likely to show EXACTLY this model and configuration (match model numbers and cab/open-station in alt text and filenames; when unsure, leave it out — a human picks the final photos). Order best-first.
+
+PAGE TITLE: ${page.title}
+IMAGE CANDIDATES:
+${imgList}
+PAGE TEXT:
+${(page.text||'').slice(0,20000)}`}]})});
+  }catch(e){st.innerHTML='<span class="pill err">Claude request failed: '+esc(e)+'</span>';document.getElementById('fetchBtn').disabled=false;return;}
+  const data=await res.json();
+  if(data.error){st.innerHTML='<span class="pill err">Claude: '+esc(data.error.message||JSON.stringify(data.error))+'</span>';document.getElementById('fetchBtn').disabled=false;return;}
+  let out={};
+  try{out=JSON.parse((data.content[0].text.match(/\{[\s\S]*\}/)||['{}'])[0]);}
+  catch(e){st.innerHTML='<span class="pill err">Could not parse the extraction</span>';document.getElementById('fetchBtn').disabled=false;return;}
+
+  S.draft=out.fields||{};
+  S.suggested=(out.suggested_images||[]).map(s=>s.i).filter(i=>page.images[i]);
+  st.innerHTML='<span class="pill ok">Fetched — check every field below</span>';
+  document.getElementById('fetchBtn').disabled=false;
+  renderFields();
+  unlock('s2');document.getElementById('s2').scrollIntoView({behavior:'smooth'});
+}
+
+/* ---------- step 2 ---------- */
+function renderFields(){
+  const el=document.getElementById('fields');
+  el.innerHTML=FIELDS[S.kind].map(x=>{
+    const v=S.draft[x.f];
+    const input=x.type==='select'
+      ?'<select data-f="'+x.f+'">'+x.opts.map(o=>'<option'+(String(v??'')===o?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select>'
+      :x.type==='textarea'
+      ?'<textarea data-f="'+x.f+'">'+esc(v??'')+'</textarea>'
+      :'<input type="'+(x.type||'text')+'" data-f="'+x.f+'" value="'+esc(v??'')+'"'+(x.type==='number'?' step="any"':'')+'>';
+    return '<div class="fieldrow"><div class="k">'+esc(x.label)+'</div><div>'+input+'</div>'
+      +'<div class="src">'+(v!=null&&v!==''?'from the page':'page doesn\'t say — type it only if you know it\'s true, or leave blank')+'</div></div>';
+  }).join('')
+  +'<p class="muted" style="margin-top:.7rem">Source: <a href="'+esc(S.page.url)+'" target="_blank" rel="noopener">'+esc(S.page.url)+'</a></p>';
+}
+function readFields(){
+  const o={};
+  document.querySelectorAll('#fields [data-f]').forEach(inp=>{
+    let v=inp.value.trim();
+    if(v==='')return;
+    if(inp.type==='number'||/^(hp|loader_lift_lbs|widthIn|width|weight|hpMin|hpMax|price)$/.test(inp.dataset.f)){const n=+v;v=isNaN(n)?v:n;}
+    o[inp.dataset.f]=v;
+  });
+  return o;
+}
+
+/* ---------- step 3 ---------- */
+function toPhotos(){
+  const k=KINDMETA[S.kind];
+  document.getElementById('photoHelp').innerHTML=(k.maxPhotos>1
+    ?'Tap up to <b>5</b> photos in the order they should appear — the <b>first is the main photo</b>. '
+    :'Tap <b>one</b> photo — this page shows a single photo. ')
+    +'Blue <b>Claude\'s pick</b> tags are ranked by matching alt text and filenames, but <b>you decide</b> — the photo must show this exact model and configuration (Open Station vs Cab matters).';
+  const imgs=S.page.images||[];
+  document.getElementById('imgrid').innerHTML=imgs.map((im,i)=>{
+    const sug=S.suggested&&S.suggested.indexOf(i);
+    return '<button class="imcard" data-i="'+i+'" onclick="togglePick('+i+')">'
+      +'<span class="im"><img loading="lazy" src="/api/fetch-image?url='+encodeURIComponent(im.src)+'" onerror="this.closest(\'.imcard\').style.display=\'none\'"></span>'
+      +(sug>-1?'<span class="ai">Claude\'s pick'+(sug===0?' #1':'')+'</span>':'')
+      +'<span class="alt">'+esc(im.alt||im.src.split('/').pop())+'</span><span class="ord" style="display:none"></span></button>';
+  }).join('')||'<p class="muted">The page had no usable images — skip ahead and add photos later.</p>';
+  S.picked=[];
+  unlock('s3');document.getElementById('s3').scrollIntoView({behavior:'smooth'});
+}
+function togglePick(i){
+  const max=KINDMETA[S.kind].maxPhotos;
+  const at=S.picked.indexOf(i);
+  if(at>-1)S.picked.splice(at,1);
+  else{if(max===1)S.picked=[i];else if(S.picked.length>=max){alert('Up to '+max+' photos — unselect one first.');return;}else S.picked.push(i);}
+  document.querySelectorAll('.imcard').forEach(c=>{
+    const idx=S.picked.indexOf(+c.dataset.i);
+    c.classList.toggle('on',idx>-1);
+    const o=c.querySelector('.ord');o.style.display=idx>-1?'flex':'none';o.textContent=idx+1;
+  });
+}
+
+/* ---------- step 4 ---------- */
+async function toReview(){
+  const f=readFields();
+  const model=(document.getElementById('model').value||'').trim();
+  // download + resize picked photos now so publish is one click
+  S.photoData={};
+  for(const i of S.picked){
+    const src=S.page.images[i].src;
+    try{
+      const blob=await (await fetch('/api/fetch-image?url='+encodeURIComponent(src))).blob();
+      S.photoData[src]=await resizeBlob(blob);
+    }catch(e){alert('Could not fetch photo '+src+' — it will be skipped.');}
+  }
+  const got=S.picked.map(i=>S.page.images[i].src).filter(s=>S.photoData[s]);
+  const specbits=S.kind==='mowers'
+    ?[f.hp?f.hp+' HP':null,f.decks?String(f.decks).split(',').map(d=>d.trim()+'″').join(' / ')+' decks':null,f.fuel].filter(Boolean)
+    :S.kind==='implements'
+    ?[f.category,f.duty?f.duty+' duty':null,f.widthIn?f.widthIn+'″':f.width?f.width+'′':null].filter(Boolean)
+    :[f.hp?f.hp+' HP':null,(document.getElementById('station')||{}).value,f.transmission].filter(Boolean);
+  document.getElementById('previewBox').innerHTML=
+    '<div class="preview"><div class="pi">'+(got.length?'<img src="'+esc(S.photoData[got[0]])+'">':'<span class="muted" style="padding:.8rem;text-align:center">Photo coming to the lot<br>(placeholder)</span>')+'</div>'
+    +'<div class="pt"><div class="nm">'+esc(model)+'</div><div class="specline">'+specbits.map(esc).join(' · ')+'</div>'
+    +'<p style="font-size:.93rem">'+esc(f.blurb||'')+'</p>'
+    +(got.length>1?'<p class="muted" style="margin-top:.4rem">+'+(got.length-1)+' gallery photo'+(got.length>2?'s':'')+'</p>':'')
+    +'<p class="muted" style="margin-top:.6rem">'+(f.price?'Price: $'+f.price:'Price: “Call for price” (tap-to-call)')+'</p></div></div>';
+  document.getElementById('branch').value='builder/new-'+slugify(model)+'-'+new Date().toISOString().slice(0,10);
+  document.getElementById('commitmsg').value='Add '+KINDMETA[S.kind].label+' '+model+' via product builder';
+  unlock('s4');document.getElementById('s4').scrollIntoView({behavior:'smooth'});
+}
+function resizeBlob(blob){return new Promise((res,rej)=>{const img=new Image();const u=URL.createObjectURL(blob);
+  img.onload=()=>{const MAX=1400;const sc=Math.min(1,MAX/Math.max(img.width,img.height));
+    const c=document.createElement('canvas');c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',0.85));};
+  img.onerror=rej;img.src=u;});}
+
+/* ---------- build the new item + files ---------- */
+function buildItem(paths){
+  const f=readFields();
+  const model=(document.getElementById('model').value||'').trim();
+  const drop=o=>{const r={};for(const[k,v]of Object.entries(o)){if(v!==undefined&&v!==''&&v!==null)r[k]=v;}return r;};
+  if(S.kind==='tym'||S.kind==='badboy'){
+    return drop({model,hp:f.hp,series:S.kind==='tym'?f.series:(f.series_name||'').replace(/\s*Series$/i,''),
+      series_name:S.kind==='badboy'?f.series_name:undefined,
+      cab:(document.getElementById('station')||{}).value==='Cab',
+      url:S.page.url,image:paths[0],blurb:f.blurb,engine:f.engine,drive:f.drive,
+      transmission:f.transmission,loader_lift_lbs:f.loader_lift_lbs,fuel:f.fuel});
+  }
+  if(S.kind==='mowers'){
+    return drop({model,cat:f.cat,type:f.type,engine:f.engine,hp:f.hp,decks:f.decks,fuel:f.fuel,
+      drive:f.drive,transmission:f.transmission,price:f.price,image:paths[0],url:S.page.url,blurb:f.blurb});
+  }
+  const cat=(window.JJ_CATEGORIES||[]).find(c=>c.category===f.category)||{};
+  return drop({id:slugify(model),brand:f.brand,group:cat.group,category:f.category,duty:f.duty,
+    name:model,attach:f.attach,hitch:f.hitch,width:f.width,widthIn:f.widthIn,weight:f.weight,
+    hpMin:f.hpMin,hpMax:f.hpMax,price:f.price,fitNote:f.fitNote,sku:f.sku,img:paths[0],page:S.page.url});
+}
+function sheetRowFor(item){
+  const f=readFields(),g=v=>v??'';
+  if(S.kind==='tym'||S.kind==='badboy')
+    return['Active',S.kind==='tym'?'TYM':'Bad Boy',item.model,'','',g(item.hp),g(item.series),g(item.series_name),item.cab?'Cab':'Open Station',g(item.transmission),g(item.drive),g(item.loader_lift_lbs),g(item.engine),g(item.fuel),'',g(item.blurb),g(item.image),g(item.url),'',''].join('\t');
+  if(S.kind==='mowers')
+    return['Active','Bad Boy',item.model,'',g(item.cat),g(item.type),g(item.engine),g(item.hp),g(item.decks),g(item.fuel),g(item.drive),g(item.transmission),g(item.price),g(item.blurb),g(item.image),g(item.url),'',''].join('\t');
+  return['Active',g(item.group),g(item.category),item.name,'',g(item.brand),g(item.attach),g(item.hitch),g(item.duty),g(item.width),g(item.widthIn),g(item.weight),g(item.hpMin),g(item.hpMax),g(item.price),g(item.img),'',g(item.fitNote),g(item.sku),''].join('\t');
+}
+
+/* ---------- publish ---------- */
+async function gh(path,opts={}){
+  const t=localStorage.getItem('jj_ghtoken');if(!t)throw new Error('Add your GitHub token in Settings (⚙) first');
+  const r=await fetch('https://api.github.com/repos/'+OWNER+'/'+REPO+path,{...opts,headers:{
+    'Authorization':'Bearer '+t,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(opts.headers||{})}});
+  const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(path+' → '+r.status+' '+(j.message||''));return j;
+}
+async function publish(){
+  const log=document.getElementById('publog');log.style.display='block';log.textContent='';
+  const say=s=>{log.textContent+=s+'\n';log.scrollTop=1e9;};
+  const btn=document.getElementById('pubbtn');btn.disabled=true;
+  try{
+    const k=KINDMETA[S.kind];
+    const model=(document.getElementById('model').value||'').trim();
+    if(k.arr().some(m=>String(m.model||m.name||'').toLowerCase()===model.toLowerCase()))
+      throw new Error('“'+model+'” already exists on the site — this wizard only adds new products.');
+    const branch=document.getElementById('branch').value.trim();
+    const msg=document.getElementById('commitmsg').value.trim();
+
+    // photo repo paths
+    const srcs=S.picked.map(i=>S.page.images[i].src).filter(s=>S.photoData[s]);
+    const base=S.kind==='implements'?slugify(model):slugify((S.kind==='mowers'?'bad-boy-':'')+model);
+    const paths=srcs.map((s,i)=>'img/uploads/'+base+'-'+Date.now().toString(36)+i+'.jpg');
+
+    const item=buildItem(paths);
+    const arr=k.arr().concat([item]);
+    const files={};
+    if(S.kind==='implements'){
+      const counts={};arr.forEach(i=>counts[i.category]=(counts[i.category]||0)+1);
+      const cats=(window.JJ_CATEGORIES||[]).map(c=>({...c,count:counts[c.category]||0}));
+      files[k.file]='window.JJ_IMPLEMENTS='+JSON.stringify(arr)+';\n'
+        +'window.JJ_CATEGORIES='+JSON.stringify(cats)+';\n'
+        +'window.JJ_GROUP_ORDER='+JSON.stringify(window.JJ_GROUP_ORDER||[])+';';
+    }else{
+      files[k.file]='window.'+k.global+'='+JSON.stringify(arr)+';';
+    }
+    if(k.galBrand&&paths.length>1){
+      // merge extra tractor photos into the uploads gallery (additive, never clobbers)
+      const txt=await (await fetch('/js/uploads-gallery.data.js')).text();
+      let cur={};const m=txt.match(/Object\.assign\(window\.TRACTOR_GALLERY\|\|\{\},\s*(\{[\s\S]*\})\)/);
+      if(m){try{cur=JSON.parse(m[1]);}catch(e){}}
+      cur[k.galBrand+'|'+model]=paths.slice(1);
+      files['js/uploads-gallery.data.js']='// Gallery entries managed by /admin/photos/ and the product builder.\n'
+        +'window.TRACTOR_GALLERY=Object.assign(window.TRACTOR_GALLERY||{}, '+JSON.stringify(cur)+');';
+    }
+
+    say('base: '+BASE_BRANCH+' → branch: '+branch);
+    const ref=await gh('/git/ref/heads/'+BASE_BRANCH);
+    try{await gh('/git/refs',{method:'POST',body:JSON.stringify({ref:'refs/heads/'+branch,sha:ref.object.sha})});say('branch created');}
+    catch(e){say('branch exists — updating it');}
+    for(let i=0;i<paths.length;i++){
+      await gh('/contents/'+paths[i],{method:'PUT',body:JSON.stringify({message:msg+' — photo',branch,content:S.photoData[srcs[i]].split(',')[1]})});
+      say('uploaded '+paths[i]);
+    }
+    for(const[path,content]of Object.entries(files)){
+      let sha;try{sha=(await gh('/contents/'+path+'?ref='+branch)).sha;}catch(e){}
+      await gh('/contents/'+path,{method:'PUT',body:JSON.stringify({message:msg+' — '+path,branch,
+        content:btoa(unescape(encodeURIComponent(content))),...(sha?{sha}:{})})});
+      say('committed '+path);
+    }
+    say('\n✓ Published. The regenerate Action is rebuilding pages now.');
+    say('Preview (after Cloudflare builds): https://'+branch.replace(/[^a-z0-9-]/g,'-')+'.jjriggs-new.pages.dev');
+    say('Open a PR: https://github.com/'+OWNER+'/'+REPO+'/compare/'+BASE_BRANCH+'...'+encodeURIComponent(branch)+'?expand=1');
+
+    document.getElementById('sheetRow').innerHTML='<div class="sheetbox"><b>Last step — keep the sheet as the source of truth.</b>'
+      +'<p class="muted" style="margin:.3rem 0 .6rem">Copy this row and paste it into the <b>'+(S.kind==='mowers'?'Mowers':S.kind==='implements'?'Implements':'Tractors')+'</b> tab of the JJ Riggs Inventory Master sheet (click the first empty row, then paste — the tabs line up with the columns). Skip this and the next sheet import will think this product was removed.</p>'
+      +'<textarea readonly id="tsv">'+esc(sheetRowFor(item))+'</textarea>'
+      +'<button class="btn sm" style="margin-top:.5rem" onclick="navigator.clipboard.writeText(document.getElementById(\'tsv\').value).then(()=>this.textContent=\'✓ Copied\')">Copy row for the sheet</button></div>';
+  }catch(e){say('ERROR: '+e.message);btn.disabled=false;}
+}
+
+/* ---------- misc ---------- */
+function unlock(id){document.getElementById(id).classList.remove('locked');}
+function loadSettings(){for(const k of ['ghtoken','claudekey','claudemodel']){const v=localStorage.getItem('jj_'+k);if(v)document.getElementById(k).value=v;}}
+function saveSettings(){for(const k of ['ghtoken','claudekey','claudemodel']){localStorage.setItem('jj_'+k,document.getElementById(k).value.trim());}document.getElementById('settings').close();}
+loadSettings();
+</script>
+</body>
+</html>

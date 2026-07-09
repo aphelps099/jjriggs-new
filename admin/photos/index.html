@@ -114,6 +114,7 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
 <header class="bar"><div class="wrap">
   <div class="t">Photo Editor <small>fix product page photos · nothing changes on the site until you publish &amp; merge</small></div>
   <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+    <a class="btn ghost sm" href="/admin/new/">＋ New product</a>
     <a class="btn ghost sm" href="/admin/">⇤ Inventory Builder</a>
     <button class="btn ghost sm" onclick="document.getElementById('settings').showModal()">⚙ Settings</button>
   </div>
@@ -522,6 +523,15 @@ function saveSettings(){localStorage.setItem('jj_ghtoken',document.getElementByI
 
 /* ---------- boot ---------- */
 loadSettings();renderList();
+// deep link from the live-page edit pencil: ?open=<kind>|<model>  (implements: implements|<category>|<name>)
+(function(){
+  const q=new URLSearchParams(location.search).get('open');if(!q)return;
+  const parts=q.split('|'),kind=parts[0],k=KINDS[kind];if(!k)return;
+  const i=k.arr().findIndex(m=>kind==='implements'
+    ?(m.category===parts[1]&&m.name===parts[2])
+    :String(m.model).toLowerCase()===String(parts[1]||'').toLowerCase());
+  if(i>-1){openProduct(pid(kind,i));document.getElementById('pane').scrollIntoView();}
+})();
 window.addEventListener('beforeunload',e=>{if(dirtyIds().length){e.preventDefault();e.returnValue='';}});
 </script>
 </body>
