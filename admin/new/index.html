@@ -71,9 +71,9 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
 </head>
 <body>
 <header class="bar"><div class="wrap">
-  <div class="t">New Product <small>fetch the facts, keep only what's true, pick real photos · publishes to a preview branch</small></div>
+  <div class="t">New Product <small>fetch the facts, keep only what's true, pick real photos · live in about a minute</small></div>
   <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
-    <a class="btn ghost sm" href="/admin/photos/">📷 Photo editor</a>
+    <a class="btn ghost sm" href="/admin/photos/">📷 Product editor</a>
     <a class="btn ghost sm" href="/admin/">⇤ Inventory Builder</a>
     <button class="btn ghost sm" onclick="document.getElementById('settings').showModal()">⚙ Settings &amp; keys</button>
   </div>
@@ -113,7 +113,7 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
     <h2><span class="n">3</span>Pick the photos</h2>
     <p class="muted" id="photoHelp"></p>
     <div id="imgrid" class="imgrid"></div>
-    <p class="muted" style="margin-top:.8rem">Nothing usable here? Skip photos — the page shows a branded “Photo coming to the lot” placeholder, and you can add your own shots later in the <a href="/admin/photos/">Photo editor</a>. A placeholder always beats a wrong photo.</p>
+    <p class="muted" style="margin-top:.8rem">Nothing usable here? Skip photos — the page shows a branded “Photo coming to the lot” placeholder, and you can add your own shots later in the <a href="/admin/photos/">Product editor</a>. A placeholder always beats a wrong photo.</p>
     <button class="btn" style="margin-top:.8rem" onclick="toReview()">Continue ›</button>
   </section>
 
@@ -238,7 +238,7 @@ function checkDup(){
   const k=KINDMETA[S.kind];
   const names=m=>String(m.model||m.name||'').toLowerCase();
   const hit=k.arr().find(m=>names(m)===v);
-  if(hit){el.innerHTML='<span class="pill warn">Already on the site</span> <span class="muted">“'+esc(hit.model||hit.name)+'” exists — to change its photos use the <a href="/admin/photos/">Photo editor</a>; to change its specs use the sheet + <a href="/admin/">builder</a>.</span>';return;}
+  if(hit){el.innerHTML='<span class="pill warn">Already on the site</span> <span class="muted">“'+esc(hit.model||hit.name)+'” exists — to change its photos (or remove it from the site) use the <a href="/admin/photos/">Product editor</a>; to change its specs use the sheet + <a href="/admin/">builder</a>.</span>';return;}
   // near-miss: "4025" when the site has "4025H" (or vice versa) is usually the SAME machine
   const near=v.length>=3?k.arr().filter(m=>names(m).includes(v)||v.includes(names(m))).slice(0,4):[];
   if(near.length)el.innerHTML='<span class="pill warn">Similar model already on the site</span> <span class="muted">'+near.map(m=>'“'+esc(m.model||m.name)+'”').join(', ')+' — make sure this isn\'t the same machine under a slightly different name. One tractor must never have two pages.</span>';
