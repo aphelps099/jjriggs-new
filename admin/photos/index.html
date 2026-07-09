@@ -174,7 +174,7 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
 <dialog id="settings">
   <div class="dbody">
     <h2>Settings</h2>
-    <p class="muted">Stored only in this browser (localStorage), never committed anywhere. Same token the Inventory Builder uses. <b>Saved per device and per web address</b> — if you set it on another domain (or a preview URL), paste it again here once.</p>
+    <p class="muted"><b>Fallback only.</b> Once Aaron finishes the one-time server setup (ADMIN-ACCESS-SETUP.md), this stays empty — the site holds the keys and nobody pastes anything. If you do use it: stored only in this browser (localStorage), saved per device and per web address.</p>
     <div style="margin-top:.9rem"><label>GitHub fine-grained token (repo: aphelps099/jjriggs-new, Contents: read/write)</label><input type="password" id="ghtoken"></div>
     <div style="margin-top:1.1rem;display:flex;gap:.6rem">
       <button class="btn sm" onclick="saveSettings()">Save</button>
@@ -192,10 +192,11 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
 <script src="/js/uploads-gallery.data.js"></script>
 <script src="/js/tractor-features.data.js"></script>
 <script src="/js/mower-features.data.js"></script>
+<script src="/admin/common.js"></script>
 
 <script>
 'use strict';
-const OWNER='aphelps099', REPO='jjriggs-new', BASE_BRANCH='main';
+const OWNER=JJ.OWNER, REPO=JJ.REPO, BASE_BRANCH=JJ.BASE_BRANCH;
 const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const slugify=s=>String(s).toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 // display src: repo-relative paths need a leading / because this page lives at /admin/photos/
@@ -476,13 +477,7 @@ function openReview(){
   document.getElementById('review').showModal();
 }
 
-/* ---------- publish (same GitHub flow as the builder) ---------- */
-async function gh(path,opts={}){
-  const t=localStorage.getItem('jj_ghtoken');if(!t)throw new Error('Add your GitHub token in Settings (⚙, top right) first');
-  const r=await fetch('https://api.github.com/repos/'+OWNER+'/'+REPO+path,{...opts,headers:{
-    'Authorization':'Bearer '+t,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(opts.headers||{})}});
-  const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(path+' → '+r.status+' '+(j.message||''));return j;
-}
+/* ---------- publish (server-first via /api/admin/publish, legacy fallback) ---------- */
 async function publish(){
   const log=document.getElementById('publog');log.style.display='block';log.textContent='';
   const say=s=>{log.textContent+=s+'\n';log.scrollTop=1e9;};
@@ -491,32 +486,12 @@ async function publish(){
     const branch=document.getElementById('branch').value.trim();
     const msg=document.getElementById('commitmsg').value.trim()||'Photo updates via photo editor';
     const{files,uploads,deletions}=genFiles();
-    say('base: '+BASE_BRANCH+' → branch: '+branch);
-    const ref=await gh('/git/ref/heads/'+BASE_BRANCH);
-    try{await gh('/git/refs',{method:'POST',body:JSON.stringify({ref:'refs/heads/'+branch,sha:ref.object.sha})});say('branch created');}
-    catch(e){say('branch exists — updating it');}
-    for(const[path,b64]of Object.entries(uploads)){
-      let sha;try{sha=(await gh('/contents/'+path+'?ref='+branch)).sha;}catch(e){}
-      await gh('/contents/'+path,{method:'PUT',body:JSON.stringify({message:msg+' — photo '+path,branch,content:b64,...(sha?{sha}:{})})});
-      say('uploaded '+path);
-    }
-    for(const[path,content]of Object.entries(files)){
-      let sha;try{sha=(await gh('/contents/'+path+'?ref='+branch)).sha;}catch(e){}
-      await gh('/contents/'+path,{method:'PUT',body:JSON.stringify({message:msg+' — '+path,branch,
-        content:btoa(unescape(encodeURIComponent(content))),...(sha?{sha}:{})})});
-      say('committed '+path);
-    }
-    for(const path of deletions){
-      try{const cur=await gh('/contents/'+path+'?ref='+branch);
-        await gh('/contents/'+path,{method:'DELETE',body:JSON.stringify({message:msg+' — remove unused '+path,branch,sha:cur.sha})});
-        say('deleted '+path);
-      }catch(e){say('skip delete '+path+' ('+e.message+')');}
-    }
+    await JJ.publish({branch,message:msg,files,photos:uploads,deletions},say);
     say('\n✓ Published to the preview branch.');
     say('Preview (after Cloudflare builds): https://'+branch.replace(/[^a-z0-9-]/g,'-')+'.jjriggs-new.pages.dev');
     say('Open a PR to make it live: https://github.com/'+OWNER+'/'+REPO+'/compare/'+BASE_BRANCH+'...'+encodeURIComponent(branch)+'?expand=1');
     say('\nThis editor still shows the site as it is today — reload the page after the PR merges.');
-  }catch(e){say('ERROR: '+e.message);btn.disabled=false;}
+  }catch(e){say('ERROR: '+JJ.explain(e));btn.disabled=false;}
 }
 
 /* ---------- settings ---------- */
