@@ -58,7 +58,10 @@ details{margin:.4rem 0}summary{cursor:pointer;font-weight:600}
 <body>
 <header class="bar"><div class="wrap">
   <div class="t">Inventory Builder <small>internal tool · nothing here publishes without your click</small></div>
-  <button class="btn ghost sm" onclick="document.getElementById('settings').showModal()">⚙ Settings & keys</button>
+  <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+    <a class="btn ghost sm" href="/admin/photos/" style="color:#fff;text-decoration:none">📷 Photo editor</a>
+    <button class="btn ghost sm" onclick="document.getElementById('settings').showModal()">⚙ Settings & keys</button>
+  </div>
 </div></header>
 
 <div class="wrap">
@@ -113,6 +116,7 @@ details{margin:.4rem 0}summary{cursor:pointer;font-weight:600}
     <div class="card">
       <h2>Upload photos & map to a product</h2>
       <p class="muted">Pick the product, then drop up to 5 photos. They're resized and compressed right here in the browser. The <b>first</b> photo becomes the product's main image; extra photos go to the product page gallery (tractors). Works with or without a CSV import — photo-only updates are fine. Alt text is generated automatically from the product name on the site.</p>
+      <p class="muted" style="margin-top:.5rem">Need to <b>remove, reorder, or swap</b> photos already on a page? Use the <a href="/admin/photos/">Photo editor</a> — it shows every product's current photos and lets you fix them visually.</p>
       <div class="grid2" style="margin:.9rem 0">
         <div><label>Product</label><select id="photoTarget"></select></div>
         <div><label>Photos (first = main image)</label><div class="droptab" id="drop-photos">drop up to 5 images / click</div></div>
