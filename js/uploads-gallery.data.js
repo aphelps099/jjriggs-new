@@ -1,4 +1,4 @@
 // Gallery entries managed by /admin/photos/ (and the /admin/ builder photo upload).
 // Loads AFTER js/badboy-tractor-images.data.js, so a key here OVERRIDES that
 // model's hand-maintained gallery — never edit that file from admin tools.
-window.TRACTOR_GALLERY=Object.assign(window.TRACTOR_GALLERY||{}, {"TYM|T224":["img/uploads/t224-mrdndw8y0.jpg","img/uploads/t224-mrdne0q81.jpg"]});
+window.TRACTOR_GALLERY=Object.assign(window.TRACTOR_GALLERY||{}, {"TYM|T224":["img/uploads/t224-mrdndw8y0.jpg","img/uploads/t224-mrdne0q81.jpg"],"Bad Boy|1022H":["img/bb-tractor-images/1022/1022_implements_2.png","img/bb-tractor-images/1022/1022_header_2.jpg","img/bb-tractor-images/1022/1022_feature_2.jpg","img/bb-tractor-images/1022/1022_any_task_1.jpg","img/bb-tractor-images/1022/1022_comfortable_1.jpg","img/bb-tractor-images/1022/1022_perfect_fit_2.jpg","img/bb-tractor-images/1022/1022_powertrain_1.jpg","img/bb-tractor-images/1022/1022_tough_1.jpg","img/bb-tractor-images/1022/1022_work_2.jpg"]});
