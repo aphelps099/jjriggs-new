@@ -41,14 +41,14 @@ const impl = load("implements-data.js");
 // ---------- ① Tractors ----------
 const tractorHead = ["status","brand","model","display_name","sort","hp","series","series_name","station","transmission","drive","loader_lift_lbs","engine","fuel","price","blurb","image_current","manufacturer_url","featured","notes"];
 const tractorRows = [
-  ...tym.map((m) => ["Active","TYM",m.model,"",m.sort ?? "",m.hp,m.series,"",m.cab ? "Cab" : "Open Station",m.transmission || "",m.drive || "",m.loader_lift_lbs || "",m.engine || "",m.fuel || "","",m.blurb || "",m.image || "",m.url || "","",""]),
-  ...bb.map((m) => ["Active","Bad Boy",m.model,"",m.sort ?? "",m.hp,m.series,m.series_name || "",m.cab ? "Cab" : "Open Station",m.transmission || "",m.drive || "",m.loader_lift_lbs || "",m.engine || "",m.fuel || "","",m.blurb || "",m.image || "",m.url || "","",(m.use_tags || []).join("; ")]),
+  ...tym.map((m) => ["Active","TYM",m.model,"",m.sort ?? "",m.hp,m.series,"",m.cab ? "Cab" : "Open Station",m.transmission || "",m.drive || "",m.loader_lift_lbs ?? "",m.engine || "",m.fuel || "","",m.blurb || "",m.image || "",m.url || "","",""]),
+  ...bb.map((m) => ["Active","Bad Boy",m.model,"",m.sort ?? "",m.hp,m.series,m.series_name || "",m.cab ? "Cab" : "Open Station",m.transmission || "",m.drive || "",m.loader_lift_lbs ?? "",m.engine || "",m.fuel || "","",m.blurb || "",m.image || "",m.url || "","",(m.use_tags || []).join("; ")]),
 ];
 writeFileSync(join(out, "Tractors.csv"), csv([tractorHead, ...tractorRows]));
 
 // ---------- ② Mowers ----------
 const mowerHead = ["status","brand","model","sort","category","type","engine","hp","decks","fuel","drive","transmission","price","blurb","image_current","manufacturer_url","featured","notes"];
-const mowerRows = mowers.map((m) => ["Active","Bad Boy",m.model,"",m.cat || "",m.type || "",m.engine || "",m.hp || "",Array.isArray(m.decks) ? m.decks.join("; ") : m.decks || "",m.fuel || "",m.drive || "",m.transmission || "",m.price || "",m.blurb || "",m.image || "",m.url || "","",""]);
+const mowerRows = mowers.map((m) => ["Active","Bad Boy",m.model,"",m.cat || "",m.type || "",m.engine || "",m.hp ?? "",Array.isArray(m.decks) ? m.decks.join("; ") : m.decks || "",m.fuel || "",m.drive || "",m.transmission || "",m.price || "",m.blurb || "",m.image || "",m.url || "","",""]);
 writeFileSync(join(out, "Mowers.csv"), csv([mowerHead, ...mowerRows]));
 
 // ---------- ③ Implements (variant schema) ----------
@@ -57,9 +57,20 @@ writeFileSync(join(out, "Mowers.csv"), csv([mowerHead, ...mowerRows]));
 // Site data stores width in FEET (`width`, e.g. rotary cutters) or INCHES
 // (`widthIn`, e.g. grapples) — size_label carries the unit explicitly.
 const implHead = ["status","group","category","style_name","size_label","brand","attach","hitch","duty","width_ft","width_in","weight_lbs","hp_min","hp_max","price","image_current","new_photo_url","fit_note","sku","notes"];
+// split a leading/trailing/embedded size token out of the name so style_name
+// groups size variants (matches tools/generate-implement-pages.mjs)
+const SIZE_RES = [/^\s*(\d+(?:\.\d+)?\s*')\s+/, /^\s*(\d+\s*")\s+/, /\s*\((\d+(?:\.\d+)?\s*["'])\)\s*$/, /\s+(\d+(?:\.\d+)?\s*["'])\s*$/, /\s(\d+(?:\.\d+)?\s*")\s/];
+function splitSize(name) {
+  for (const re of SIZE_RES) {
+    const m = (name || "").match(re);
+    if (m) return { style: name.replace(re, " ").replace(/\s{2,}/g, " ").trim(), size: m[1].replace(/\s+/g, "") };
+  }
+  return { style: name, size: "" };
+}
 const implRows = (impl.JJ_IMPLEMENTS || []).map((it) => {
-  const size = it.widthIn != null ? `${it.widthIn}"` : it.width != null ? `${it.width}'` : "";
-  return ["Active",it.group || "",it.category || "",it.name || "",size,it.brand || "",it.attach || "",it.hitch || "",it.duty || "",it.width ?? "",it.widthIn ?? "",it.weight || "",it.hpMin || "",it.hpMax || "","",it.img || "","",it.fitNote || "",it.sku || "",""];
+  const { style, size: parsed } = splitSize(it.name);
+  const size = parsed || (it.widthIn != null ? `${it.widthIn}"` : it.width != null ? `${it.width}'` : "");
+  return ["Active",it.group || "",it.category || "",style,size,it.brand || "",it.attach || "",it.hitch || "",it.duty || "",it.width ?? "",it.widthIn ?? "",it.weight ?? "",it.hpMin ?? "",it.hpMax ?? "","",it.img || "","",it.fitNote || "",it.sku || "",""];
 });
 writeFileSync(join(out, "Implements.csv"), csv([implHead, ...implRows]));
 

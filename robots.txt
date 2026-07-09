@@ -10,6 +10,7 @@ Disallow: /MyWebfontsKit/
 Disallow: /font-sample/
 Disallow: /jjriggs_lot_images/
 Disallow: /bb-tractor-images/
+Disallow: /admin/
 # work-in-progress / preview pages
 Disallow: /builder.html
 Disallow: /test-combined.html
