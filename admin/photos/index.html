@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Photo Editor — JJ Riggs Equipment (internal)</title>
+<title>Product Editor — JJ Riggs Equipment (internal)</title>
 <meta name="robots" content="noindex,nofollow" />
 <link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet" />
@@ -86,6 +86,21 @@ label{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:#6a70
 .rm-chip img{width:44px;height:33px;object-fit:cover;filter:grayscale(.7);opacity:.75}
 .rm-chip button{border:0;background:none;color:var(--red-deep);font-family:inherit;font-weight:700;cursor:pointer;font-size:.82rem;text-decoration:underline}
 .note{background:#fdf8ec;border:1px solid #e7d9ae;padding:.6rem .8rem;font-size:.88rem;color:#6a5a1f;margin-top:.8rem}
+.sheetbox{background:#f2f8f3;border:1px solid #bcd9c2;padding:1rem;margin-top:1rem;font-size:.93rem}
+.btn.danger{background:transparent;border-color:var(--red-deep);color:var(--red-deep)}
+.btn.danger:hover{background:var(--red-deep);color:#fff}
+
+/* ---- removed products (archive) ---- */
+.archsec{border-top:1px solid #e4e0d4}
+.archsec summary{cursor:pointer;font-family:"Michroma",sans-serif;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:#6a7077;padding:.7rem .8rem;list-style-position:inside}
+.archsec summary:hover{color:var(--ink)}
+.arch{display:flex;align-items:center;gap:.65rem;padding:.5rem .8rem;font-size:.9rem}
+.arch .th{width:52px;height:40px;flex:none;background:#eee9dd;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:.6rem;color:#9a9484}
+.arch .th img{width:100%;height:100%;object-fit:cover;filter:grayscale(.7);opacity:.75}
+.arch .nm{flex:1;min-width:0}
+.arch .nm b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arch .nm small{color:#6a7077;font-size:.74rem}
+.arch .btn.sm{flex:none}
 
 /* ---- empty state ---- */
 .empty{padding:3.5rem 1rem;text-align:center;color:#6a7077}
@@ -114,7 +129,7 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
 </head>
 <body>
 <header class="bar"><div class="wrap">
-  <div class="t">Photo Editor <small>fix product page photos · nothing changes on the site until you publish &amp; merge</small></div>
+  <div class="t">Product Editor <small>fix photos · remove &amp; restore products · nothing changes until you hit Publish</small></div>
   <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
     <a class="btn ghost sm" href="/admin/new/">＋ New product</a>
     <a class="btn ghost sm" href="/admin/">⇤ Inventory Builder</a>
@@ -135,9 +150,9 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
     <div class="card empty">
       <div class="big">Pick a product on the left</div>
       <ol>
-        <li><b>Choose</b> the tractor, mower, or implement whose photos need fixing.</li>
-        <li><b>Add</b> new photos (drag &amp; drop), <b>remove</b> wrong ones, <b>★ star</b> the one that should lead the page.</li>
-        <li><b>Publish</b> — you get a preview link to check before anything goes live.</li>
+        <li><b>Choose</b> the tractor, mower, or implement that needs attention.</li>
+        <li><b>Add</b> new photos (drag &amp; drop), <b>remove</b> wrong ones, <b>★ star</b> the one that should lead the page — or take the whole product off the site when it sells.</li>
+        <li><b>Publish</b> — it's on the live site in about a minute, and this page tells you the moment it's up.</li>
       </ol>
       <p class="muted" style="margin-top:1rem">Photos are resized in your browser automatically. Removing a photo here never breaks anything — it just comes off the page, and you can restore it before publishing.</p>
     </div>
@@ -174,6 +189,11 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
   </div>
 </dialog>
 
+<!-- remove / restore dialog -->
+<dialog id="lifecycle">
+  <div class="dbody" id="lcbody"></div>
+</dialog>
+
 <dialog id="settings">
   <div class="dbody">
     <h2>Settings</h2>
@@ -195,6 +215,7 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
 <script src="/js/uploads-gallery.data.js"></script>
 <script src="/js/tractor-features.data.js"></script>
 <script src="/js/mower-features.data.js"></script>
+<script src="/js/archived-products.data.js"></script>
 <script src="/admin/common.js"></script>
 
 <script>
@@ -228,6 +249,12 @@ const KINDS={
     live:m=>'/implements/'+slugify(m.category)+'/'}
 };
 const GA=()=>window.TRACTOR_GALLERY||{};
+
+/* ---------- archive (removed products) — mirrors js/archived-products.data.js ---------- */
+const ARCH=(window.JJ_ARCHIVED&&typeof window.JJ_ARCHIVED==='object')?window.JJ_ARCHIVED:{};
+for(const kk of Object.keys(KINDS))if(!Array.isArray(ARCH[kk]))ARCH[kk]=[];
+const SHEET_TAB={tym:'Tractors',badboy:'Tractors',mowers:'Mowers',implements:'Implements'};
+let ARCH_OPEN=false, LC=null;
 
 /* ---------- state ----------
    W[id]  working copy  {main, gallery:[...], removed:[{src,from}]}
@@ -275,9 +302,24 @@ function renderList(){
         +'<span class="ct">'+n+' 📷</span><span class="dirty" title="edited"></span></button>';
     }).join('');
   }
-  el.innerHTML=html||'<p class="muted" style="padding:1rem">No products match.</p>';
+  if(!html)html='<p class="muted" style="padding:1rem">No products match.</p>';
+  el.innerHTML=html+renderArchive();
+  const d=el.querySelector('.archsec');if(d)d.ontoggle=()=>{ARCH_OPEN=d.open;};
 }
 document.getElementById('q').oninput=renderList;
+
+function renderArchive(){
+  const n=Object.values(ARCH).reduce((s,a)=>s+a.length,0);
+  let inner;
+  if(!n)inner='<p class="muted" style="padding:.2rem .8rem .8rem;font-size:.84rem">Nothing here. When a unit sells, open it above and hit “Remove from site” — it lands here for one-click restore.</p>';
+  else inner=Object.entries(KINDS).map(([kind,k])=>ARCH[kind].map((it,i)=>{
+    const im=it[k.imgField];
+    return '<div class="arch"><span class="th">'+(im?'<img src="'+esc(disp(im))+'" alt="" loading="lazy">':'no photo')+'</span>'
+      +'<span class="nm"><b>'+esc(k.name(it))+'</b><small>'+esc(k.label)+' · removed '+esc(it.archivedAt||'')+'</small></span>'
+      +'<button class="btn ghost sm" onclick="askRestore(\''+kind+'\','+i+')">Restore</button></div>';
+  }).join('')).join('');
+  return '<details class="archsec"'+(ARCH_OPEN?' open':'')+'><summary>Removed products ('+n+')</summary>'+inner+'</details>';
+}
 
 /* ---------- editor pane ---------- */
 function openProduct(id){CUR=id;ensure(id);renderPane();renderList();}
@@ -317,7 +359,8 @@ function renderPane(){
    '<div class="phead"><div><div class="kind">'+esc(k.label)+(m.brand&&kindOf(id)==='implements'?' · '+esc(m.brand):'')+'</div><h1>'+esc(k.name(m))+'</h1></div>'
    +'<div class="grow"></div>'
    +(isDirty(id)?'<button class="btn ghost sm" onclick="revertProduct(\''+id+'\')">↩ Undo my changes</button>':'')
-   +'<a class="btn ghost sm" href="'+esc(k.live(m))+'" target="_blank" rel="noopener">See live page ↗</a></div>'
+   +'<a class="btn ghost sm" href="'+esc(k.live(m))+'" target="_blank" rel="noopener">See live page ↗</a>'
+   +'<button class="btn danger sm" onclick="askRemove()">✕ Remove from site…</button></div>'
 
    +'<div class="card"><h2>Main photo</h2>'
    +'<p class="muted">This is the first photo customers see'+(hasGallery(id)?'':' — this page shows one photo')+'. To swap it, star (★) a gallery photo or drop a replacement below.</p>'
@@ -418,6 +461,146 @@ function referenced(path){
   return false;
 }
 
+/* ---------- file serializers (one format for photo edits AND remove/restore) ---------- */
+function serializeKind(kind,arr){
+  const k=KINDS[kind];
+  if(kind!=='implements')return 'window.'+k.global+'='+JSON.stringify(arr)+';';
+  const counts={};arr.forEach(i=>counts[i.category]=(counts[i.category]||0)+1);
+  const cats=(window.JJ_CATEGORIES||[]).map(c=>({...c,count:counts[c.category]||0}));
+  return 'window.JJ_IMPLEMENTS='+JSON.stringify(arr)+';\n'
+    +'window.JJ_CATEGORIES='+JSON.stringify(cats)+';\n'
+    +'window.JJ_GROUP_ORDER='+JSON.stringify(window.JJ_GROUP_ORDER||[])+';';
+}
+function serializeGallery(map){
+  return '// Gallery entries managed by /admin/photos/ (and the /admin/ builder photo upload).\n'
+    +'// Loads AFTER js/badboy-tractor-images.data.js, so a key here OVERRIDES that\n'
+    +'// model\'s hand-maintained gallery — never edit that file from admin tools.\n'
+    +'window.TRACTOR_GALLERY=Object.assign(window.TRACTOR_GALLERY||{}, '+JSON.stringify(map)+');';
+}
+function serializeArchive(arch){
+  return '// Products removed from the site via /admin/photos/ — restore them there anytime.\n'
+    +'// Entries are the exact item objects moved out of the live data files, plus\n'
+    +'// archivedAt/archivedIndex (and archivedGallery for tractors) so Restore can\n'
+    +'// put everything back exactly as it was.\n'
+    +'window.JJ_ARCHIVED='+JSON.stringify(arch)+';\n';
+}
+
+/* ---------- remove / restore (archive, never delete) ---------- */
+function lifecycleBlocked(){
+  if(dirtyIds().length){alert('You have unpublished photo changes. Publish or discard them first — removing or restoring a product is its own publish.');return true;}
+  return false;
+}
+function openLifecycle(o){
+  document.getElementById('lcbody').innerHTML=
+    '<h2>'+o.title+'</h2>'+o.body
+    +'<div style="display:flex;gap:.6rem;margin-top:1.1rem;flex-wrap:wrap">'
+    +'<button class="btn'+(o.danger?' danger':'')+'" id="lcgo">'+o.btn+'</button>'
+    +'<button class="btn ghost" id="lccancel" onclick="document.getElementById(\'lifecycle\').close()">Cancel</button></div>'
+    +'<div class="log" id="lclog" style="margin-top:1rem;display:none"></div>'
+    +'<div id="lcafter"></div>';
+  document.getElementById('lcgo').onclick=o.go;
+  document.getElementById('lifecycle').showModal();
+}
+function lcSay(s){const log=document.getElementById('lclog');log.style.display='block';log.textContent+=s+'\n';log.scrollTop=1e9;}
+function lcDone(afterHtml){
+  document.getElementById('lcgo').style.display='none';
+  const c=document.getElementById('lccancel');c.textContent='Done';c.classList.remove('ghost');
+  document.getElementById('lcafter').innerHTML=afterHtml;
+}
+
+async function askRemove(){
+  if(!CUR||lifecycleBlocked())return;
+  const kind=kindOf(CUR),index=+CUR.split(':')[1],k=KINDS[kind],m=model(CUR),name=k.name(m);
+  // warn (don't block) if the homepage's hand-built Featured Equipment carousel shows this model
+  let featured=false;
+  try{
+    const t=await (await fetch('/index.html',{cache:'no-store'})).text();
+    const sec=((t.match(/<section class="featured"[\s\S]*?<\/section>/)||[])[0]||'').toLowerCase();
+    featured=sec.includes(String(name).toLowerCase())||(m.id&&sec.includes(String(m.id).toLowerCase()));
+  }catch(e){}
+  openLifecycle({
+    title:'Take “'+esc(name)+'” off the site?',
+    danger:true,btn:'Remove from the site ›',
+    body:'<p class="muted" style="margin-top:.4rem">It comes off the site in about a minute. <b>Nothing is deleted</b> — you can put it back anytime with one click from <b>Removed products</b> at the bottom of the product list.</p>'
+      +(featured?'<div class="note">⚠ This model appears in the <b>Featured Equipment</b> section on the homepage. That section is updated by hand, so the homepage card will NOT come off automatically — tell Aaron before removing.</div>':''),
+    go:()=>doRemove(kind,index),
+  });
+}
+async function doRemove(kind,index){
+  const k=KINDS[kind],arr=k.arr(),item=arr[index],name=k.name(item);
+  document.getElementById('lcgo').disabled=true;
+  try{
+    const entry={...item,archivedAt:new Date().toISOString().slice(0,10),archivedIndex:index};
+    const files={};
+    const galKey=k.galKey?k.galKey(item):null;
+    let nextGal=null;
+    if(galKey&&(window.UPLOADS_CURRENT||{})[galKey]){
+      entry.archivedGallery=window.UPLOADS_CURRENT[galKey];
+      nextGal={...window.UPLOADS_CURRENT};delete nextGal[galKey];
+      files['js/uploads-gallery.data.js']=serializeGallery(nextGal);
+    }
+    files[k.file]=serializeKind(kind,arr.slice(0,index).concat(arr.slice(index+1)));
+    const nextArch={...ARCH,[kind]:ARCH[kind].concat([entry])};
+    files['js/archived-products.data.js']=serializeArchive(nextArch);
+    await JJ.publish({target:'live',message:'Remove '+name+' from the site via product editor',files},lcSay);
+    // publish succeeded — update this page's in-memory state to match
+    arr.splice(index,1);
+    ARCH[kind]=nextArch[kind];
+    if(nextGal){window.UPLOADS_CURRENT=nextGal;if(window.TRACTOR_GALLERY)delete window.TRACTOR_GALLERY[galKey];}
+    for(const id of Object.keys(W)){delete W[id];delete B[id];}
+    CUR=null;ARCH_OPEN=true;renderList();updatePubbar();
+    document.getElementById('pane').innerHTML='<div class="card"><h2>Removed</h2><p>“'+esc(name)+'” is coming off the site now. Restore it anytime from <b>Removed products</b> at the bottom of the product list.</p></div>';
+    lcSay('\n✓ Published.');
+    lcDone('<div class="sheetbox"><b>Last step — keep the sheet truthful.</b>'
+      +'<p style="margin-top:.3rem">In the <b>'+SHEET_TAB[kind]+'</b> tab of the JJ Riggs Inventory Master sheet, find the row for “'+esc(name)+'” and change its <b>Status</b> to <b>Hidden</b>.</p>'
+      +'<p class="muted" style="margin-top:.4rem">Skip this and the next sheet import will put the product back on the site (the builder\'s diff screen would show it as an ADD first).</p></div>');
+    JJ.waitLive(k.file,files[k.file],lcSay);
+  }catch(e){lcSay('ERROR: '+JJ.explain(e));document.getElementById('lcgo').disabled=false;}
+}
+
+function askRestore(kind,i){
+  if(lifecycleBlocked())return;
+  const k=KINDS[kind],entry=ARCH[kind][i],name=k.name(entry);
+  if(k.arr().some(m=>String(k.name(m)).toLowerCase()===String(name).toLowerCase())){
+    alert('A product named “'+name+'” is already on the site — restoring this copy would create a duplicate. If it was re-added with the New Product wizard, this removed copy is stale.');return;
+  }
+  openLifecycle({
+    title:'Put “'+esc(name)+'” back on the site?',
+    btn:'Restore to the site ›',
+    body:'<p class="muted" style="margin-top:.4rem">It reappears in about a minute, exactly as it was when removed — same specs, same photos.</p>',
+    go:()=>doRestore(kind,i),
+  });
+}
+async function doRestore(kind,i){
+  const k=KINDS[kind],entry=ARCH[kind][i],name=k.name(entry);
+  document.getElementById('lcgo').disabled=true;
+  try{
+    const item={...entry};delete item.archivedAt;delete item.archivedIndex;delete item.archivedGallery;
+    const arr=k.arr();
+    const at=Math.min(entry.archivedIndex??arr.length,arr.length);
+    const files={};
+    files[k.file]=serializeKind(kind,arr.slice(0,at).concat([item],arr.slice(at)));
+    const nextArch={...ARCH,[kind]:ARCH[kind].filter((_,j)=>j!==i)};
+    files['js/archived-products.data.js']=serializeArchive(nextArch);
+    let nextGal=null;
+    if(entry.archivedGallery&&k.galKey){
+      nextGal={...window.UPLOADS_CURRENT,[k.galKey(item)]:entry.archivedGallery};
+      files['js/uploads-gallery.data.js']=serializeGallery(nextGal);
+    }
+    await JJ.publish({target:'live',message:'Restore '+name+' to the site via product editor',files},lcSay);
+    arr.splice(at,0,item);
+    ARCH[kind]=nextArch[kind];
+    if(nextGal){window.UPLOADS_CURRENT=nextGal;window.TRACTOR_GALLERY=Object.assign(window.TRACTOR_GALLERY||{},{[k.galKey(item)]:entry.archivedGallery});}
+    for(const id of Object.keys(W)){delete W[id];delete B[id];}
+    renderList();updatePubbar();openProduct(pid(kind,at));
+    lcSay('\n✓ Published.');
+    lcDone('<div class="sheetbox"><b>Last step — keep the sheet truthful.</b>'
+      +'<p style="margin-top:.3rem">In the <b>'+SHEET_TAB[kind]+'</b> tab of the JJ Riggs Inventory Master sheet, set the “'+esc(name)+'” row\'s <b>Status</b> back to <b>Active</b>.</p>'
+      +'<p class="muted" style="margin-top:.4rem">Skip this and the next sheet import will take the product off the site again.</p></div>');
+    JJ.waitLive(k.file,files[k.file],lcSay);
+  }catch(e){lcSay('ERROR: '+JJ.explain(e));document.getElementById('lcgo').disabled=false;}
+}
+
 /* ---------- generate files ---------- */
 function genFiles(){
   const files={};
@@ -438,24 +621,10 @@ function genFiles(){
       return c;
     });
   };
-  if(touched.tym)files['js/tym-models.data.js']='window.TYM_MODELS='+JSON.stringify(withEdits('tym'))+';';
-  if(touched.badboy)files['js/badboy-models.data.js']='window.BADBOY_MODELS='+JSON.stringify(withEdits('badboy'))+';';
-  if(touched.mowers)files['js/mower-models.data.js']='window.MOWER_MODELS='+JSON.stringify(withEdits('mowers'))+';';
-  if(touched.implements){
-    const impl=withEdits('implements');
-    const counts={};impl.forEach(i=>counts[i.category]=(counts[i.category]||0)+1);
-    const cats=(window.JJ_CATEGORIES||[]).map(c=>({...c,count:counts[c.category]||0}));
-    files['implements-data.js']='window.JJ_IMPLEMENTS='+JSON.stringify(impl)+';\n'
-      +'window.JJ_CATEGORIES='+JSON.stringify(cats)+';\n'
-      +'window.JJ_GROUP_ORDER='+JSON.stringify(window.JJ_GROUP_ORDER||[])+';';
-  }
-  if(Object.keys(galleryOverrides).length){
-    files['js/uploads-gallery.data.js']='// Gallery entries managed by /admin/photos/ (and the /admin/ builder photo upload).\n'
-      +'// Loads AFTER js/badboy-tractor-images.data.js, so a key here OVERRIDES that\n'
-      +'// model\'s hand-maintained gallery — never edit that file from admin tools.\n'
-      +'window.TRACTOR_GALLERY=Object.assign(window.TRACTOR_GALLERY||{}, '
-      +JSON.stringify({...(window.UPLOADS_CURRENT||{}),...galleryOverrides})+');';
-  }
+  for(const kind of Object.keys(touched))
+    if(touched[kind])files[KINDS[kind].file]=serializeKind(kind,withEdits(kind));
+  if(Object.keys(galleryOverrides).length)
+    files['js/uploads-gallery.data.js']=serializeGallery({...(window.UPLOADS_CURRENT||{}),...galleryOverrides});
   // photos to upload: new files still referenced after all edits
   const uploads={};for(const[p,v]of Object.entries(NEW))if(referenced(p))uploads[p]=v.b64;
   // photos to delete from the repo: session-removed img/uploads/* files nothing references anymore

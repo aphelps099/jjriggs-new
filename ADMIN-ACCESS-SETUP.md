@@ -38,7 +38,7 @@ Copy each (without the quotes) into the matching variable.
 
 1. Private window → `jjriggsequipment.com/admin/` → you should get the dark
    **JJ Riggs Admin** sign-in screen. Wrong passcode → error; right → tools.
-2. In the Photo editor, make a small change and Publish — the log should say
+2. In the Product editor, make a small change and Publish — the log should say
    *"publishing through the site — no keys on this device needed."*
 3. Send Andrew the URL + passcode. That's his entire onboarding.
 
