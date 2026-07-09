@@ -67,7 +67,8 @@ details{margin:.4rem 0}summary{cursor:pointer;font-weight:600}
     <button class="stepbtn on" data-step="import">1 · Import</button>
     <button class="stepbtn" data-step="review">2 · Validate & Diff</button>
     <button class="stepbtn" data-step="enrich">3 · Missing info</button>
-    <button class="stepbtn" data-step="publish">4 · Publish</button>
+    <button class="stepbtn" data-step="photos">4 · Photos</button>
+    <button class="stepbtn" data-step="publish">5 · Publish</button>
   </div>
 
   <!-- STEP 1 -->
@@ -107,7 +108,22 @@ details{margin:.4rem 0}summary{cursor:pointer;font-weight:600}
     </div>
   </section>
 
-  <!-- STEP 4 -->
+  <!-- STEP 4: PHOTOS -->
+  <section class="step" id="step-photos">
+    <div class="card">
+      <h2>Upload photos & map to a product</h2>
+      <p class="muted">Pick the product, then drop up to 5 photos. They're resized and compressed right here in the browser. The <b>first</b> photo becomes the product's main image; extra photos go to the product page gallery (tractors). Works with or without a CSV import — photo-only updates are fine. Alt text is generated automatically from the product name on the site.</p>
+      <div class="grid2" style="margin:.9rem 0">
+        <div><label>Product</label><select id="photoTarget"></select></div>
+        <div><label>Photos (first = main image)</label><div class="droptab" id="drop-photos">drop up to 5 images / click</div></div>
+      </div>
+      <div id="photoPreview" style="display:flex;gap:.6rem;flex-wrap:wrap"></div>
+      <button class="btn sm" id="photoApply" onclick="applyPhotos()" disabled style="margin-top:.6rem">Attach to product</button>
+      <div id="photoQueue" class="muted" style="margin-top:.8rem"></div>
+    </div>
+  </section>
+
+  <!-- STEP 5 -->
   <section class="step" id="step-publish">
     <div class="card">
       <h2>Publish to a preview branch</h2>
@@ -150,7 +166,13 @@ details{margin:.4rem 0}summary{cursor:pointer;font-weight:600}
 <script>
 'use strict';
 const OWNER='aphelps099', REPO='jjriggs-new', BASE_BRANCH='main';
-const S={imported:{}, generated:null, valid:false};
+const S={imported:{}, generated:null, valid:true}; // valid=true until an import introduces errors (photo-only publishing is allowed)
+// capture the CURRENT uploads-gallery entries so publishes merge, never clobber
+window.UPLOADS_GALLERY_CURRENT={};
+fetch('/js/uploads-gallery.data.js').then(r=>r.text()).then(t=>{
+  const m=t.match(/Object\.assign\(window\.TRACTOR_GALLERY\|\|\{\},\s*(\{[\s\S]*\})\)/);
+  if(m){try{window.UPLOADS_GALLERY_CURRENT=JSON.parse(m[1]);}catch(e){}}
+}).catch(()=>{});
 
 /* ---------- settings ---------- */
 function loadSettings(){for(const k of ['ghtoken','claudekey','claudemodel']){const v=localStorage.getItem('jj_'+k);if(v)document.getElementById(k).value=v;}}
@@ -256,7 +278,7 @@ function rebuild(){
     findDupes(G.implements.map(x=>x.category+'|'+x.name)).forEach(d=>errs.push('Implements: duplicate '+d));
   }
   S.generated=G;S.valid=errs.length===0;
-  renderValidation(errs,warns);renderDiff();renderGaps();renderFiles();
+  renderValidation(errs,warns);renderDiff();renderGaps();renderFiles();fillPhotoTargets();
 }
 function findDupes(keys){const seen={},d=new Set();keys.forEach(k=>{if(seen[k])d.add(k);seen[k]=1;});return[...d];}
 
@@ -341,27 +363,93 @@ function applyEnrich(i){
   renderDiff();renderGaps();renderFiles();
 }
 
+/* ---------- photos: upload, resize, map to product ---------- */
+S.photos={};          // repo path -> base64 (jpeg)
+S.imgTouched={tym:false,badboy:false,mowers:false,implements:false};
+S.galleryAdd={};      // "Brand|Model" -> [paths]
+S.pending=[];         // resized dataURLs awaiting attach
+// effective arrays: imported data if present, else a working copy of live data
+S.eff={};
+function eff(kind){
+  if(S.generated&&S.generated[kind])return S.generated[kind];
+  if(!S.eff[kind]){const src={tym:window.TYM_MODELS,badboy:window.BADBOY_MODELS,mowers:window.MOWER_MODELS,implements:window.JJ_IMPLEMENTS}[kind]||[];
+    S.eff[kind]=JSON.parse(JSON.stringify(src));}
+  return S.eff[kind];
+}
+function fillPhotoTargets(){
+  const sel=document.getElementById('photoTarget');const opt=(g,items,keyf,labf)=>'<optgroup label="'+g+'">'+items.map((m,i)=>'<option value=\''+esc(JSON.stringify({kind:g.toLowerCase().includes('tym')?'tym':g.toLowerCase().includes('bad')?'badboy':g.toLowerCase().includes('mower')?'mowers':'implements',i}))+'\'>'+esc(labf(m))+'</option>').join('')+'</optgroup>';
+  sel.innerHTML=opt('TYM tractors',eff('tym'),0,m=>m.model)+opt('Bad Boy tractors',eff('badboy'),0,m=>m.model)
+    +opt('Mowers',eff('mowers'),0,m=>m.model)+opt('Implements',eff('implements'),0,m=>m.category+' — '+m.name);
+}
+const slugify=s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+function resizeImage(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{
+  const MAX=1400;const sc=Math.min(1,MAX/Math.max(img.width,img.height));
+  const c=document.createElement('canvas');c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',0.85));};
+  img.onerror=rej;img.src=r.result;};r.readAsDataURL(file);});}
+(function(){const el=document.getElementById('drop-photos');
+  el.onclick=()=>{const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.multiple=true;inp.onchange=()=>takePhotos(inp.files);inp.click();};
+  el.ondragover=e=>e.preventDefault();el.ondrop=e=>{e.preventDefault();takePhotos(e.dataTransfer.files);};})();
+async function takePhotos(files){
+  S.pending=[];for(const f of [...files].slice(0,5))S.pending.push(await resizeImage(f));
+  document.getElementById('photoPreview').innerHTML=S.pending.map((d,i)=>'<div style="text-align:center"><img src="'+d+'" style="height:90px;border:2px solid '+(i?'#c9c5b8':'var(--red)')+'">'+(i?'':'<div class="muted" style="font-size:.7rem">main</div>')+'</div>').join('');
+  document.getElementById('photoApply').disabled=!S.pending.length;
+}
+function applyPhotos(){
+  const t=JSON.parse(document.getElementById('photoTarget').value);
+  const arr=eff(t.kind);const m=arr[t.i];if(!m){alert('pick a product');return;}
+  const base=t.kind==='implements'?slugify(m.name):slugify((t.kind==='mowers'?'bad-boy-':'')+(m.model));
+  const paths=S.pending.map((d,i)=>'img/uploads/'+base+'-'+(i+1)+'.jpg');
+  S.pending.forEach((d,i)=>{S.photos[paths[i]]=d.split(',')[1];});
+  if(t.kind==='implements')m.img=paths[0];else m.image=paths[0];
+  S.imgTouched[t.kind]=true;
+  if((t.kind==='tym'||t.kind==='badboy')&&paths.length>1){
+    const key=(t.kind==='tym'?'TYM|':'Bad Boy|')+m.model;
+    S.galleryAdd[key]=(S.galleryAdd[key]||[]).concat(paths.slice(1));
+  }
+  S.pending=[];document.getElementById('photoPreview').innerHTML='';document.getElementById('photoApply').disabled=true;
+  renderPhotoQueue();renderFiles();
+  const label=t.kind==='implements'?m.name:m.model;
+  document.getElementById('photoQueue').scrollIntoView({behavior:'smooth'});
+}
+function renderPhotoQueue(){
+  const n=Object.keys(S.photos).length;
+  document.getElementById('photoQueue').innerHTML=n?'<span class="pill ok">'+n+' photo'+(n>1?'s':'')+' queued</span> '+Object.keys(S.photos).map(esc).join(' · '):'';
+}
+
 /* ---------- generate files + publish ---------- */
 function genFiles(){
-  const G=S.generated||{};const files={};
-  if(G.tym)files['js/tym-models.data.js']='window.TYM_MODELS='+JSON.stringify(G.tym)+';';
-  if(G.badboy)files['js/badboy-models.data.js']='window.BADBOY_MODELS='+JSON.stringify(G.badboy)+';';
-  if(G.mowers)files['js/mower-models.data.js']='window.MOWER_MODELS='+JSON.stringify(G.mowers)+';';
-  if(G.implements){
+  const files={};
+  const G=S.generated||{};
+  const tym=G.tym||(S.imgTouched.tym?S.eff.tym:null);
+  const badboy=G.badboy||(S.imgTouched.badboy?S.eff.badboy:null);
+  const mowers=G.mowers||(S.imgTouched.mowers?S.eff.mowers:null);
+  const implementsA=G.implements||(S.imgTouched.implements?S.eff.implements:null);
+  if(tym)files['js/tym-models.data.js']='window.TYM_MODELS='+JSON.stringify(tym)+';';
+  if(badboy)files['js/badboy-models.data.js']='window.BADBOY_MODELS='+JSON.stringify(badboy)+';';
+  if(mowers)files['js/mower-models.data.js']='window.MOWER_MODELS='+JSON.stringify(mowers)+';';
+  if(implementsA){
     // recount categories from new data; keep current category meta + group order
-    const counts={};G.implements.forEach(i=>counts[i.category]=(counts[i.category]||0)+1);
+    const counts={};implementsA.forEach(i=>counts[i.category]=(counts[i.category]||0)+1);
     const cats=(window.JJ_CATEGORIES||[]).map(c=>({...c,count:counts[c.category]||0}));
-    files['implements-data.js']='window.JJ_IMPLEMENTS='+JSON.stringify(G.implements)+';\n'
+    files['implements-data.js']='window.JJ_IMPLEMENTS='+JSON.stringify(implementsA)+';\n'
       +'window.JJ_CATEGORIES='+JSON.stringify(cats)+';\n'
       +'window.JJ_GROUP_ORDER='+JSON.stringify(window.JJ_GROUP_ORDER||[])+';';
+  }
+  if(Object.keys(S.galleryAdd).length){
+    files['js/uploads-gallery.data.js']='// Gallery images added through the /admin/ inventory builder photo upload.\n'
+      +'window.TRACTOR_GALLERY=Object.assign(window.TRACTOR_GALLERY||{}, '+JSON.stringify({...(window.UPLOADS_GALLERY_CURRENT||{}),...S.galleryAdd})+');';
   }
   return files;
 }
 function renderFiles(){
-  const el=document.getElementById('filelist');if(!S.generated){el.textContent='';return;}
-  el.innerHTML='Files to commit: '+Object.keys(genFiles()).map(f=>'<code>'+esc(f)+'</code>').join(' · ')
+  const el=document.getElementById('filelist');
+  const files=Object.keys(genFiles()),photos=Object.keys(S.photos);
+  if(!files.length&&!photos.length){el.textContent='Nothing to publish yet.';document.getElementById('pubbtn').disabled=true;return;}
+  el.innerHTML='To commit: '+files.map(f=>'<code>'+esc(f)+'</code>').join(' · ')
+   +(photos.length?' + <span class="pill info">'+photos.length+' photo'+(photos.length>1?'s':'')+'</span>':'')
    +(S.valid?'':' — <span class="pill err">blocked by validation errors</span>');
-  document.getElementById('pubbtn').disabled=!S.valid||!Object.keys(genFiles()).length;
+  document.getElementById('pubbtn').disabled=!S.valid;
 }
 async function gh(path,opts={}){
   const t=localStorage.getItem('jj_ghtoken');if(!t)throw new Error('Add your GitHub token in Settings');
@@ -386,12 +474,18 @@ async function publish(){
         content:btoa(unescape(encodeURIComponent(content))),...(sha?{sha}:{})})});
       say('committed '+path);
     }
+    for(const[path,b64]of Object.entries(S.photos)){
+      let sha;try{sha=(await gh('/contents/'+path+'?ref='+branch)).sha;}catch(e){}
+      await gh('/contents/'+path,{method:'PUT',body:JSON.stringify({message:msg+' — photo '+path,branch,content:b64,...(sha?{sha}:{})})});
+      say('uploaded '+path);
+    }
     say('\n✓ Published. The regenerate Action is now rebuilding category pages.');
     say('Preview (after Cloudflare builds): https://'+branch.replace(/[^a-z0-9-]/g,'-')+'.jjriggs-new.pages.dev');
     say('Open a PR: https://github.com/'+OWNER+'/'+REPO+'/compare/'+BASE_BRANCH+'...'+encodeURIComponent(branch)+'?expand=1');
   }catch(e){say('ERROR: '+e.message);}
 }
 const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+fillPhotoTargets();renderFiles();
 </script>
 </body>
 </html>
