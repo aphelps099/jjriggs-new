@@ -6,8 +6,14 @@
 //   - deletions allowed only under img/uploads/
 //   - same-origin only (belt) + Cloudflare Access on /api/admin/* (suspenders)
 //
-// Job shape: { branch, message, files:{path:text}, photos:{path:base64jpeg},
-//              deletions:[path] }   →   { log:[...] }
+// Job shape: { target:'live'|'preview', branch?, message,
+//              files:{path:text}, photos:{path:base64jpeg}, deletions:[path] }
+//   →   { ok, live, log:[...] }
+//
+// target:'live' commits straight to main — the editor (Andrew/Aaron) IS the
+// review for inventory edits, and the path allowlist keeps live mode from
+// ever touching anything but inventory data + upload photos. 'preview'
+// keeps the builder/* branch + PR flow for changes worth checking first.
 
 import { hasValidSession } from "../../_auth.js";
 
@@ -38,8 +44,10 @@ export async function onRequestPost({ request, env }) {
   const photos = job.photos || {};
   const deletions = job.deletions || [];
   const message = String(job.message || "Update via admin tools").slice(0, 200);
+  const live = job.target === "live";
+  const branch = live ? BASE_BRANCH : job.branch;
 
-  if (!BRANCH_RE.test(job.branch || "")) return err("Branch must look like builder/…", 400);
+  if (!live && !BRANCH_RE.test(job.branch || "")) return err("Branch must look like builder/…", 400);
   for (const p of Object.keys(files)) if (!FILE_RE.test(p)) return err("File path not allowed: " + p, 400);
   for (const p of Object.keys(photos)) if (!PHOTO_RE.test(p)) return err("Photo path not allowed: " + p, 400);
   for (const p of deletions) if (!PHOTO_RE.test(p)) return err("Only img/uploads photos can be deleted: " + p, 400);
@@ -66,20 +74,24 @@ export async function onRequestPost({ request, env }) {
   };
 
   try {
-    log.push(`base: ${BASE_BRANCH} → branch: ${job.branch}`);
-    const ref = await gh("/git/ref/heads/" + BASE_BRANCH);
-    try {
-      await gh("/git/refs", { method: "POST", body: JSON.stringify({ ref: "refs/heads/" + job.branch, sha: ref.object.sha }) });
-      log.push("branch created");
-    } catch {
-      log.push("branch exists — updating it");
+    if (live) {
+      log.push("publishing straight to the live site (" + BASE_BRANCH + ")");
+    } else {
+      log.push(`base: ${BASE_BRANCH} → branch: ${branch}`);
+      const ref = await gh("/git/ref/heads/" + BASE_BRANCH);
+      try {
+        await gh("/git/refs", { method: "POST", body: JSON.stringify({ ref: "refs/heads/" + branch, sha: ref.object.sha }) });
+        log.push("branch created");
+      } catch {
+        log.push("branch exists — updating it");
+      }
     }
     const put = async (path, contentB64, label) => {
       let sha;
-      try { sha = (await gh("/contents/" + path + "?ref=" + job.branch)).sha; } catch {}
+      try { sha = (await gh("/contents/" + path + "?ref=" + branch)).sha; } catch {}
       await gh("/contents/" + path, {
         method: "PUT",
-        body: JSON.stringify({ message: message + " — " + path, branch: job.branch, content: contentB64, ...(sha ? { sha } : {}) }),
+        body: JSON.stringify({ message: message + " — " + path, branch, content: contentB64, ...(sha ? { sha } : {}) }),
       });
       log.push(label + " " + path);
     };
@@ -87,10 +99,10 @@ export async function onRequestPost({ request, env }) {
     for (const [path, text] of Object.entries(files)) await put(path, btoa(unescape(encodeURIComponent(text))), "committed");
     for (const path of deletions) {
       try {
-        const cur = await gh("/contents/" + path + "?ref=" + job.branch);
+        const cur = await gh("/contents/" + path + "?ref=" + branch);
         await gh("/contents/" + path, {
           method: "DELETE",
-          body: JSON.stringify({ message: message + " — remove unused " + path, branch: job.branch, sha: cur.sha }),
+          body: JSON.stringify({ message: message + " — remove unused " + path, branch, sha: cur.sha }),
         });
         log.push("deleted " + path);
       } catch (e) {
@@ -104,7 +116,7 @@ export async function onRequestPost({ request, env }) {
       headers: { "Content-Type": "application/json" },
     });
   }
-  return new Response(JSON.stringify({ ok: true, log }), {
+  return new Response(JSON.stringify({ ok: true, live, log }), {
     headers: { "Content-Type": "application/json" },
   });
 }

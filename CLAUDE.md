@@ -9,6 +9,6 @@ Non-negotiables:
 - Never invent specs, prices, or photos; never assign one model's photo to another.
 - Category/product pages render client-side from `js/*.data.js` + `implements-data.js`; features/galleries are keyed on exact `"Brand|Model"` strings — any model rename/removal must update those keys and be verified with a repo-wide grep plus a browser click-through (serve over http, not file://).
 - No frameworks, no build step, no CMS.
-- Nothing ships to the live domain without Andrew (the client) reviewing a test deploy.
+- Nothing ships to the live domain without Andrew (the client) reviewing a test deploy. (This governs code/design changes. Inventory data + photos published through the passcode-gated /admin tools go straight to main by design — there the editor IS the reviewer, and the publish endpoint's path allowlist keeps those publishes from touching code.)
 
 Skills in `.claude/skills/`: `jjriggs-web-designer` (design/UI work), `jjriggs-inventory-scout` (inventory data, gap audits, crawling).

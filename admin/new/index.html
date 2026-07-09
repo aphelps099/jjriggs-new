@@ -121,10 +121,11 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
   <section class="card locked" id="s4">
     <h2><span class="n">4</span>Review &amp; publish</h2>
     <div id="previewBox"></div>
-    <p class="muted" style="margin:1rem 0 .3rem">This creates a <b>preview to check first</b> — nothing changes on the real jjriggs site until it's approved. You'll get a preview link when it's done.</p>
-    <button class="btn" id="pubbtn" onclick="publish()" style="margin-top:.5rem">Publish for review ›</button>
-    <details style="margin-top:1.1rem"><summary class="muted" style="cursor:pointer;font-size:.84rem">Advanced (names this auto-fills for you)</summary>
-      <div class="grid2" style="margin:.7rem 0 0">
+    <p class="muted" style="margin:1rem 0 .3rem">Hit publish and this product is <b>on the live site in about a minute</b> — this page tells you the moment it's up.</p>
+    <button class="btn" id="pubbtn" onclick="publish()" style="margin-top:.5rem">Publish to the live site ›</button>
+    <details style="margin-top:1.1rem"><summary class="muted" style="cursor:pointer;font-size:.84rem">Advanced — make a preview instead of going live</summary>
+      <label style="display:flex;align-items:center;gap:.5rem;margin:.7rem 0 .5rem;font-size:.9rem;text-transform:none;letter-spacing:0;color:var(--ink)"><input type="checkbox" id="previewMode" style="width:auto"> Publish to a preview branch (check it, then merge to go live)</label>
+      <div class="grid2">
         <div><label>Preview name</label><input type="text" id="branch"></div>
         <div><label>Change note</label><input type="text" id="commitmsg"></div>
       </div>
@@ -462,10 +463,18 @@ async function publish(){
     }
 
     const photos={};paths.forEach((p,i)=>{photos[p]=S.photoData[srcs[i]].split(',')[1];});
-    await JJ.publish({branch,message:msg,files,photos},say);
-    say('\n✓ Published. The regenerate Action is rebuilding pages now.');
-    say('Preview (after Cloudflare builds): https://'+branch.replace(/[^a-z0-9-]/g,'-')+'.jjriggs-new.pages.dev');
-    say('Open a PR: https://github.com/'+OWNER+'/'+REPO+'/compare/'+BASE_BRANCH+'...'+encodeURIComponent(branch)+'?expand=1');
+    const preview=document.getElementById('previewMode').checked;
+    await JJ.publish({target:preview?'preview':'live',branch,message:msg,files,photos},say);
+    if(preview){
+      say('\n✓ Published to the preview branch.');
+      say('Preview (after Cloudflare builds): https://'+branch.replace(/[^a-z0-9-]/g,'-')+'.jjriggs-new.pages.dev');
+      say('Open a PR to make it live: https://github.com/'+OWNER+'/'+REPO+'/compare/'+BASE_BRANCH+'...'+encodeURIComponent(branch)+'?expand=1');
+    }else{
+      say('\n✓ Published.');
+      const liveUrl=location.origin+(S.kind==='implements'?'/implements/'+slugify(readFields().category||'')+'/':'/product.html?type='+(S.kind==='mowers'?'mower':'tractor')+'&m='+encodeURIComponent(model));
+      // poll in the background so the sheet-row step below appears right away
+      JJ.waitLive(k.file,files[k.file],say).then(()=>say('See it: '+liveUrl));
+    }
 
     document.getElementById('sheetRow').innerHTML='<div class="sheetbox"><b>Last step — keep the sheet as the source of truth.</b>'
       +'<p class="muted" style="margin:.3rem 0 .6rem">Copy this row and paste it into the <b>'+(S.kind==='mowers'?'Mowers':S.kind==='implements'?'Implements':'Tractors')+'</b> tab of the JJ Riggs Inventory Master sheet (click the first empty row, then paste — the tabs line up with the columns). Skip this and the next sheet import will think this product was removed.</p>'

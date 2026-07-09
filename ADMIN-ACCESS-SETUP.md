@@ -57,11 +57,16 @@ copy-out step, run `localStorage.removeItem('jj_claudekey')` and
 - The two key-holding endpoints double-check the session themselves and
   refuse to run at all unless `ADMIN_PASSCODE` is set — so there is no
   ordering mistake that exposes a key.
-- Even signed in, publishing is structurally limited: `builder/*` branches
-  only (never main — a human still merges every change), only the inventory
-  data files and `img/uploads/` photos are writable, and deletions are
-  allowed only under `img/uploads/`. Claude calls are capped and
-  model-allowlisted, so worst case is pennies.
+- Publishing is **live-first, WordPress-style**: the default button commits
+  straight to main and the site rebuilds in about a minute (the tools watch
+  and report "✓ LIVE"). A preview-branch mode stays under Advanced for
+  anything worth checking first.
+- Even signed in — and in either mode — publishing is structurally limited:
+  only the inventory data files and `img/uploads/` photos are writable (live
+  mode cannot touch the site's code), deletions are allowed only under
+  `img/uploads/`, and preview mode accepts `builder/*` branch names only.
+  Every publish is a git commit, so history is the undo. Claude calls are
+  capped and model-allowlisted, so worst case is pennies.
 - Before the env vars exist, the middleware does nothing and the tools fall
   back to the old paste-a-key dialog — deploying this breaks nothing.
 
