@@ -17,6 +17,8 @@ header.bar .wrap{display:flex;align-items:center;justify-content:space-between;g
 header.bar .t{font-family:"Michroma",sans-serif;font-size:1.05rem}
 header.bar .t small{display:block;font-family:"Questrial";color:var(--steel);font-size:.8rem;letter-spacing:.05em}
 header.bar a{color:#fff}
+header.bar .btn.ghost{border-color:rgba(255,255,255,.45);color:#fff}
+header.bar .btn.ghost:hover{background:#fff;color:var(--ink)}
 h2{font-family:"Michroma",sans-serif;font-size:1.1rem;margin-bottom:.6rem}
 h2 .n{display:inline-flex;width:1.7em;height:1.7em;align-items:center;justify-content:center;background:var(--red);color:#fff;border-radius:50%;font-size:.85rem;margin-right:.55rem;vertical-align:middle}
 .card{background:#fff;border:1px solid #d9d5c8;border-top:4px solid var(--red);padding:1.3rem 1.4rem;margin-bottom:1.3rem}
@@ -132,7 +134,7 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
 
 <dialog id="settings">
   <h2>Settings &amp; keys</h2>
-  <p class="muted">Stored only in this browser (localStorage), never committed anywhere. Same keys as the Inventory Builder.</p>
+  <p class="muted">Stored only in this browser (localStorage), never committed anywhere. Same keys as the Inventory Builder. <b>Keys are saved per device and per web address</b> — if you set them on another domain (or a preview URL), paste them again here once.</p>
   <div style="margin-top:.9rem"><label>GitHub fine-grained token (repo: aphelps099/jjriggs-new, Contents: read/write)</label><input type="password" id="ghtoken"></div>
   <div style="margin-top:.9rem"><label>Anthropic API key (for the fact fetch)</label><input type="password" id="claudekey"></div>
   <div style="margin-top:.9rem"><label>Extraction model</label>
@@ -230,8 +232,12 @@ function checkDup(){
   if(!S.kind)return;
   const v=(document.getElementById('model').value||'').trim().toLowerCase();if(!v)return;
   const k=KINDMETA[S.kind];
-  const hit=k.arr().find(m=>String(m.model||m.name||'').toLowerCase()===v);
-  if(hit)el.innerHTML='<span class="pill warn">Already on the site</span> <span class="muted">“'+esc(hit.model||hit.name)+'” exists — to change its photos use the <a href="/admin/photos/">Photo editor</a>; to change its specs use the sheet + <a href="/admin/">builder</a>.</span>';
+  const names=m=>String(m.model||m.name||'').toLowerCase();
+  const hit=k.arr().find(m=>names(m)===v);
+  if(hit){el.innerHTML='<span class="pill warn">Already on the site</span> <span class="muted">“'+esc(hit.model||hit.name)+'” exists — to change its photos use the <a href="/admin/photos/">Photo editor</a>; to change its specs use the sheet + <a href="/admin/">builder</a>.</span>';return;}
+  // near-miss: "4025" when the site has "4025H" (or vice versa) is usually the SAME machine
+  const near=v.length>=3?k.arr().filter(m=>names(m).includes(v)||v.includes(names(m))).slice(0,4):[];
+  if(near.length)el.innerHTML='<span class="pill warn">Similar model already on the site</span> <span class="muted">'+near.map(m=>'“'+esc(m.model||m.name)+'”').join(', ')+' — make sure this isn\'t the same machine under a slightly different name. One tractor must never have two pages.</span>';
 }
 
 async function fetchAndExtract(){

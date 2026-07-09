@@ -17,6 +17,8 @@ header.bar .wrap{display:flex;align-items:center;justify-content:space-between;g
 header.bar .t{font-family:"Michroma",sans-serif;font-size:1.05rem}
 header.bar .t small{display:block;font-family:"Questrial";color:var(--steel);font-size:.8rem;letter-spacing:.05em}
 header.bar a{color:#fff}
+header.bar .btn.ghost{border-color:rgba(255,255,255,.45);color:#fff}
+header.bar .btn.ghost:hover{background:#fff;color:var(--ink)}
 .wrap{max-width:1280px;margin:0 auto;padding:0 clamp(1rem,3vw,2.4rem)}
 h2{font-family:"Michroma",sans-serif;font-size:1.05rem;margin-bottom:.6rem}
 .card{background:#fff;border:1px solid #d9d5c8;border-top:4px solid var(--red);padding:1.2rem 1.3rem;margin-bottom:1.2rem}
@@ -172,7 +174,7 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
 <dialog id="settings">
   <div class="dbody">
     <h2>Settings</h2>
-    <p class="muted">Stored only in this browser (localStorage), never committed anywhere. Same token the Inventory Builder uses.</p>
+    <p class="muted">Stored only in this browser (localStorage), never committed anywhere. Same token the Inventory Builder uses. <b>Saved per device and per web address</b> — if you set it on another domain (or a preview URL), paste it again here once.</p>
     <div style="margin-top:.9rem"><label>GitHub fine-grained token (repo: aphelps099/jjriggs-new, Contents: read/write)</label><input type="password" id="ghtoken"></div>
     <div style="margin-top:1.1rem;display:flex;gap:.6rem">
       <button class="btn sm" onclick="saveSettings()">Save</button>
