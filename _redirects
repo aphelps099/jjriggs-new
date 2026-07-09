@@ -33,11 +33,8 @@
 # --- sheds moved to their own site ---
 /sheds* https://colvillesheds.com/ 301
 
-# --- blog posts (port as real pages in Phase 2, then remove) ---
-/best-bad-boy-mower-tractor-for-ne-washington*                 /tractors    301
-/compact-tractor-vs-zero-turn-mower-for-2-10-acres*            /tractors    301
-/best-tractor-snow-removal-northeast-washington*               /implements  301
-/tractor-sizing-guide-for-northeast-washington-acreage-owners* /tractors    301
+# (blog posts ported as real pages 2026-07-09 — no redirects needed; they
+#  serve directly at their original URLs)
 
 # (town landing pages ported as real pages 2026-07-08 — no redirects needed:
 #  /colville-tractors, /kettle-falls-tractors, /chewelah-tractors serve directly)
