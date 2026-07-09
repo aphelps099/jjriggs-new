@@ -1,96 +1,72 @@
-# Admin setup: login for Andrew, zero keys in the browser
+# Admin setup — one dashboard screen, done
 
-Two one-time steps in the Cloudflare dashboard (~25 min total). After both,
-the admin experience is: **open the URL → type your email → enter the 6-digit
-PIN from your inbox → work.** No passwords, no tokens, no Settings dialog.
+The admin tools (`/admin/`, `/admin/photos/`, `/admin/new/`) are protected by
+a **single admin passcode**, enforced server-side at the edge by the site
+itself (`functions/_middleware.js`). Andrew's whole experience: open the URL,
+type the passcode once, stay signed in on that device for 30 days. No
+accounts, no tokens, no Settings dialog.
 
-Do them **in this order** — Part 1 locks the doors, Part 2 puts the keys
-inside. Never do Part 2 first.
+All the code is in the repo. Your entire setup is **adding 3 environment
+variables in one Cloudflare screen.**
 
----
+## The one screen
 
-## Part 1 — Cloudflare Access (who gets in)
-
-Free for up to 50 users. No code. More secure than a WordPress login: there is
-no password form on the public internet, nothing to brute-force, and revoking
-a person = deleting their email from a list.
-
-1. **Cloudflare dashboard → Zero Trust** (left sidebar). First visit asks for a
-   team name (e.g. `jjriggs`) and a plan — choose **Free**.
-
-2. **Settings → Authentication → Login methods**: confirm **One-time PIN** is
-   enabled (default). Add nothing else — email PIN is the simplest flow.
-
-3. **Access → Applications → Add an application → Self-hosted**:
-   - **Application name**: `JJ Riggs Admin`
-   - **Session duration**: `1 week`
-   - **Public hostnames** — add ALL FOUR rows (the admin pages *and* the admin
-     API must both be covered, on the live domain and the pages.dev domain):
-
-     | Domain | Path |
-     |---|---|
-     | `jjriggsequipment.com` | `admin/*` |
-     | `jjriggsequipment.com` | `api/admin/*` |
-     | `*.jjriggs-new.pages.dev` | `admin/*` |
-     | `*.jjriggs-new.pages.dev` | `api/admin/*` |
-
-     (For the pages.dev wildcard, Cloudflare may ask you to enable Access on
-     the Pages project: **Workers & Pages → jjriggs-new → Settings → Enable
-     Access** — do it, then point its policy at this application.)
-
-4. **Add a policy**: name `Owners`, action `Allow`, **Include → Emails**:
-   `aaron@aaroncphelps.com` + Andrew's email. Save.
-
-5. **Test** in a private window: `jjriggsequipment.com/admin/` should demand
-   the email PIN; a wrong email gets blocked; `/api/admin/status` should also
-   be blocked without login.
-
-Do **NOT** gate `/api/*` broadly — `api/lead` powers the public contact form
-and `api/fetch-page` / `api/fetch-image` are used by the admin pages but are
-already restricted to the manufacturer allowlist. Only `api/admin/*` gets gated.
-
----
-
-## Part 2 — server-side keys (nothing to paste, ever)
-
-The admin tools call `/api/admin/extract` (Claude) and `/api/admin/publish`
-(GitHub commits) — the site holds the keys, exactly like the contact form
-already holds `RESEND_API_KEY`. Until these are set, the tools fall back to
-the old paste-a-key ⚙ Settings dialog.
-
-**Workers & Pages → jjriggs-new → Settings → Environment variables →
-Production** (add to Preview too so builder-branch previews work). Add both
-as **Secret** (encrypted):
+**Cloudflare dashboard → Workers & Pages → jjriggs-new → Settings →
+Environment variables.** Add all three to **Production** (and to **Preview**
+so builder-branch previews work too), each as **Secret / encrypted**:
 
 | Variable | Value |
 |---|---|
-| `ANTHROPIC_API_KEY` | an Anthropic API key from console.anthropic.com → API Keys. Make a fresh one named `jjriggs-admin` so it can be revoked alone. |
-| `GH_PUBLISH_TOKEN` | a GitHub **fine-grained** personal access token: github.com → Settings → Developer settings → Fine-grained tokens → Generate. Repository access: **only `aphelps099/jjriggs-new`**. Permissions: **Contents → Read and write**. Nothing else. Set a 1-year expiry and calendar the renewal. |
+| `ADMIN_PASSCODE` | A passphrase you make up and share with Andrew. Long beats clever: 3–4 words like `elm-tree-loader-5045` is great. Changing it later signs everyone out instantly. |
+| `ANTHROPIC_API_KEY` | The key you already have (copy-out instructions below). |
+| `GH_PUBLISH_TOKEN` | The GitHub token you already have (below). ⚠ It expires **2026-08-07** — when it does, mint a new fine-grained token (repo `aphelps099/jjriggs-new` only, Contents read/write) and paste it over this value. |
 
-Then **redeploy** (Deployments → Retry latest, or just push any commit) so the
-functions pick up the vars.
+Then **redeploy** (Deployments → three-dot menu on the latest → Retry
+deployment) so the functions pick up the vars.
 
-**Test**: logged in via Access, open `jjriggsequipment.com/api/admin/status` —
-it should show `{"extract":true,"publish":true}`. Then run a small publish
-from the Photo editor and check the log says *"publishing through the site —
-no keys on this device needed."*
+### Copying the keys you already have
 
-### What the server will and won't do (built-in guards)
+They're saved in your browser on whichever site you used the admin tools with
+keys (localStorage). On that page, open DevTools (F12) → **Console** and run:
 
-Even for someone logged in — and even if Access were misconfigured — the
-publish endpoint only ever:
-- commits to branches named `builder/*` (never main; a human still merges),
-- writes the inventory data files and `img/uploads/` photos (no HTML, no
-  functions, no workflows),
-- deletes only under `img/uploads/`.
+    localStorage.getItem('jj_claudekey')   // → ANTHROPIC_API_KEY value
+    localStorage.getItem('jj_ghtoken')     // → GH_PUBLISH_TOKEN value
 
-The extract endpoint only relays capped Claude calls on an allowlisted model
-list, so a leak costs pennies, not a takeover.
+Copy each (without the quotes) into the matching variable.
 
-### Housekeeping once this works
+### Test (2 minutes)
 
-- Delete the old keys from browser localStorage (⚙ Settings → clear the
-  fields → Save) and revoke the old GitHub PAT (the ledger one expiring
-  2026-08-07) — the server token replaces it.
-- Rotate the Anthropic key that transited chat during the original setup
-  (credentials ledger note) — the new `jjriggs-admin` key replaces it.
+1. Private window → `jjriggsequipment.com/admin/` → you should get the dark
+   **JJ Riggs Admin** sign-in screen. Wrong passcode → error; right → tools.
+2. In the Photo editor, make a small change and Publish — the log should say
+   *"publishing through the site — no keys on this device needed."*
+3. Send Andrew the URL + passcode. That's his entire onboarding.
+
+### Afterwards (2 minutes)
+
+Clear the old browser keys so the fallback path retires: on the page from the
+copy-out step, run `localStorage.removeItem('jj_claudekey')` and
+`localStorage.removeItem('jj_ghtoken')`.
+
+## How the security actually works
+
+- The middleware gates `/admin/*` and `/api/admin/*` only — the public site,
+  contact form (`/api/lead`), and manufacturer proxies are untouched.
+- Sessions are signed (HMAC) 30-day cookies; there's no session store to leak.
+  Failed logins wait 1.2s each, and the passcode never appears in any URL.
+- The two key-holding endpoints double-check the session themselves and
+  refuse to run at all unless `ADMIN_PASSCODE` is set — so there is no
+  ordering mistake that exposes a key.
+- Even signed in, publishing is structurally limited: `builder/*` branches
+  only (never main — a human still merges every change), only the inventory
+  data files and `img/uploads/` photos are writable, and deletions are
+  allowed only under `img/uploads/`. Claude calls are capped and
+  model-allowlisted, so worst case is pennies.
+- Before the env vars exist, the middleware does nothing and the tools fall
+  back to the old paste-a-key dialog — deploying this breaks nothing.
+
+**Want to upgrade later?** Cloudflare Access (per-person email-PIN logins,
+free ≤50 users) can be layered on top of the same paths — `admin/*` and
+`api/admin/*` on both domains — with zero code changes. Worth it if more
+people than you and Andrew ever need access. The passcode gate is plenty for
+two people.
