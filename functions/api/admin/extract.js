@@ -5,11 +5,17 @@
 //   - max_tokens capped
 //   - same-origin only (belt) + Cloudflare Access on /api/admin/* (suspenders)
 
+import { hasValidSession } from "../../_auth.js";
+
 const MODELS = ["claude-sonnet-5", "claude-haiku-4-5-20251001", "claude-opus-4-8"];
 const MAX_TOKENS = 4000;
 
 export async function onRequestPost({ request, env }) {
   if (!env.ANTHROPIC_API_KEY) return err("Server extract key not configured", 501);
+  // the key never runs without the passcode gate: require ADMIN_PASSCODE to be
+  // set AND a signed-in session, independent of the middleware (defense in depth)
+  if (!env.ADMIN_PASSCODE) return err("Set ADMIN_PASSCODE before adding server keys", 501);
+  if (!(await hasValidSession(request, env.ADMIN_PASSCODE))) return err("Signed out — reload the admin page and enter the passcode.", 401);
   const origin = request.headers.get("Origin");
   if (origin && origin !== new URL(request.url).origin) return err("Cross-origin not allowed", 403);
 

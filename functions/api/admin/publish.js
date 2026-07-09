@@ -9,6 +9,8 @@
 // Job shape: { branch, message, files:{path:text}, photos:{path:base64jpeg},
 //              deletions:[path] }   →   { log:[...] }
 
+import { hasValidSession } from "../../_auth.js";
+
 const OWNER = "aphelps099";
 const REPO = "jjriggs-new";
 const BASE_BRANCH = "main";
@@ -19,6 +21,10 @@ const MAX_ITEMS = 40;
 
 export async function onRequestPost({ request, env }) {
   if (!env.GH_PUBLISH_TOKEN) return err("Server publish token not configured", 501);
+  // the token never runs without the passcode gate: require ADMIN_PASSCODE to
+  // be set AND a signed-in session, independent of the middleware
+  if (!env.ADMIN_PASSCODE) return err("Set ADMIN_PASSCODE before adding server keys", 501);
+  if (!(await hasValidSession(request, env.ADMIN_PASSCODE))) return err("Signed out — reload the admin page and enter the passcode.", 401);
   const origin = request.headers.get("Origin");
   if (origin && origin !== new URL(request.url).origin) return err("Cross-origin not allowed", 403);
 
