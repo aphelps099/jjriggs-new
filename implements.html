@@ -44,30 +44,29 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 @media(max-width:760px){.ch-photo{display:none}}
 
 /* BODY */
-/* browse-by-category strip (links to the static category pages) */
-.cat-strip{background:var(--bone);color:var(--ink);padding:clamp(1.4rem,3vw,2rem) 0 0}
-.cat-strip .cs-label{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:#9a948a;font-weight:600;margin-bottom:.6rem}
-.cat-chips{display:flex;gap:.55rem;flex-wrap:wrap}
-.cat-chip{display:inline-block;border:1.5px solid rgba(20,23,26,.3);color:var(--ink);padding:.5rem .95rem;font-size:.9rem;background:#fff}
-.cat-chip:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
 .imp-body{background:var(--bone);color:var(--ink);padding:clamp(1.8rem,3.5vw,2.6rem) 0 clamp(2.4rem,5vw,3.6rem)}
 
-/* BRAND FILTER — inline logo toggles */
-.filters{margin-bottom:clamp(1.4rem,3vw,2rem)}
-.fblock{margin-bottom:1.3rem}
-.flabel{font-size:.72rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#6a7077;margin-bottom:.7rem}
-.bfilter{display:flex;align-items:stretch;gap:.6rem;flex-wrap:wrap}
-.jfilter{display:flex;gap:.5rem;flex-wrap:wrap}
-.jtog{font-family:inherit;border:1.5px solid #c9c5b8;background:#fff;color:var(--ink);padding:.5rem 1.1rem;border-radius:999px;font-weight:500;font-size:.9rem;cursor:pointer;transition:.15s}
+/* ONE COMPACT FILTER BAR — job pills + brand toggles + jump dropdown */
+.filterbar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:1.1rem 2rem;margin-bottom:clamp(1.4rem,3vw,2rem);padding-bottom:1.4rem;border-bottom:1px solid rgba(20,23,26,.16)}
+.fgroup{display:flex;flex-direction:column;gap:.6rem;min-width:0}
+.fgroup-jump{margin-left:auto}
+.flabel{font-size:.8rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#5a6066}
+.bfilter{display:flex;align-items:stretch;gap:.55rem;flex-wrap:wrap}
+.jfilter{display:flex;gap:.55rem;flex-wrap:wrap}
+.jtog{display:inline-flex;align-items:center;min-height:44px;font-family:inherit;border:1.5px solid #b9b4a5;background:#fff;color:var(--ink);padding:.55rem 1.15rem;border-radius:999px;font-weight:500;font-size:1rem;cursor:pointer;transition:.15s}
 .jtog:hover{border-color:var(--ink)}
 .jtog.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.btog{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-width:96px;height:50px;padding:0 1rem;background:#fff;border:1.5px solid #c9c5b8;cursor:pointer;font-family:inherit;transition:.15s}
+.btog{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-width:92px;min-height:44px;height:48px;padding:0 1rem;background:#fff;border:1.5px solid #b9b4a5;cursor:pointer;font-family:inherit;transition:.15s}
 .btog:hover{border-color:var(--ink)}
 .btog.on{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
 .btog img{height:20px;width:auto;object-fit:contain;pointer-events:none}
 .btog img[alt="Bad Boy"]{height:16px}
-.btog .all{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;text-transform:uppercase;letter-spacing:.04em;font-size:.95rem;color:var(--ink)}
+.btog .all{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;text-transform:uppercase;letter-spacing:.04em;font-size:1rem;color:var(--ink)}
 .btog.on .all{color:var(--red)}
+.catjump{font-family:inherit;font-size:1rem;min-height:48px;padding:.55rem 2.4rem .55rem 1rem;border:1.5px solid #b9b4a5;background:#fff;color:var(--ink);cursor:pointer;max-width:100%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2314171a' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;-webkit-appearance:none;appearance:none}
+.catjump:hover{border-color:var(--ink)}
+.noresult{color:#5a6066;font-size:1.05rem;padding:1.2rem 0}
+.noresult a{color:var(--red);font-weight:600}
 
 /* GROUPS + CARDS */
 .group{margin-top:clamp(1.6rem,3vw,2.4rem)}
@@ -83,6 +82,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .card:hover{background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink),0 12px 28px rgba(20,23,26,.13);z-index:2}
 .card .ph{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;padding:1rem;overflow:hidden}
 .card .ph img{max-width:100%;max-height:100%;object-fit:contain;mix-blend-mode:darken}
+.card .ph-fallback{text-align:center;color:#9a948a;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:.9rem;line-height:1.4}
 .card .cbody{padding:.9rem 1.1rem 1.15rem;display:flex;flex-direction:column;gap:.3rem;flex:1}
 .card .cm{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:1.3rem;color:var(--ink);line-height:1.05}
 .card .cmeta{font-size:.8rem;color:#5b6168}
@@ -132,18 +132,12 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     </div>
   </section>
 
-  <section class="cat-strip" aria-label="Browse implements by category">
-    <div class="wrap">
-      <div class="cs-label">Browse by category</div>
-      <div class="cat-chips" id="catStrip"></div>
-    </div>
-  </section>
-
   <section class="imp-body">
     <div class="wrap">
-      <div class="filters">
-        <div class="fblock"><div class="flabel">Filter by brand</div><div class="bfilter" id="bfilter"></div></div>
-        <div class="fblock"><div class="flabel">Filter by job</div><div class="jfilter" id="jfilter"></div></div>
+      <div class="filterbar">
+        <div class="fgroup"><span class="flabel">Filter by job</span><div class="jfilter" id="jfilter"></div></div>
+        <div class="fgroup"><span class="flabel">Brand</span><div class="bfilter" id="bfilter"></div></div>
+        <div class="fgroup fgroup-jump"><label class="flabel" for="catJump">Jump to category</label><select class="catjump" id="catJump"><option value="">Choose a category…</option></select></div>
       </div>
       <div id="groups"></div>
       <div class="help">
@@ -196,93 +190,53 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 <script src="implements-data.js"></script>
 <script>
 (function(){
-  var QUOTE="contact.html";
+  // Grid renders straight from the data layer (JJ_CATEGORIES + JJ_GROUP_ORDER),
+  // so it can never drift from the 21 static subcategory pages. Each card links
+  // to implements/<slug>/ using the same slugify as tools/generate-implement-pages.mjs.
+  var slug=function(s){return String(s).toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');};
+  var CATS=(window.JJ_CATEGORIES||[]);
   var IMPL=(window.JJ_IMPLEMENTS||[]);
   var ORDER=(window.JJ_GROUP_ORDER||["Cutting & mowing","Dirt work & grading","Tillage","Material handling","Snow","Spreading & seeding"]);
-  var IMG={
-  "Rotary Cutters":"img/bad-boy-implements/cutter-sd-4-5-6.png",
-  "Flex Wing Cutter":"img/bad-boy-implements/flex-wing-cutter.png",
-  "Finish Mower":"img/bad-boy-implements/finish-mower.png",
-  "Mid-Mount Mower Deck":"img/bad-boy-implements/mid-mower-deck.jpg",
-  "Box Blades":"img/bad-boy-implements/box-blade.png",
-  "Grader Blades":"img/bad-boy-implements/grader-blade.png",
-  "Land Graders":"img/bad-boy-implements/land-grader.png",
-  "Landscape Rakes":"img/bad-boy-implements/landscape-rake.png",
-  "Landplane Graders":"https://jjriggsequipment.com/wp-content/uploads/2024/10/land-plane-graders.jpeg",
-  "Rotary Tillers":"img/bad-boy-implements/rotary-tiller.png",
-  "Disc Harrow":"img/bad-boy-implements/disc-harrow-4-5ft.png",
-  "Front Grapples":"img/bad-boy-implements/grappler.png",
-  "Rock Buckets":"https://cdn.bfldr.com/71PUUW3G/at/stbpczxfcmfj73ftp8b6t9m/cid-mini-skid-steer-rock-bucket-attachment__82146.png",
-  "Forks & Hitches":"img/bad-boy-implements/hay-fork-trailer-hitch.png",
-  "Augers & Bits":"https://jjriggsequipment.com/wp-content/uploads/2024/10/augers-bits.jpg",
-  "Snow Pusher":"img/bad-boy-implements/snow-pusher-steel-skids.png",
-  "Snow Plows":"https://jjriggsequipment.com/wp-content/uploads/2024/10/Compact_Snow_Plow_-_IronCraft.webp",
-  "Snow Blowers":"https://jjriggsequipment.com/wp-content/uploads/2024/10/1.png",
-  "Spreaders":"img/bad-boy-implements/spreader-3-point.png"};
-  // categories carried (incl. brands not yet in the spec data)
-  var HUB=[
-  {c:"Rotary Cutters",g:"Cutting & mowing",b:["Bad Boy","IronCraft"]},
-  {c:"Flex Wing Cutter",g:"Cutting & mowing",b:["Bad Boy"]},
-  {c:"Finish Mower",g:"Cutting & mowing",b:["Bad Boy"]},
-  {c:"Mid-Mount Mower Deck",g:"Cutting & mowing",b:["Bad Boy"]},
-  {c:"Box Blades",g:"Dirt work & grading",b:["Bad Boy","IronCraft"]},
-  {c:"Grader Blades",g:"Dirt work & grading",b:["Bad Boy","IronCraft"]},
-  {c:"Land Graders",g:"Dirt work & grading",b:["Bad Boy"]},
-  {c:"Landscape Rakes",g:"Dirt work & grading",b:["Bad Boy","IronCraft"]},
-  {c:"Landplane Graders",g:"Dirt work & grading",b:["Braber"],fit:"3-point · Cat 1 & 2"},
-  {c:"Rotary Tillers",g:"Tillage",b:["Bad Boy","IronCraft"]},
-  {c:"Disc Harrow",g:"Tillage",b:["Bad Boy"]},
-  {c:"Front Grapples",g:"Material handling",b:["Bad Boy","IronCraft","CID"]},
-  {c:"Rock Buckets",g:"Material handling",b:["CID"]},
-  {c:"Forks & Hitches",g:"Material handling",b:["Bad Boy","IronCraft","CID"]},
-  {c:"Augers & Bits",g:"Material handling",b:["IronCraft"],fit:"Loader / 3-point"},
-  {c:"Snow Pusher",g:"Snow",b:["Bad Boy","CID"]},
-  {c:"Snow Plows",g:"Snow",b:["IronCraft","CID"]},
-  {c:"Snow Blowers",g:"Snow",b:["Braber"],fit:"3-point · Cat 1 & 2"},
-  {c:"Spreaders",g:"Spreading & seeding",b:["Bad Boy"]}];
 
-  var BRANDLOGO={
-    "Bad Boy":"img/bb_logo_horizontal_orange.svg",
-    "IronCraft":"https://jjriggsequipment.com/wp-content/uploads/2024/10/IronCraft-Attachments-Logo-1.svg",
-    "Braber":"https://jjriggsequipment.com/wp-content/uploads/2024/10/braber-equipment-logo-png.png",
-    "CID":"img/cid-logo-black.svg"};
-  function blogos(bs){return bs.map(function(b){return BRANDLOGO[b]?'<img src="'+BRANDLOGO[b]+'" alt="'+b+'">':b;}).join('');}
-  function itemsFor(c){return IMPL.filter(function(i){return i.category===c;});}
-  function fitFor(it){
-    var rows=itemsFor(it.c);
-    if(!rows.length) return {label:it.fit||"3-point",universal:/fits all|front-mount/i.test(it.fit||"")};
-    var att={};rows.forEach(function(r){att[r.attach]=1;});
-    var keys=Object.keys(att);
-    if(keys.length===1){
-      var a=keys[0];
-      if(a==="Front Loader QA") return {label:"Front-mount · fits all tractors",universal:true};
-      if(a==="Pull-Behind") return {label:"Pull-behind",universal:true};
-      if(a==="Mid-Mount") return {label:"Mid-mount deck",universal:false};
-      if(a==="3-Point Hitch"){var c2=rows.some(function(r){return r.c2;});return {label:"3-point · "+(c2?"Cat 1 & Cat 2":"Cat 1"),universal:false};}
-    }
-    return {label:"Front & 3-point",universal:false};
+  // Brands carried in a category, derived from the item data. Display casing is
+  // normalized ("Ironcraft" -> "IronCraft") so it matches the brand filter keys.
+  var BRAND_RANK={"Bad Boy":0,"IronCraft":1,"Braber":2,"CID":3};
+  var brandsCache={};
+  function brandsFor(cat){
+    if(brandsCache[cat]) return brandsCache[cat];
+    var seen={},list=[];
+    IMPL.forEach(function(i){
+      if(i.category!==cat||!i.brand) return;
+      var b=i.brand==="Ironcraft"?"IronCraft":i.brand;
+      if(!seen[b]){seen[b]=1;list.push(b);}
+    });
+    list.sort(function(a,b){return (a in BRAND_RANK?BRAND_RANK[a]:9)-(b in BRAND_RANK?BRAND_RANK[b]:9);});
+    brandsCache[cat]=list;
+    return list;
   }
-  function card(it){
-    var rows=itemsFor(it.c),hasData=rows.length>0;
-    return '<button class="card" type="button" data-cat="'+it.c+'"'+(hasData?'':' data-quote="1"')+'>'+
-      '<span class="ph"><img loading="lazy" src="'+(IMG[it.c]||'')+'" alt="'+it.c+'"></span>'+
-      '<span class="cbody"><span class="cm">'+it.c+'</span>'+
-      '<span class="cmeta">'+it.b.join(' · ')+'</span>'+
-      '<span class="go">Get a quote &rarr;</span></span></button>';
+
+  function card(c){
+    var s=slug(c.category),brands=brandsFor(c.category),img=c.img||'';
+    return '<a class="card" href="implements/'+s+'/">'+
+      '<span class="ph">'+(img?'<img loading="lazy" src="'+img+'" alt="'+c.category+'">':'<span class="ph-fallback">Photo coming<br>to the lot</span>')+'</span>'+
+      '<span class="cbody"><span class="cm">'+c.category+'</span>'+
+      (brands.length?'<span class="cmeta">'+brands.join(' · ')+'</span>':'')+
+      '<span class="go">See sizes &amp; specs &rarr;</span></span></a>';
   }
+
   var active="All",activeJob="All";
   function render(){
     var html='';
     ORDER.forEach(function(g){
       if(activeJob!=="All"&&g!==activeJob) return;
-      var its=HUB.filter(function(it){return it.g===g && (active==="All"||it.b.indexOf(active)>-1);});
-      if(!its.length) return;
-      html+='<section class="group"><div class="gh"><h2>'+g+'</h2></div><div class="grid-clip"><div class="grid">'+its.map(card).join('')+'</div></div></section>';
+      var cs=CATS.filter(function(c){
+        if(c.group!==g) return false;
+        return active==="All"||brandsFor(c.category).indexOf(active)>-1;
+      });
+      if(!cs.length) return;
+      html+='<section class="group"><div class="gh"><h2>'+g+'</h2></div><div class="grid-clip"><div class="grid">'+cs.map(card).join('')+'</div></div></section>';
     });
-    document.getElementById('groups').innerHTML=html;
-    Array.prototype.forEach.call(document.querySelectorAll('.card'),function(el){
-      el.onclick=function(){location.href=QUOTE+'?implement='+encodeURIComponent(el.getAttribute('data-cat'));};
-    });
+    document.getElementById('groups').innerHTML=html||'<p class="noresult">No categories match that filter. Call <a href="tel:+15097382985">509-738-2985</a> and we’ll help you find it.</p>';
   }
 
   var BRANDS=[{k:"All"},{k:"Bad Boy",img:"img/bb_logo_horizontal_orange.svg"},
@@ -292,34 +246,33 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
   function chips(){
     document.getElementById('bfilter').innerHTML=BRANDS.map(function(b){
       var inner=b.img?'<img src="'+b.img+'" alt="'+b.k+'">':'<span class="all">All</span>';
-      return '<button class="btog'+(b.k===active?' on':'')+'" type="button" data-b="'+b.k+'">'+inner+'</button>';
+      return '<button class="btog'+(b.k===active?' on':'')+'" type="button" data-b="'+b.k+'" aria-pressed="'+(b.k===active)+'">'+inner+'</button>';
     }).join('');
     Array.prototype.forEach.call(document.querySelectorAll('.btog'),function(el){
       el.onclick=function(){active=el.getAttribute('data-b');chips();render();};
     });
   }
 
-
   function jchips(){
     var jobs=["All"].concat(ORDER);
     document.getElementById('jfilter').innerHTML=jobs.map(function(j){
-      return '<button class="jtog'+(j===activeJob?' on':'')+'" type="button" data-j="'+j+'">'+j+'</button>';
+      return '<button class="jtog'+(j===activeJob?' on':'')+'" type="button" data-j="'+j+'" aria-pressed="'+(j===activeJob)+'">'+j+'</button>';
     }).join('');
     Array.prototype.forEach.call(document.querySelectorAll('.jtog'),function(el){
       el.onclick=function(){activeJob=el.getAttribute('data-j');jchips();render();};
     });
   }
 
-  chips();jchips();render();
-})();
-</script>
-<script>
-(function(){/* category strip -> static category pages */
-  var slug=function(s){return String(s).toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');};
-  var el=document.getElementById('catStrip');if(!el)return;
-  el.innerHTML=(window.JJ_CATEGORIES||[]).map(function(c){
-    return '<a class="cat-chip" href="implements/'+slug(c.category)+'/">'+c.category+'</a>';
-  }).join('');
+  function jumpMenu(){
+    var sel=document.getElementById('catJump');if(!sel)return;
+    var opts=CATS.slice().sort(function(a,b){return a.category.localeCompare(b.category);});
+    sel.insertAdjacentHTML('beforeend',opts.map(function(c){
+      return '<option value="'+slug(c.category)+'">'+c.category+'</option>';
+    }).join(''));
+    sel.onchange=function(){if(sel.value)location.href='implements/'+sel.value+'/';};
+  }
+
+  chips();jchips();jumpMenu();render();
 })();
 </script>
 </body>
