@@ -276,6 +276,18 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
   var qp=new URLSearchParams(location.search);
   var imp=qp.get('implement'),intent=qp.get('intent'),product=qp.get('product');
   function pretty(s){return (s||'').replace(/badboy-?/,'').replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();}).trim();}
+  // sanitize free-form query values before they touch the DOM: strip angle
+  // brackets and control chars, collapse whitespace, cap length. Missing or
+  // malformed params collapse to "" and are ignored.
+  function clean(s){return (s||'').replace(/[<>]/g,'').replace(/[\x00-\x1f\x7f]/g,'').replace(/\s+/g,' ').trim().slice(0,120);}
+  // never overwrite text the visitor has already typed
+  function setMsg(el,text){if(el&&text&&!el.value.trim())el.value=text;}
+  var qtype=clean(qp.get('type')).toLowerCase();
+  var qcategory=clean(qp.get('category'));
+  var qitem=clean(qp.get('item')||qp.get('model'));
+  var qbrand=clean(qp.get('brand'));
+  var isImpl=qtype==='implements'||!!imp;
+  var implLabel=[qbrand,qitem].filter(Boolean).join(' ');
 
   // ---- tabs ----
   var TABS={quote:['tabQuote','paneQuote'],visit:['tabVisit','paneVisit'],service:['tabService','paneService']};
@@ -292,18 +304,24 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 
   // ---- prefill from URL ----
   var pkg=qp.get('package');
-  var label=pretty(product||imp);
+  var label=implLabel||pretty(product||imp);
   var sel=document.getElementById('qintent'),qmsg=document.getElementById('qmsg'),vmsg=document.getElementById('vmsg'),smsg=document.getElementById('smsg');
-  if(imp){for(var i=0;i<sel.options.length;i++){if(/implement/i.test(sel.options[i].text)){sel.selectedIndex=i;break;}}}
+  // preselect the Implement option for an implement quote (type=implements or the
+  // legacy implement= param)
+  if(isImpl&&sel){for(var i=0;i<sel.options.length;i++){if(/implement/i.test(sel.options[i].text)){sel.selectedIndex=i;break;}}}
   if(intent==='visit'){
     show('visit');
-    if(label) vmsg.value="I'd like to come see the "+label+".";
+    setMsg(vmsg,label?"I'd like to come see the "+label+".":"");
   } else if(intent==='service'){
     show('service');
-    if(label) smsg.value="I need service on my "+label+".";
+    setMsg(smsg,label?"I need service on my "+label+".":"");
   } else {
-    if(pkg) qmsg.value="I'd like a quote on this package:\n"+pkg;
-    else if(label) qmsg.value="I'm interested in the "+label+".";
+    var draft='';
+    if(pkg) draft="I'd like a quote on this package:\n"+pkg;
+    else if(isImpl&&implLabel) draft="I'm interested in the "+implLabel+". Please help me confirm the right size and fit.";
+    else if(isImpl&&qcategory) draft="I'm interested in "+qcategory+". Please help me confirm the right size and fit.";
+    else if(label) draft="I'm interested in the "+label+".";
+    setMsg(qmsg,draft);
   }
 
   // ---- Google Calendar booking ----
