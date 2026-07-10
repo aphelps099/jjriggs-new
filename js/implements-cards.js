@@ -132,3 +132,47 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", wire);
   else wire();
 })();
+
+// Category navigator popover. The hero renders a compact "Browse categories"
+// button plus a floating panel of real, crawlable category anchors (grouped by
+// job). This wires the button as a proper disclosure: toggles aria-expanded,
+// opens/closes the panel, and closes on Escape (returning focus to the button),
+// on outside click, and once a category link is chosen. The anchors live in the
+// HTML regardless of JS, so crawlers and no-JS still reach every category.
+(function () {
+  "use strict";
+  var btn = document.getElementById("catNavBtn");
+  var panel = document.getElementById("catNavPanel");
+  if (!btn || !panel) return;
+
+  function isOpen() { return btn.getAttribute("aria-expanded") === "true"; }
+  function setOpen(open) {
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    panel.hidden = !open;
+  }
+  function close(returnFocus) {
+    if (!isOpen()) return;
+    setOpen(false);
+    if (returnFocus) btn.focus();
+  }
+
+  btn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    setOpen(!isOpen());
+  });
+  // outside click closes (clicks inside the button/panel are ignored)
+  document.addEventListener("click", function (e) {
+    if (!isOpen()) return;
+    if (btn.contains(e.target) || panel.contains(e.target)) return;
+    close(false);
+  });
+  // Escape closes and returns focus to the trigger
+  document.addEventListener("keydown", function (e) {
+    if ((e.key === "Escape" || e.key === "Esc") && isOpen()) close(true);
+  });
+  // choosing a category navigates away; collapse first so a bfcache restore
+  // (Back button) doesn't reopen to a stale panel
+  panel.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("a")) setOpen(false);
+  });
+})();
