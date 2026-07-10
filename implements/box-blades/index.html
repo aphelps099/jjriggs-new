@@ -58,16 +58,23 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .catnav-trigger[aria-expanded="true"] .cn-chev{transform:rotate(-135deg);margin-top:.1rem}
 .catnav-panel{position:absolute;top:calc(100% + .55rem);right:0;z-index:70;width:min(600px,calc(100vw - 2*var(--gut)));max-height:min(70vh,600px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:#fbfaf6;color:var(--ink);border:1px solid #ddd8cb;border-radius:8px;box-shadow:0 24px 64px -22px rgba(0,0,0,.55)}
 .catnav-panel[hidden]{display:none}
-.catnav-panel-inner{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:0 1.7rem;padding:.4rem 1.1rem 1rem}
-.cat-grp{margin:0;padding-top:.75rem;break-inside:avoid}
-.cat-grp .gh{font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;color:#9a948a;margin-bottom:.05rem}
+.catnav-panel-inner{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0 1.6rem;padding:.35rem 1.1rem .7rem}
+.cat-grp{margin:0;padding-top:.5rem;break-inside:avoid}
+/* group label: uppercase, slightly higher contrast, with a short restrained red
+   underline under the label itself (not a full-column rule) so hierarchy reads
+   intentionally while staying subordinate to the item text. */
+.cat-grp .gh{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6f675b;margin:.1rem 0 .2rem;padding-bottom:.14rem;border-bottom:2px solid var(--red)}
 .cat-grp ul{list-style:none}
-.cat-grp li{margin:0;border-bottom:1px solid #efece3}
-.cat-grp li:last-child{border-bottom:0}
-.cat-grp a,.cat-grp .cur{display:flex;align-items:center;min-height:44px;padding:.35rem .1rem;font-size:.95rem;line-height:1.3;color:var(--ink)}
+.cat-grp li{margin:0}
+/* clean text links on a compact rhythm — no boxes, no separator rules. Desktop
+   rows are tight (~34px); a wrapped long name grows past the min so it never
+   crowds. Touch targets grow to 44px on the mobile breakpoint below. */
+.cat-grp a,.cat-grp .cur{display:flex;align-items:center;min-height:34px;padding:.16rem .1rem;font-size:.95rem;line-height:1.3;color:var(--ink)}
 .cat-grp a:hover,.cat-grp a:focus-visible{color:var(--red);text-decoration:underline;text-underline-offset:3px}
-.cat-grp .cur{color:#a29c8f;cursor:default;font-weight:600}
-.cat-grp .cur::after{content:"· you're here";font-size:.76rem;font-weight:400;letter-spacing:.01em;margin-left:.4rem;color:#b3ad9f}
+/* current category: bold, non-clickable, marked with a restrained red slash. The
+   slash is decorative (::before); aria-current on the span carries the meaning. */
+.cat-grp .cur{color:var(--ink);cursor:default;font-weight:700}
+.cat-grp .cur::before{content:"/";color:var(--red);font-weight:700;margin-right:.35rem}
 /* tablet + mobile: the hero stacks, so the trigger drops full-width beneath the
    copy and the panel spans the full available width in a single column. Breakpoint
    sits above 768px so tablets never get the desktop right-anchored panel (which
@@ -77,6 +84,8 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
   .catnav-trigger{width:100%}
   .catnav-panel{width:100%;left:0;right:auto;max-height:70vh}
   .catnav-panel-inner{grid-template-columns:1fr}
+  .cat-grp{padding-top:.7rem}
+  .cat-grp a,.cat-grp .cur{min-height:44px;padding:.3rem .1rem}
 }
 
 .cat-list{background:var(--bone);color:var(--ink);padding:clamp(2rem,4.4vw,3.2rem) 0}
