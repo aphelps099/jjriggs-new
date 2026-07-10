@@ -21,7 +21,7 @@
   +'</div></div></div>'
   +'<header class="site-head'+(solid?' is-solid':'')+'" id="siteHead"><div class="wrap">'
   +'<div class="brand-lock">'
-  +'<a class="brand-logo" href="/index.html" aria-label="JJ Riggs Equipment — home"><img src="https://jjriggsequipment.com/wp-content/uploads/2024/09/snow-JJ-Riggs-Equipment-white-outline-logo.png" alt="JJ Riggs Equipment" /></a>'
+  +'<a class="brand-logo" href="/index.html" aria-label="JJ Riggs Equipment — home"><img src="/img/jj-riggs-logo-white.png" alt="JJ Riggs Equipment" /></a>'
   +'</div>'
   +'<nav class="primary-nav" aria-label="Primary"><ul>'
   +'<li class="has-menu"><button class="nav-top'+cur('equipment')+'" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="equip-menu">Equipment <span class="caret" aria-hidden="true">▾</span></button>'
