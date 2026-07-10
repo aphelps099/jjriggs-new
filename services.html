@@ -326,14 +326,12 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
   .branson p .hl{color:#fff;font-weight:500}
 
   .why{padding-block:clamp(2rem,4.5vw,3.2rem)}
-  .why .h2{margin-bottom:clamp(1.4rem,3vw,2.1rem)}
-  .why-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;
-    gap:clamp(1.6rem,3.2vw,2.4rem) clamp(1.8rem,4vw,3.5rem)}
-  .why-grid li{display:grid;grid-template-columns:auto 1fr;gap:1.1rem;align-items:start}
-  .why-grid .material-icons{font-size:34px;color:var(--red)}
-  .why-grid h3{font-size:1.12rem;letter-spacing:.02em;margin-bottom:.35rem}
-  .why-grid p{color:var(--steel-2);line-height:1.5;font-size:.97rem;max-width:44ch}
-  @media(max-width:720px){.why-grid{grid-template-columns:1fr;gap:1.6rem}}
+  .why-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);
+    gap:clamp(1.8rem,4vw,3.5rem)}
+  .why-grid .material-icons{display:block;font-size:40px;color:var(--red);margin-bottom:.9rem}
+  .why-grid h3{font-size:1.12rem;letter-spacing:.02em;margin-bottom:.4rem}
+  .why-grid p{color:var(--steel-2);line-height:1.5;font-size:.97rem;max-width:38ch}
+  @media(max-width:720px){.why-grid{grid-template-columns:1fr;gap:1.7rem}}
   </style>
 
   <!-- ---------- HEADER BAND (category-page pattern) ---------- -->
@@ -352,10 +350,9 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
     </div>
   </section>
 
-  <!-- ---------- WHY JJ RIGGS ---------- -->
-  <section class="why" aria-labelledby="why-h">
+  <!-- ---------- WHY JJ RIGGS (trust strip — icons on top, 3-up) ---------- -->
+  <section class="why" aria-label="Why JJ Riggs">
     <div class="wrap">
-      <h2 class="h2" id="why-h" data-reveal>Why JJ Riggs?</h2>
       <ul class="why-grid" data-reveal>
         <li>
           <span class="material-icons" aria-hidden="true">engineering</span>
@@ -364,10 +361,6 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
         <li>
           <span class="material-icons" aria-hidden="true">local_fire_department</span>
           <div><h3>Diesel Repairs &amp; Welding</h3><p>Diesel engine repairs plus welding and fabrication to fix or enhance components — getting you back to work quickly.</p></div>
-        </li>
-        <li>
-          <span class="material-icons" aria-hidden="true">handyman</span>
-          <div><h3>Comprehensive Solutions</h3><p>From diagnostics and preventive maintenance to major overhauls, we offer a full range of repair services.</p></div>
         </li>
         <li>
           <span class="material-icons" aria-hidden="true">verified</span>

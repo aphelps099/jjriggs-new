@@ -107,14 +107,15 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
 
 /* ============================================================ HERO (with category tabs) ============================================================ */
 .hero{position:relative;min-height:clamp(620px,86vh,868px);display:flex;flex-direction:column;overflow:hidden;background:var(--ink)}
+@media(min-width:941px){.hero{min-height:clamp(560px,74vh,760px)}}
 .hero-media{position:absolute;inset:0;z-index:0}
 .hero-media img{width:100%;height:100%;object-fit:cover;transition:opacity .35s ease}
 .hero-scrim{position:absolute;inset:0;z-index:1;background:linear-gradient(100deg,rgba(12,14,17,.88) 0%,rgba(12,14,17,.56) 36%,rgba(12,14,17,.16) 66%,rgba(12,14,17,.06) 100%),linear-gradient(180deg,rgba(12,14,17,0) 58%,rgba(12,14,17,.62) 100%)}
-.hero-inner{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:flex-start;
-  padding-top:clamp(10rem,22vh,13rem);padding-bottom:clamp(2.4rem,4vh,3.4rem)}
+.hero-inner{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:flex-end;
+  padding-top:clamp(9rem,16vh,11rem);padding-bottom:clamp(2.6rem,5.5vh,4.2rem)}
 /* flex + margin:auto shrink-wraps the wrap and centers it — force it onto the standard grid */
 .hero-inner .wrap{width:100%}
-.hero h1{font-size:clamp(2.1rem,4.2vw,3.6rem);margin:.6rem 0 1.5rem;max-width:17ch;text-wrap:balance}
+.hero h1{font-size:clamp(2.3rem,4.8vw,4.1rem);margin:.6rem 0 1.5rem;max-width:26ch;text-wrap:balance}
 .hero h1 .accent{color:#fff}
 .hero h1::after{content:"";display:block;width:72px;height:4px;background:var(--red);border-radius:2px;margin:.7rem 0 0}
 .hero .eyebrow{color:#eef1f3}
@@ -133,7 +134,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
 .hero-ctas{animation:heroIn .8s .40s both cubic-bezier(.2,.7,.2,1)}
 @media(prefers-reduced-motion:reduce){.hero-inner .eyebrow,.hero h1,.hero .lead,.hero-ctas{animation:none}}
 .hero-tabs{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}
-.hero-tab{position:relative;z-index:0;padding:2.55rem 1rem;text-align:center;font-family:"Tactic Sans Bld","Michroma","Bebas Neue",sans-serif;font-weight:400;
+.hero-tab{position:relative;z-index:0;padding:1.7rem 1rem;text-align:center;font-family:"Tactic Sans Bld","Michroma","Bebas Neue",sans-serif;font-weight:400;
   font-size:clamp(1.35rem,1.9vw,1.75rem);letter-spacing:.07em;text-transform:uppercase;color:#cfd3d8;
   background:transparent;cursor:pointer;border:0;transition:color .18s}
 .hero-tab::before{content:"";position:absolute;inset:0;z-index:-1;background:transparent;
