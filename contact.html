@@ -276,17 +276,27 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
   var qp=new URLSearchParams(location.search);
   var imp=qp.get('implement'),intent=qp.get('intent'),product=qp.get('product');
   function pretty(s){return (s||'').replace(/badboy-?/,'').replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();}).trim();}
-  // sanitize free-form query values before they touch the DOM: strip angle
-  // brackets and control chars, collapse whitespace, cap length. Missing or
-  // malformed params collapse to "" and are ignored.
-  function clean(s){return (s||'').replace(/[<>]/g,'').replace(/[\x00-\x1f\x7f]/g,'').replace(/\s+/g,' ').trim().slice(0,120);}
+  // sanitize free-form query values before they touch the DOM. Anything with
+  // control chars, angle brackets, or characters outside the legitimate
+  // product-name allowlist (letters, digits, space and the punctuation real
+  // product/category names use) is REJECTED ENTIRELY -> "". This keeps markup-
+  // like or garbage values from producing ugly residue text or any preselect/
+  // prefill; only clean, plausible values survive.
+  function clean(s){
+    s=(s||'');
+    if(!s) return '';
+    if(/[\x00-\x1f\x7f<>]/.test(s)) return '';           // control chars or angle brackets
+    if(!/^[A-Za-z0-9 &'".,()\/\-]+$/.test(s)) return '';  // allowlist of real-name punctuation
+    return s.replace(/\s+/g,' ').trim().slice(0,120);
+  }
   // never overwrite text the visitor has already typed
   function setMsg(el,text){if(el&&text&&!el.value.trim())el.value=text;}
   var qtype=clean(qp.get('type')).toLowerCase();
   var qcategory=clean(qp.get('category'));
   var qitem=clean(qp.get('item')||qp.get('model'));
   var qbrand=clean(qp.get('brand'));
-  var isImpl=qtype==='implements'||!!imp;
+  var cimp=clean(imp),cproduct=clean(product);
+  var isImpl=qtype==='implements'||!!cimp;
   var implLabel=[qbrand,qitem].filter(Boolean).join(' ');
 
   // ---- tabs ----
@@ -304,7 +314,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 
   // ---- prefill from URL ----
   var pkg=qp.get('package');
-  var label=implLabel||pretty(product||imp);
+  var label=implLabel||pretty(cproduct||cimp);
   var sel=document.getElementById('qintent'),qmsg=document.getElementById('qmsg'),vmsg=document.getElementById('vmsg'),smsg=document.getElementById('smsg');
   // preselect the Implement option for an implement quote (type=implements or the
   // legacy implement= param)

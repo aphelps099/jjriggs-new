@@ -204,22 +204,28 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
    ends calm, not in a wall of buttons. Links are real crawlable anchors grouped
    by job; the current category is shown non-clickable and marked. */
 .more-cats{background:#fff;color:var(--ink);padding:clamp(1.4rem,3vw,2.2rem) 0}
-.cat-nav{border:1px solid #ddd9cc;border-radius:3px;background:#fcfbf7}
-.cat-nav>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:44px;padding:.6rem 1.1rem;font-family:"Michroma","Tactic Sans Bld",sans-serif;font-size:clamp(.98rem,1.6vw,1.15rem);color:var(--ink)}
+.cat-nav{border:1px solid #e5e1d6;border-radius:6px;background:#fbfaf6}
+/* summary reads as normal interactive UI text (not a display headline), compact
+   padding, and a small clean chevron that flips on open. */
+.cat-nav>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:44px;padding:.45rem 1rem;font-weight:600;font-size:clamp(.98rem,1.3vw,1.08rem);letter-spacing:.005em;color:var(--ink)}
 .cat-nav>summary::-webkit-details-marker{display:none}
-.cat-nav>summary::after{content:"⌄";font-size:1.3rem;line-height:1;transition:transform .2s;color:var(--red)}
-.cat-nav[open]>summary::after{transform:rotate(180deg)}
+.cat-nav>summary::after{content:"";flex:none;width:.5rem;height:.5rem;margin:-.2rem .1rem 0 0;border-right:2px solid #8a857a;border-bottom:2px solid #8a857a;transform:rotate(45deg);transition:transform .2s,border-color .2s}
+.cat-nav[open]>summary::after{transform:rotate(-135deg);margin-top:.05rem}
 .cat-nav>summary:hover{color:var(--red)}
-.cat-nav-body{padding:.4rem 1.1rem 1.1rem;border-top:1px solid #eceae0}
-.cat-grp{margin-top:1rem}
-.cat-grp:first-child{margin-top:.4rem}
-.cat-grp .gh{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:#8a857a;margin-bottom:.35rem}
-.cat-grp ul{list-style:none;display:flex;flex-wrap:wrap;gap:.3rem .4rem}
-.cat-grp li{margin:0}
-.cat-grp a,.cat-grp .cur{display:inline-flex;align-items:center;min-height:44px;padding:.4rem .85rem;font-size:.95rem;border:1px solid #ddd9cc;border-radius:2px;color:var(--ink)}
-.cat-grp a:hover,.cat-grp a:focus-visible{background:var(--ink);color:#fff;border-color:var(--ink)}
-.cat-grp .cur{background:#efece2;color:#8a857a;border-color:#e0dccf;cursor:default}
-.cat-grp .cur::after{content:" ·  you're here";font-size:.8rem;letter-spacing:.02em}
+.cat-nav>summary:hover::after{border-color:var(--red)}
+/* open state: a clean grouped text-link menu in responsive columns by job — no
+   boxed chips. Rows have subtle dividers + underline-on-hover, keep 44px touch
+   targets, and the grid keeps the whole panel short. */
+.cat-nav-body{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:0 1.8rem;padding:.2rem 1rem 1rem;border-top:1px solid #efece3}
+.cat-grp{margin:0;padding-top:.75rem}
+.cat-grp .gh{font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;color:#9a948a;margin-bottom:.05rem}
+.cat-grp ul{list-style:none}
+.cat-grp li{margin:0;border-bottom:1px solid #efece3}
+.cat-grp li:last-child{border-bottom:0}
+.cat-grp a,.cat-grp .cur{display:flex;align-items:center;min-height:44px;padding:.35rem .1rem;font-size:.95rem;line-height:1.3;color:var(--ink)}
+.cat-grp a:hover,.cat-grp a:focus-visible{color:var(--red);text-decoration:underline;text-underline-offset:3px}
+.cat-grp .cur{color:#a29c8f;cursor:default;font-weight:600}
+.cat-grp .cur::after{content:"· you're here";font-size:.76rem;font-weight:400;letter-spacing:.01em;margin-left:.4rem;color:#b3ad9f}
 
 /* quieter closing CTA: a dark-neutral band, not a bright-red wall. Red returns
    only as the single primary action, so it reads calm and practical. */
@@ -230,6 +236,12 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
 .ctaband .cs-actions{display:flex;gap:.9rem;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:1.2rem}
 .ctaband .cs-or{color:var(--steel-2);font-size:.98rem}
 .ctaband .cs-call{color:#fff;font-weight:600;letter-spacing:.02em}.ctaband .cs-call:hover{color:var(--red)}
+/* on the dark band a dark-fill button vanishes; give it a clear light border in
+   rest state, then shift to a restrained red (border + fill) on hover/focus.
+   Scoped to .ctaband so the on-white card button keeps its dark-neutral look. */
+.ctaband .btn-quote{min-height:44px;background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.9)}
+.ctaband .btn-quote:hover,.ctaband .btn-quote:focus-visible{background:var(--red);border-color:var(--red);color:#fff}
+.ctaband .btn-quote:focus-visible{outline:2px solid #fff;outline-offset:2px}
 
 /* full-image lightbox (native <dialog>): image is contained within the viewport,
    never cropped; caption names the product; close button + backdrop + Escape. */
