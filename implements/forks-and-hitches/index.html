@@ -40,6 +40,9 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .style-card{display:grid;grid-template-columns:280px 1fr;gap:clamp(1.2rem,2.6vw,2rem);background:#fff;border:1px solid #d9d5c8;border-top:4px solid var(--red);padding:clamp(1.2rem,2.6vw,1.8rem);margin-bottom:1.4rem}
 .sc-media img{width:100%;aspect-ratio:4/3;object-fit:cover;border:1px solid #e2ded2}
 .ph{display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;background:var(--bone);border:1px dashed #c9c5b8;text-align:center;color:#9a948a;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:.95rem;line-height:1.4}
+.sc-media{position:relative}
+.sc-pencil{position:absolute;top:.5rem;right:.5rem;z-index:5;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:#14171a;color:#fff;border-radius:50%;font-size:1.05rem;line-height:1;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.35);opacity:.9}
+.sc-pencil:hover,.sc-pencil:focus-visible{background:var(--red);opacity:1}
 .sc-body h2{font-family:"Michroma","Tactic Sans Bld",sans-serif;text-transform:none;letter-spacing:0;font-size:clamp(1.15rem,2vw,1.5rem);color:var(--ink);margin-bottom:.55rem}
 .badges{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.9rem}
 .badge{border:1px solid rgba(20,23,26,.25);color:#4a5057;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;padding:.3rem .6rem}
@@ -91,8 +94,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
 
   <section class="cat-list">
     <div class="wrap">
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/bb-qa_front_hay_spear_studio_2.png" alt="Bad Boy QA Front Hay Spear" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="QA Front Hay Spear">
+        <div class="sc-media" data-img="img/implements/bb-qa_front_hay_spear_studio_2.png"><img src="../../img/implements/bb-qa_front_hay_spear_studio_2.png" alt="Bad Boy QA Front Hay Spear" loading="lazy" /></div>
         <div class="sc-body">
           <h2>QA Front Hay Spear</h2>
           <div class="badges"><span class="badge">Bad Boy</span><span class="badge">Front Loader QA</span></div>
@@ -106,8 +109,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/bb-3_point_hay_fork_studio_2.png" alt="Bad Boy 3-Prong 3-Point Hay Fork" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="3-Prong 3-Point Hay Fork">
+        <div class="sc-media" data-img="img/implements/bb-3_point_hay_fork_studio_2.png"><img src="../../img/implements/bb-3_point_hay_fork_studio_2.png" alt="Bad Boy 3-Prong 3-Point Hay Fork" loading="lazy" /></div>
         <div class="sc-body">
           <h2>3-Prong 3-Point Hay Fork</h2>
           <div class="badges"><span class="badge">Bad Boy</span><span class="badge">3-Point Hitch</span><span class="badge">Cat 1</span></div>
@@ -121,8 +124,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/bb-hay_fork_trailer_hitch_studio_2026_1.png" alt="Bad Boy 2-Prong 3-Point Hay Fork &amp; Trailer Mover Combo" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="2-Prong 3-Point Hay Fork &amp; Trailer Mover Combo">
+        <div class="sc-media" data-img="img/implements/bb-hay_fork_trailer_hitch_studio_2026_1.png"><img src="../../img/implements/bb-hay_fork_trailer_hitch_studio_2026_1.png" alt="Bad Boy 2-Prong 3-Point Hay Fork &amp; Trailer Mover Combo" loading="lazy" /></div>
         <div class="sc-body">
           <h2>2-Prong 3-Point Hay Fork &amp; Trailer Mover Combo</h2>
           <div class="badges"><span class="badge">Bad Boy</span><span class="badge">3-Point Hitch</span><span class="badge">Cat 1</span></div>
@@ -136,8 +139,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/bb-trailer_mover_studio_2026_1.png" alt="Bad Boy 3-Point Trailer Mover" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="3-Point Trailer Mover">
+        <div class="sc-media" data-img="img/implements/bb-trailer_mover_studio_2026_1.png"><img src="../../img/implements/bb-trailer_mover_studio_2026_1.png" alt="Bad Boy 3-Point Trailer Mover" loading="lazy" /></div>
         <div class="sc-body">
           <h2>3-Point Trailer Mover</h2>
           <div class="badges"><span class="badge">Bad Boy</span><span class="badge">3-Point Hitch</span><span class="badge">Cat 1</span></div>
@@ -151,8 +154,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/bb-hd_pallet_forks_studio_2.png" alt="Bad Boy Heavy-Duty Pallet Forks" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Heavy-Duty Pallet Forks">
+        <div class="sc-media" data-img="img/implements/bb-hd_pallet_forks_studio_2.png"><img src="../../img/implements/bb-hd_pallet_forks_studio_2.png" alt="Bad Boy Heavy-Duty Pallet Forks" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Heavy-Duty Pallet Forks</h2>
           <div class="badges"><span class="badge">Bad Boy</span><span class="badge">Front Loader QA</span></div>
@@ -166,8 +169,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/bb-pallet_forks_studio_2.png" alt="Bad Boy Standard Pallet Forks" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Standard Pallet Forks">
+        <div class="sc-media" data-img="img/implements/bb-pallet_forks_studio_2.png"><img src="../../img/implements/bb-pallet_forks_studio_2.png" alt="Bad Boy Standard Pallet Forks" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Standard Pallet Forks</h2>
           <div class="badges"><span class="badge">Bad Boy</span><span class="badge">Front Loader QA</span></div>
@@ -181,8 +184,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/cid-skid-steer-bale-spear-single-cid.png" alt="CID Low Back Hay Spear - Single" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Low Back Hay Spear - Single">
+        <div class="sc-media" data-img="img/implements/cid-skid-steer-bale-spear-single-cid.png"><img src="../../img/implements/cid-skid-steer-bale-spear-single-cid.png" alt="CID Low Back Hay Spear - Single" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Low Back Hay Spear - Single</h2>
           <div class="badges"><span class="badge">CID</span><span class="badge">Front Loader QA</span></div>
@@ -196,8 +199,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/cid-double-low-back-hay-spear.png" alt="CID Double Low Back Hay Spear" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Double Low Back Hay Spear">
+        <div class="sc-media" data-img="img/implements/cid-double-low-back-hay-spear.png"><img src="../../img/implements/cid-double-low-back-hay-spear.png" alt="CID Double Low Back Hay Spear" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Double Low Back Hay Spear</h2>
           <div class="badges"><span class="badge">CID</span><span class="badge">Front Loader QA</span></div>
@@ -211,8 +214,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/cid-skid-steer-triple-low-back-hay-spear.png" alt="CID Triple Low Back Hay Spear" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Triple Low Back Hay Spear">
+        <div class="sc-media" data-img="img/implements/cid-skid-steer-triple-low-back-hay-spear.png"><img src="../../img/implements/cid-skid-steer-triple-low-back-hay-spear.png" alt="CID Triple Low Back Hay Spear" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Triple Low Back Hay Spear</h2>
           <div class="badges"><span class="badge">CID</span><span class="badge">Front Loader QA</span></div>
@@ -226,8 +229,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/cid-quad-hayspear-new-placement.jpg" alt="CID Quad Low Back Hay Spear" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Quad Low Back Hay Spear">
+        <div class="sc-media" data-img="img/implements/cid-quad-hayspear-new-placement.jpg"><img src="../../img/implements/cid-quad-hayspear-new-placement.jpg" alt="CID Quad Low Back Hay Spear" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Quad Low Back Hay Spear</h2>
           <div class="badges"><span class="badge">CID</span><span class="badge">Front Loader QA</span></div>
@@ -241,8 +244,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/cid-compact-tractor-pallet-forks-and-frame---cid.png" alt="CID Forks &amp; Frame - 2,000lb" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Forks &amp; Frame - 2,000lb">
+        <div class="sc-media" data-img="img/implements/cid-compact-tractor-pallet-forks-and-frame---cid.png"><img src="../../img/implements/cid-compact-tractor-pallet-forks-and-frame---cid.png" alt="CID Forks &amp; Frame - 2,000lb" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Forks &amp; Frame - 2,000lb</h2>
           <div class="badges"><span class="badge">CID</span><span class="badge">Front Loader QA</span></div>
@@ -256,8 +259,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/cid-compact-tractor-pallet-forks-and-frame---cid.png" alt="CID JD Forks &amp; Frame - 2,000lb" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="JD Forks &amp; Frame - 2,000lb">
+        <div class="sc-media" data-img="img/implements/cid-compact-tractor-pallet-forks-and-frame---cid.png"><img src="../../img/implements/cid-compact-tractor-pallet-forks-and-frame---cid.png" alt="CID JD Forks &amp; Frame - 2,000lb" loading="lazy" /></div>
         <div class="sc-body">
           <h2>JD Forks &amp; Frame - 2,000lb</h2>
           <div class="badges"><span class="badge">CID</span><span class="badge">Front Loader QA</span></div>
@@ -271,8 +274,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/cid-skid-steer-standard-pallet-forks-frame.png" alt="CID Forks &amp; Frame - 3,000lb" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Forks &amp; Frame - 3,000lb">
+        <div class="sc-media" data-img="img/implements/cid-skid-steer-standard-pallet-forks-frame.png"><img src="../../img/implements/cid-skid-steer-standard-pallet-forks-frame.png" alt="CID Forks &amp; Frame - 3,000lb" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Forks &amp; Frame - 3,000lb</h2>
           <div class="badges"><span class="badge">CID</span><span class="badge">Standard-Duty</span><span class="badge">Front Loader QA</span></div>
@@ -286,8 +289,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/cid-light-duty-pallet-forks-and-frame-hires.png" alt="CID Forks - 4,000lb" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Forks - 4,000lb">
+        <div class="sc-media" data-img="img/implements/cid-light-duty-pallet-forks-and-frame-hires.png"><img src="../../img/implements/cid-light-duty-pallet-forks-and-frame-hires.png" alt="CID Forks - 4,000lb" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Forks - 4,000lb</h2>
           <div class="badges"><span class="badge">CID</span><span class="badge">Heavy-Duty</span><span class="badge">Front Loader QA</span></div>
@@ -301,8 +304,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/cid-5500-capacity-pallet-fork-heavy-duty.png" alt="CID Forks - 5,500lb" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Forks - 5,500lb">
+        <div class="sc-media" data-img="img/implements/cid-5500-capacity-pallet-fork-heavy-duty.png"><img src="../../img/implements/cid-5500-capacity-pallet-fork-heavy-duty.png" alt="CID Forks - 5,500lb" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Forks - 5,500lb</h2>
           <div class="badges"><span class="badge">CID</span><span class="badge">Heavy-Duty</span><span class="badge">Front Loader QA</span></div>
@@ -316,8 +319,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/be-bs3ptn.jpg" alt="Braber 3-Point Bale Spear" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="3-Point Bale Spear">
+        <div class="sc-media" data-img="img/implements/be-bs3ptn.jpg"><img src="../../img/implements/be-bs3ptn.jpg" alt="Braber 3-Point Bale Spear" loading="lazy" /></div>
         <div class="sc-body">
           <h2>3-Point Bale Spear</h2>
           <div class="badges"><span class="badge">Braber</span><span class="badge">3-Point Hitch</span><span class="badge">Cat 1</span></div>
@@ -331,8 +334,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/be-bsbm1n.jpg" alt="Braber Bucket-Mount Single Bale Spear with Chain" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Bucket-Mount Single Bale Spear with Chain">
+        <div class="sc-media" data-img="img/implements/be-bsbm1n.jpg"><img src="../../img/implements/be-bsbm1n.jpg" alt="Braber Bucket-Mount Single Bale Spear with Chain" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Bucket-Mount Single Bale Spear with Chain</h2>
           <div class="badges"><span class="badge">Braber</span><span class="badge">Bucket-Mount</span></div>
@@ -346,8 +349,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/be-60.000.005.jpg" alt="Braber Replacement Spear for BSS49BO500G" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Replacement Spear for BSS49BO500G">
+        <div class="sc-media" data-img="img/implements/be-60.000.005.jpg"><img src="../../img/implements/be-60.000.005.jpg" alt="Braber Replacement Spear for BSS49BO500G" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Replacement Spear for BSS49BO500G</h2>
           <div class="badges"><span class="badge">Braber</span><span class="badge">Replacement part</span></div>
@@ -361,8 +364,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/be-bss49bo500g.jpg" alt="Braber Single-Prong Bale Spear" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Single-Prong Bale Spear">
+        <div class="sc-media" data-img="img/implements/be-bss49bo500g.jpg"><img src="../../img/implements/be-bss49bo500g.jpg" alt="Braber Single-Prong Bale Spear" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Single-Prong Bale Spear</h2>
           <div class="badges"><span class="badge">Braber</span><span class="badge">Front Loader QA</span></div>
@@ -376,8 +379,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/be-bst49bo500g.jpg" alt="Braber Triple-Prong Bale Spear" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Triple-Prong Bale Spear">
+        <div class="sc-media" data-img="img/implements/be-bst49bo500g.jpg"><img src="../../img/implements/be-bst49bo500g.jpg" alt="Braber Triple-Prong Bale Spear" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Triple-Prong Bale Spear</h2>
           <div class="badges"><span class="badge">Braber</span><span class="badge">Front Loader QA</span></div>
@@ -391,8 +394,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/be-bft1002n.jpg" alt="Braber Clamp-On Bucket Forks — 1,000 lb." loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Clamp-On Bucket Forks — 1,000 lb.">
+        <div class="sc-media" data-img="img/implements/be-bft1002n.jpg"><img src="../../img/implements/be-bft1002n.jpg" alt="Braber Clamp-On Bucket Forks — 1,000 lb." loading="lazy" /></div>
         <div class="sc-body">
           <h2>Clamp-On Bucket Forks — 1,000 lb.</h2>
           <div class="badges"><span class="badge">Braber</span><span class="badge">Bucket-Mount</span></div>
@@ -406,8 +409,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/be-bft2002n.jpg" alt="Braber Clamp-On Bucket Forks — 2,000 lb." loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Clamp-On Bucket Forks — 2,000 lb.">
+        <div class="sc-media" data-img="img/implements/be-bft2002n.jpg"><img src="../../img/implements/be-bft2002n.jpg" alt="Braber Clamp-On Bucket Forks — 2,000 lb." loading="lazy" /></div>
         <div class="sc-body">
           <h2>Clamp-On Bucket Forks — 2,000 lb.</h2>
           <div class="badges"><span class="badge">Braber</span><span class="badge">Bucket-Mount</span></div>
@@ -421,8 +424,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/be-pf5048hbo500j.jpg" alt="Braber Pallet Forks — 4,400 lb." loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Pallet Forks — 4,400 lb.">
+        <div class="sc-media" data-img="img/implements/be-pf5048hbo500j.jpg"><img src="../../img/implements/be-pf5048hbo500j.jpg" alt="Braber Pallet Forks — 4,400 lb." loading="lazy" /></div>
         <div class="sc-body">
           <h2>Pallet Forks — 4,400 lb.</h2>
           <div class="badges"><span class="badge">Braber</span><span class="badge">Heavy-Duty</span><span class="badge">Front Loader QA</span></div>
@@ -436,8 +439,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/be-hd5548bo500.jpg" alt="Braber Pallet Forks — 5,500 lb." loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Pallet Forks — 5,500 lb.">
+        <div class="sc-media" data-img="img/implements/be-hd5548bo500.jpg"><img src="../../img/implements/be-hd5548bo500.jpg" alt="Braber Pallet Forks — 5,500 lb." loading="lazy" /></div>
         <div class="sc-body">
           <h2>Pallet Forks — 5,500 lb.</h2>
           <div class="badges"><span class="badge">Braber</span><span class="badge">Heavy-Duty</span><span class="badge">Front Loader QA</span></div>
@@ -451,8 +454,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/be-pfld36ebo.jpg" alt="Braber Light-Duty Pallet Forks" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Light-Duty Pallet Forks">
+        <div class="sc-media" data-img="img/implements/be-pfld36ebo.jpg"><img src="../../img/implements/be-pfld36ebo.jpg" alt="Braber Light-Duty Pallet Forks" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Light-Duty Pallet Forks</h2>
           <div class="badges"><span class="badge">Braber</span><span class="badge">Front Loader QA</span></div>
@@ -466,8 +469,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/be-pf30s42lbo.jpg" alt="Braber Pallet Forks — 2,200 lb." loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Pallet Forks — 2,200 lb.">
+        <div class="sc-media" data-img="img/implements/be-pf30s42lbo.jpg"><img src="../../img/implements/be-pf30s42lbo.jpg" alt="Braber Pallet Forks — 2,200 lb." loading="lazy" /></div>
         <div class="sc-body">
           <h2>Pallet Forks — 2,200 lb.</h2>
           <div class="badges"><span class="badge">Braber</span><span class="badge">Standard-Duty</span><span class="badge">Front Loader QA</span></div>
@@ -481,8 +484,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/be-qh1n.jpg" alt="Braber Category 1 Quick Hitch" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Category 1 Quick Hitch">
+        <div class="sc-media" data-img="img/implements/be-qh1n.jpg"><img src="../../img/implements/be-qh1n.jpg" alt="Braber Category 1 Quick Hitch" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Category 1 Quick Hitch</h2>
           <div class="badges"><span class="badge">Braber</span><span class="badge">3-Point Hitch</span><span class="badge">Cat 1</span></div>
@@ -497,8 +500,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/be-64.500.340q.jpg" alt="Braber Lower-Connection 3-Point Trailer Receiver" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Lower-Connection 3-Point Trailer Receiver">
+        <div class="sc-media" data-img="img/implements/be-64.500.340q.jpg"><img src="../../img/implements/be-64.500.340q.jpg" alt="Braber Lower-Connection 3-Point Trailer Receiver" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Lower-Connection 3-Point Trailer Receiver</h2>
           <div class="badges"><span class="badge">Braber</span><span class="badge">3-Point Hitch</span><span class="badge">Cat 1</span></div>
@@ -512,8 +515,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
           <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
         </div>
       </article>
-      <article class="style-card">
-        <div class="sc-media"><img src="../../img/implements/be-64.500.344.jpg" alt="Braber Heavy-Duty 3-Point Trailer Mover" loading="lazy" /></div>
+      <article class="style-card" data-cat="Forks &amp; Hitches" data-style="Heavy-Duty 3-Point Trailer Mover">
+        <div class="sc-media" data-img="img/implements/be-64.500.344.jpg"><img src="../../img/implements/be-64.500.344.jpg" alt="Braber Heavy-Duty 3-Point Trailer Mover" loading="lazy" /></div>
         <div class="sc-body">
           <h2>Heavy-Duty 3-Point Trailer Mover</h2>
           <div class="badges"><span class="badge">Braber</span><span class="badge">Heavy-Duty</span><span class="badge">3-Point Hitch</span><span class="badge">Cat 1/Cat 2</span></div>
@@ -597,5 +600,8 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
 
 <script src="../../header.js"></script>
 <script src="../../js/analytics.js"></script>
+<script src="../../implements-data.js"></script>
+<script src="../../js/implements-lib.js"></script>
+<script src="../../js/implements-cards.js"></script>
 </body>
 </html>

@@ -15,51 +15,23 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const w = {};
 new Function("window", readFileSync(join(root, "implements-data.js"), "utf8"))(w);
+// grouping / size-splitting / image-picking come from the shared browser lib so
+// the static page, the validator, and the runtime hydrator can never disagree
+new Function("window", readFileSync(join(root, "js/implements-lib.js"), "utf8"))(w);
 const ITEMS = w.JJ_IMPLEMENTS || [];
 const CATS = w.JJ_CATEGORIES || [];
+const LIB = w.JJ_IMPL;
 
-const slug = (s) => s.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const slug = LIB.slug;
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-// size tokens live at the start (4' Box Blade, 60" Rock Bucket), in trailing
-// parens (Large Front Grapple (70")), bare at the end (Hydraulic Snow Plow 72"),
-// or embedded (1025H 60" Mid-Mount Mower Deck) — extract them all into the
-// sizes table so titles stay clean.
-const SIZE_RES = [
-  /^\s*(\d+(?:\.\d+)?\s*')\s+/,   // leading feet
-  /^\s*(\d+\s*")\s+/,             // leading inches
-  /\s*\((\d+(?:\.\d+)?\s*["'])\)\s*$/, // trailing parens
-  /\s+(\d+(?:\.\d+)?\s*["'])\s*$/,     // trailing bare
-  /\s(\d+(?:\.\d+)?\s*")\s/,           // embedded (mower decks)
-];
-function splitSize(name) {
-  for (const re of SIZE_RES) {
-    const m = (name || "").match(re);
-    if (m) return { style: name.replace(re, " ").replace(/\s{2,}/g, " ").trim(), size: m[1].replace(/\s+/g, "") };
-  }
-  return { style: name, size: null };
-}
 
-// group items: category -> style -> size rows
+// group items: category -> ordered style groups with size-sorted rows
+const groups = LIB.groupImplements(ITEMS);
 const byCat = new Map();
-for (const it of ITEMS) {
-  const { style, size: parsed } = splitSize(it.name);
-  const size = parsed || (it.widthIn != null ? `${it.widthIn}"` : it.width != null ? `${it.width}'` : "One size");
-  if (!byCat.has(it.category)) byCat.set(it.category, new Map());
-  const styles = byCat.get(it.category);
-  if (!styles.has(style)) styles.set(style, []);
-  styles.get(style).push({ ...it, _size: size });
+for (const g of groups) {
+  if (!byCat.has(g.category)) byCat.set(g.category, new Map());
+  byCat.get(g.category).set(g.style, g.rows);
 }
-
-// sort size rows within each style numerically (feet normalized to inches;
-// unparseable / "One size" rows last) so tables read 6", 9", 12" not 12", 6", 9"
-const sizeInches = (s) => {
-  const m = String(s || "").match(/(\d+(?:\.\d+)?)\s*(["'])/);
-  if (!m) return Infinity;
-  return m[2] === "'" ? +m[1] * 12 : +m[1];
-};
-for (const styles of byCat.values())
-  for (const rows of styles.values())
-    rows.sort((a, b) => sizeInches(a._size) - sizeInches(b._size));
 
 const catMeta = Object.fromEntries(CATS.map((c) => [c.category, c]));
 const allCats = [...byCat.keys()];
@@ -67,15 +39,21 @@ const allCats = [...byCat.keys()];
 const fmtW = (it) => (it.widthIn != null ? `${it.widthIn}"` : it.width != null ? `${it.width}'` : /["']$/.test(it._size || "") ? it._size : "—");
 const fmtHp = (it) => (it.hpMin || it.hpMax ? `${it.hpMin || "?"}–${it.hpMax || "?"} HP` : "—");
 
-const styleCard = (style, rows) => {
+const styleCard = (cat, style, rows) => {
   const f = rows[0];
-  const img = f.img && !/^https?:/.test(f.img) ? f.img : null; // local repo images only, never hotlinks
+  // deterministic group image (shared with the runtime + validator): local
+  // photo wins; a hotlink-only group carries data-img so js/implements-cards.js
+  // renders it at runtime (same as the tractor/mower pages), while the static
+  // HTML keeps repo-local images only for the SEO / no-JS baseline.
+  const pick = LIB.pickCardImage(rows);
+  const img = pick.isLocal ? pick.img : null;
   const badges = [f.brand, f.duty, f.attach, f.hitch].filter(Boolean).map((b) => `<span class="badge">${esc(b)}</span>`).join("");
   // fitNotes are customer-facing; drop internal cruft like "Same page as ERG60"
   const notes = [...new Set(rows.map((r) => r.fitNote).filter(Boolean))]
     .filter((t) => !/same page as|verify/i.test(t));
-  return `      <article class="style-card">
-        <div class="sc-media">${img ? `<img src="../../${esc(img)}" alt="${esc(f.brand)} ${esc(style)}" loading="lazy" />` : `<div class="ph"><span>Photo coming<br>to the lot</span></div>`}</div>
+  const dataImg = pick.img ? ` data-img="${esc(pick.img)}"` : "";
+  return `      <article class="style-card" data-cat="${esc(cat)}" data-style="${esc(style)}">
+        <div class="sc-media"${dataImg}>${img ? `<img src="../../${esc(img)}" alt="${esc(f.brand)} ${esc(style)}" loading="lazy" />` : `<div class="ph"><span>Photo coming<br>to the lot</span></div>`}</div>
         <div class="sc-body">
           <h2>${esc(style)}</h2>
           <div class="badges">${badges}</div>
@@ -138,6 +116,9 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .style-card{display:grid;grid-template-columns:280px 1fr;gap:clamp(1.2rem,2.6vw,2rem);background:#fff;border:1px solid #d9d5c8;border-top:4px solid var(--red);padding:clamp(1.2rem,2.6vw,1.8rem);margin-bottom:1.4rem}
 .sc-media img{width:100%;aspect-ratio:4/3;object-fit:cover;border:1px solid #e2ded2}
 .ph{display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;background:var(--bone);border:1px dashed #c9c5b8;text-align:center;color:#9a948a;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:.95rem;line-height:1.4}
+.sc-media{position:relative}
+.sc-pencil{position:absolute;top:.5rem;right:.5rem;z-index:5;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:#14171a;color:#fff;border-radius:50%;font-size:1.05rem;line-height:1;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.35);opacity:.9}
+.sc-pencil:hover,.sc-pencil:focus-visible{background:var(--red);opacity:1}
 .sc-body h2{font-family:"Michroma","Tactic Sans Bld",sans-serif;text-transform:none;letter-spacing:0;font-size:clamp(1.15rem,2vw,1.5rem);color:var(--ink);margin-bottom:.55rem}
 .badges{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.9rem}
 .badge{border:1px solid rgba(20,23,26,.25);color:#4a5057;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;padding:.3rem .6rem}
@@ -189,7 +170,7 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
 
   <section class="cat-list">
     <div class="wrap">
-${[...styles.entries()].map(([st, rows]) => styleCard(st, rows)).join("\n")}
+${[...styles.entries()].map(([st, rows]) => styleCard(cat, st, rows)).join("\n")}
     </div>
   </section>
 
@@ -241,6 +222,9 @@ ${others.map((c) => `        <a class="cat-chip" href="../${slug(c)}/">${esc(c)}
 
 <script src="../../header.js"></script>
 <script src="../../js/analytics.js"></script>
+<script src="../../implements-data.js"></script>
+<script src="../../js/implements-lib.js"></script>
+<script src="../../js/implements-cards.js"></script>
 </body>
 </html>
 `;
