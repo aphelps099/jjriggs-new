@@ -110,42 +110,20 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
 .hero-media{position:absolute;inset:0;z-index:0}
 .hero-media img{width:100%;height:100%;object-fit:cover;transition:opacity .35s ease}
 .hero-scrim{position:absolute;inset:0;z-index:1;background:linear-gradient(100deg,rgba(12,14,17,.88) 0%,rgba(12,14,17,.56) 36%,rgba(12,14,17,.16) 66%,rgba(12,14,17,.06) 100%),linear-gradient(180deg,rgba(12,14,17,0) 58%,rgba(12,14,17,.62) 100%)}
-.hero-inner{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:center;
-  padding-top:clamp(3rem,8vh,6rem);padding-bottom:clamp(2.4rem,4vh,3.4rem)}
-.hero h1{font-size:clamp(2.9rem,6.6vw,5.8rem);margin:.6rem 0 1.7rem;max-width:15ch;text-wrap:balance}
+.hero-inner{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:flex-start;
+  padding-top:clamp(10rem,22vh,13rem);padding-bottom:clamp(2.4rem,4vh,3.4rem)}
+/* flex + margin:auto shrink-wraps the wrap and centers it — force it onto the standard grid */
+.hero-inner .wrap{width:100%}
+.hero h1{font-size:clamp(2.1rem,4.2vw,3.6rem);margin:.6rem 0 1.5rem;max-width:17ch;text-wrap:balance}
 .hero h1 .accent{color:#fff}
-.hero h1::after{content:"";display:block;width:92px;height:5px;background:var(--red);border-radius:2px;margin:.7rem 0 0}
-.hero.svc-active h1::after{background:#fff}
+.hero h1::after{content:"";display:block;width:72px;height:4px;background:var(--red);border-radius:2px;margin:.7rem 0 0}
 .hero .eyebrow{color:#eef1f3}
 .hero .eyebrow .dot{color:var(--red);font-weight:700;margin:0 .35rem}
 .hero .lead{max-width:42ch;margin-bottom:2rem;font-size:clamp(1.05rem,1.6vw,1.24rem)}
 .hero-ctas{display:flex;flex-wrap:wrap;gap:1rem}
-.hero-ctas .btn{padding:1.15rem 2.5rem;font-size:1.08rem}
-/* Service slide — red panel, white text, sample reviews */
-.hero-reviews{display:none}
-.hero.svc-active .hero-scrim{background:linear-gradient(160deg,rgba(160,20,30,.97),rgba(112,13,20,.995))}
-.hero.svc-active .hero-media img{filter:grayscale(1) brightness(.8) opacity(.12)}
-/* Service slide — greyscale award photo, angled cut */
-.svc-photo{display:none}
-.svc-photo img{display:block;width:100%;height:auto;filter:grayscale(1) contrast(1.04);
-  clip-path:polygon(9% 0,100% 0,91% 100%,0 100%);box-shadow:0 26px 64px rgba(0,0,0,.5)}
-.svc-photo figcaption{margin:.95rem 0 0;padding-left:9%;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;
-  text-transform:uppercase;letter-spacing:.06em;font-size:.86rem;line-height:1.2;color:#fff}
-@media(min-width:1000px){
-  .hero.svc-active .svc-photo{display:block;position:absolute;z-index:2;
-    top:clamp(98px,15vh,172px);right:clamp(1.5rem,4vw,4rem);width:min(33vw,420px);margin:0}
-}
-.hero.svc-active .lead{color:#fff}
-.hero.svc-active .btn-red{background:#fff;color:var(--ink)}
-.hero.svc-active .btn-red:hover{background:#efece4}
-.hero.svc-active .btn-ghost{border-color:rgba(255,255,255,.65);color:#fff}
-.hero.svc-active .btn-ghost:hover{border-color:#fff;background:rgba(255,255,255,.1)}
-.hero.svc-active .hero-reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem;margin-top:1.9rem;max-width:840px}
-.hr-item{border-left:2px solid rgba(255,255,255,.45);padding-left:.9rem}
-.hr-stars{color:#fff;font-size:.78rem;letter-spacing:.12em}
-.hr-item p{color:#fff;font-weight:600;font-size:.95rem;line-height:1.35;margin:.35rem 0 .4rem}
-.hr-by{color:rgba(255,255,255,.72);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase}
-@media(max-width:760px){.hero.svc-active .hero-reviews{grid-template-columns:1fr;gap:.8rem;max-width:none}.hero.svc-active .hr-item:nth-child(n+2){display:none}}
+.hero-ctas .btn{padding:1.05rem 2.1rem;font-size:1rem}
+/* Service slide — the giant b/w award photo carries it; nothing else special */
+.hero.svc-active .hero-media img{filter:grayscale(1) contrast(1.04) brightness(.92)}
 .hero-fade{animation:hf .4s ease}@keyframes hf{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 /* hero text — staggered entrance on load */
 @keyframes heroIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
@@ -439,18 +417,8 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
         <div class="hero-ctas">
           <a class="btn btn-red" id="heroCta" href="tractors.html">Shop Tractors</a>
         </div>
-        <div class="hero-reviews" id="heroReviews" aria-hidden="true">
-          <div class="hr-item"><span class="hr-stars" aria-hidden="true">★★★★★</span><p>"Good pricing, good service. Worth the drive."</p><span class="hr-by">Greg Krueger · Google</span></div>
-          <div class="hr-item"><span class="hr-stars" aria-hidden="true">★★★★★</span><p>"Honest and straightforward. Highly recommend."</p><span class="hr-by">Richard Snyder · Google</span></div>
-          <div class="hr-item"><span class="hr-stars" aria-hidden="true">★★★★★</span><p>"Always professional, always timely."</p><span class="hr-by">Peter Lewis · Google</span></div>
-        </div>
       </div>
     </div>
-
-    <figure class="svc-photo" aria-hidden="true">
-      <img src="img/tym-gold-dealer.jpg" alt="JJ Riggs Equipment team receiving the TYM Gold Dealer award in Colville, WA" />
-      <figcaption>TYM Gold Dealer — two years in a row.</figcaption>
-    </figure>
 
     <div class="hero-tabs" role="tablist" aria-label="Shop by category">
       <button class="hero-tab" role="tab" aria-selected="true"  data-i="0">Tractors</button>
@@ -698,7 +666,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
     {img:'img/jjriggs-tractors-homepage-hero.jpeg', h:'The toughest tractors.<br><span class="accent">Rock-solid service.</span>', b:'Shop Tractors', href:'tractors.html'},
     {img:'img/bb-mowers-home.jpeg', h:'Cut clean.<br>Every <span class="accent">pass.</span>', b:'Shop mowers', href:'mowers.html', pos:'50% 78%', zoom:1.15},
     {img:'img/implements-glamour-shot.jpeg', h:'The right tool<br>for the <span class="accent">job.</span>', b:'Shop implements', href:'implements.html'},
-    {img:'img/tym-gold-dealer.jpg', h:'Don\'t take our<br><span class="accent">word for it.</span>', b:'View services', href:'services.html', pos:'50% 38%'}
+    {img:'img/tym-gold-dealer.jpg', h:'TYM Gold Dealer —<br><span class="accent">two years in a row.</span>', b:'About our services', href:'services.html', pos:'50% 38%'}
   ];
   var img=document.getElementById('heroImg'),h1=document.getElementById('hero-h1'),
       cta=document.getElementById('heroCta'),copy=document.getElementById('heroCopy'),
