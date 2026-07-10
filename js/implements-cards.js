@@ -146,15 +146,42 @@
   if (!btn || !panel) return;
 
   function isOpen() { return btn.getAttribute("aria-expanded") === "true"; }
+
+  // Cap the panel height to the space actually below its top edge so no part of
+  // it renders below the viewport, no matter how low in the hero the trigger sits
+  // (a real problem on tablet/mobile where the hero stacks and the trigger drops
+  // beneath tall copy). Because the panel is anchored just under the trigger,
+  // top + (innerHeight - top - inset) === innerHeight - inset, so its bottom is
+  // pinned to the viewport bottom on every recompute — even once it scrolls up
+  // under the sticky header. Internal scrolling (CSS overflow-y:auto) then keeps
+  // all 20 links reachable. A small floor avoids a uselessly tiny panel in the
+  // pathological case where the trigger is jammed against the viewport bottom.
+  var INSET = 14, MIN_H = 200;
+  function fit() {
+    var top = panel.getBoundingClientRect().top;
+    var avail = window.innerHeight - top - INSET;
+    panel.style.maxHeight = Math.max(Math.round(avail), MIN_H) + "px";
+  }
+  var raf = 0;
+  function scheduleFit() {
+    if (!isOpen() || raf) return;
+    raf = requestAnimationFrame(function () { raf = 0; fit(); });
+  }
+
   function setOpen(open) {
     btn.setAttribute("aria-expanded", open ? "true" : "false");
     panel.hidden = !open;
+    if (open) fit(); // measure once visible, before paint, so there's no flash
   }
   function close(returnFocus) {
     if (!isOpen()) return;
     setOpen(false);
     if (returnFocus) btn.focus();
   }
+
+  window.addEventListener("resize", scheduleFit, { passive: true });
+  window.addEventListener("orientationchange", scheduleFit, { passive: true });
+  window.addEventListener("scroll", scheduleFit, { passive: true });
 
   btn.addEventListener("click", function (e) {
     e.stopPropagation();
