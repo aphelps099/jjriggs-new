@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>JJ Riggs Website — Owner's Guide</title>
+<style>
+/* Self-contained: system fonts only, no external requests.
+   Source of truth is USER-GUIDE.md at the repo root — edit there, re-render here. */
+:root{
+  --ink:#14171a;--ink-2:#1b2025;--ink-3:#0f1215;
+  --bone:#f3f1ea;--paper:#fbfaf6;
+  --steel:#6b7178;--steel-2:#8b939c;
+  --red:#cf1f2a;--red-deep:#a5151f;
+  --line:#e2ddd0;--maxw:1200px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:1.5rem}
+body{font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bone);color:var(--ink);-webkit-font-smoothing:antialiased}
+a{color:var(--red-deep);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ---------- masthead ---------- */
+.mast{background:var(--ink-3);color:#fff;padding:2.6rem 0 2.2rem;border-bottom:4px solid var(--red)}
+.mast .wrap,.layout{max-width:var(--maxw);margin:0 auto;padding:0 clamp(1.2rem,4vw,3rem)}
+.tab{display:inline-block;background:var(--red);color:#fff;font-weight:800;font-size:.78rem;
+  letter-spacing:.14em;text-transform:uppercase;line-height:1;padding:.5rem 1.4rem .5rem 1rem;
+  clip-path:polygon(0 0,100% 0,calc(100% - 13px) 100%,0 100%);margin-bottom:1rem}
+.mast h1{font-size:clamp(1.7rem,4.2vw,2.7rem);font-weight:800;letter-spacing:.02em;
+  text-transform:uppercase;line-height:1.08}
+.mast p{color:#b9c0c7;margin-top:.7rem;max-width:62ch}
+.mast .meta{font-size:.85rem;color:#8b939c;margin-top:1rem;letter-spacing:.05em;text-transform:uppercase}
+
+/* ---------- layout: sticky TOC + content ---------- */
+.layout{display:grid;grid-template-columns:250px 1fr;gap:clamp(1.6rem,4vw,3.6rem);padding-top:2.4rem;padding-bottom:4rem}
+nav.toc{position:sticky;top:1.4rem;align-self:start;font-size:.88rem}
+nav.toc .t{font-weight:800;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--steel);margin-bottom:.7rem}
+nav.toc ol{list-style:none;counter-reset:toc}
+nav.toc li{counter-increment:toc;border-left:2px solid var(--line)}
+nav.toc a{display:block;padding:.34rem .75rem;color:var(--ink-2);line-height:1.35}
+nav.toc a::before{content:counter(toc) ". ";color:var(--red);font-weight:700}
+nav.toc a:hover{background:#fff;text-decoration:none;border-left:2px solid var(--red);margin-left:-2px}
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr}
+  nav.toc{position:static;background:#fff;border:1px solid var(--line);padding:1.1rem 1.2rem}
+  nav.toc ol{columns:2;column-gap:2rem}
+  nav.toc li{break-inside:avoid}
+}
+
+/* ---------- content ---------- */
+main{min-width:0}
+section{background:var(--paper);border:1px solid var(--line);padding:clamp(1.3rem,3vw,2.2rem);margin-bottom:1.6rem}
+h2{font-size:1.32rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;line-height:1.2;margin-bottom:1rem}
+h2 .no{color:var(--red);margin-right:.5rem}
+h3{font-size:1.02rem;font-weight:800;margin:1.5rem 0 .5rem;letter-spacing:.01em}
+p{margin:.7rem 0;max-width:75ch}
+ul,ol{margin:.7rem 0 .7rem 1.4rem;max-width:72ch}
+li{margin:.4rem 0}
+strong{font-weight:700}
+code{font:.85em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#edeadf;
+  border:1px solid var(--line);padding:.08em .38em;border-radius:4px;white-space:nowrap}
+.rule{background:#fff;border-left:4px solid var(--red);padding:.9rem 1.1rem;margin:1rem 0;max-width:75ch}
+.note{font-size:.9rem;color:var(--steel);border-top:1px dashed var(--line);margin-top:1.2rem;padding-top:.8rem}
+
+/* tables */
+.tblwrap{overflow-x:auto;margin:.9rem 0}
+table{border-collapse:collapse;width:100%;background:#fff;font-size:.93rem}
+th{background:var(--ink);color:#fff;text-align:left;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:.72rem;padding:.6rem .8rem}
+td{padding:.6rem .8rem;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600;white-space:nowrap}
+td code{white-space:nowrap}
+
+/* footer + print */
+footer{max-width:var(--maxw);margin:0 auto;padding:0 clamp(1.2rem,4vw,3rem) 3rem;color:var(--steel);font-size:.85rem}
+.top{display:inline-block;margin-top:.8rem;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+@media print{
+  body{background:#fff;font-size:11.5pt}
+  .mast{background:#fff;color:#000;border-bottom:3px solid #000;padding:0 0 1rem}
+  .mast p,.mast .meta{color:#333}
+  .tab{background:#000}
+  nav.toc{display:none}
+  .layout{display:block;padding-top:1rem}
+  section{border:0;border-top:2px solid #000;padding:1rem 0;break-inside:avoid-page}
+  .top{display:none}
+  a{color:#000}
+}
+</style>
+</head>
+<body>
+
+<header class="mast" id="top">
+  <div class="wrap">
+    <span class="tab">Internal · Owner's Manual</span>
+    <h1>JJ Riggs Equipment Website<br>— Owner's Guide</h1>
+    <p>The one document that explains the whole system: what the website is, how to run it day-to-day, how to sell it to other dealers, and where it's going next. Deep-dive docs are referenced throughout — this is the map.</p>
+    <p class="meta">July 2026 · Aaron Phelps / Look Serious Creative · source: USER-GUIDE.md</p>
+  </div>
+</header>
+
+<div class="layout">
+<nav class="toc" aria-label="Contents">
+  <div class="t">Contents</div>
+  <ol>
+    <li><a href="#glance">The website at a glance</a></li>
+    <li><a href="#daytoday">Day-to-day updates</a></li>
+    <li><a href="#admin">The admin tools</a></li>
+    <li><a href="#badges">Live stock badges</a></li>
+    <li><a href="#deploy">Previewing &amp; deploying</a></li>
+    <li><a href="#design">Design rules</a></li>
+    <li><a href="#data">The data layer</a></li>
+    <li><a href="#tools">Tools reference</a></li>
+    <li><a href="#facebook">Facebook posting</a></li>
+    <li><a href="#studio">The video / ads studio</a></li>
+    <li><a href="#dealerkit">The Dealer Kit</a></li>
+    <li><a href="#roadmap">Future development roadmap</a></li>
+    <li><a href="#docs">Document map</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<section id="glance">
+  <h2><span class="no">1.</span>The website at a glance</h2>
+  <p><strong>What it is:</strong> a zero-build static website — plain HTML, CSS, and vanilla JavaScript, no framework, no CMS, no build step — deployed on <strong>Cloudflare Pages</strong> straight from the GitHub repo (<code>aphelps099/jjriggs-new</code>). Push to <code>main</code> and the site rebuilds in about a minute. Hosting is effectively free.</p>
+  <p><strong>Who it's for:</strong> JJ Riggs Equipment (Andrew Alluis), a TYM + Bad Boy dealership in Colville, WA. The customer is often 60+, rural, and buys by phone — every page exists to show machines clearly and make calling <strong>509-738-2985</strong> the easiest action on screen.</p>
+  <h3>How pages work</h3>
+  <ul>
+    <li>The header/topbar/nav is injected on every page by <code>header.js</code> + <code>header.css</code> — edit once, changes everywhere.</li>
+    <li>The footer is copy-pasted per page (known debt — see §12).</li>
+    <li>Category pages (<code>tractors.html</code>, <code>mowers.html</code>, <code>implements.html</code>) and product pages render in the browser from plain-JS data files (<code>js/*.data.js</code>, <code>implements-data.js</code>). Change the data file, the pages change.</li>
+    <li>A handful of serverless functions under <code>functions/</code> handle the contact form, the live stock feed, and the admin tools. That's the entire backend.</li>
+  </ul>
+  <h3>The three moving parts beyond the site itself</h3>
+  <div class="tblwrap"><table>
+    <tr><th>Part</th><th>What it does</th><th>Where</th></tr>
+    <tr><td>Admin tools</td><td>Passcode-gated browser tools that let a non-technical person edit inventory and photos</td><td><code>/admin/</code> on the live site</td></tr>
+    <tr><td>Live stock feed</td><td>Andrew's Google Sheet drives on-the-lot badges with ~2-minute latency, zero deploys</td><td>Sheet → <code>/api/stock</code> → badges</td></tr>
+    <tr><td>Ads studio</td><td>In-browser motion-graphics tool that exports real MP4 video ads from inventory data</td><td><code>/studio/</code> on the live site</td></tr>
+  </table></div>
+</section>
+
+<section id="daytoday">
+  <h2><span class="no">2.</span>Day-to-day updates</h2>
+  <p>The common tasks, from most to least frequent:</p>
+  <h3>Change what's in stock / add a deal badge</h3>
+  <p>Edit the Google Sheet — nothing else. Change the In&nbsp;Stock / On&nbsp;Order numbers, or tick the <code>hot_deal</code> box on the Website Feed tab. The site picks it up within a few minutes. Details in §4.</p>
+  <h3>Add a brand-new product</h3>
+  <p>Open <code>/admin/new/</code> on the live site. Pick the type (TYM tractor / Bad Boy tractor / mower / implement), paste the manufacturer page URL, click <strong>Fetch the facts</strong> — the AI extracts specs verbatim from the page (blank when the page doesn't say; it never guesses). Review every field, pick photos from the candidates it found, publish. It also gives you a TSV row to paste into the master sheet so the sheet stays the source of truth.</p>
+  <h3>Edit or reorder product photos</h3>
+  <p>Open <code>/admin/photos/</code>. Add, remove, reorder, or star photos on any product (uploads are auto-resized in the browser). This is also where you <strong>remove a product from the site</strong> (archived, never deleted — one click restores it). The live site's little edit-pencil icons deep-link straight into this tool.</p>
+  <h3>Bulk inventory changes from a spreadsheet</h3>
+  <p>Open <code>/admin/</code> (the Inventory Builder). Import CSVs or fetch a published Google Sheet URL, review the validation diff against what's live, optionally AI-enrich missing fields, publish.</p>
+  <h3>Change page copy, layout, or design</h3>
+  <p>That's a code change: edit the HTML, preview locally (§5), push to a branch, deploy a test build, <strong>walk Andrew through it, then promote</strong>. Nothing ships to the live domain without Andrew seeing it — that's the house rule. (Inventory data and photos through the admin tools are the deliberate exception: there, the editor <em>is</em> the reviewer.)</p>
+</section>
+
+<section id="admin">
+  <h2><span class="no">3.</span>The admin tools</h2>
+  <p>Three tools, one passcode. Full setup in <code>ADMIN-ACCESS-SETUP.md</code>.</p>
+  <ul>
+    <li><strong>Access:</strong> <code>jjriggsequipment.com/admin/</code> → enter the shared passcode once → signed in on that device for 30 days. Changing the <code>ADMIN_PASSCODE</code> environment variable in Cloudflare signs everyone out instantly.</li>
+    <li><strong>The tools:</strong> <code>/admin/</code> Inventory Builder (sheet/CSV → site) · <code>/admin/new/</code> New Product wizard (AI extract) · <code>/admin/photos/</code> Product Editor (photos, remove/restore).</li>
+    <li><strong>How publishing works:</strong> every publish is a <strong>git commit to the repo</strong> made by the server. History is the undo button.</li>
+    <li><strong>Why it's safe:</strong> the publish endpoint has a hard path allowlist — it can only ever write the inventory data files (<code>js/*.data.js</code>, <code>implements-data.js</code>) and photos under <code>img/uploads/</code>. It <strong>cannot touch the site's code</strong>, even with a valid login. The AI extraction endpoint only reads from allowlisted manufacturer sites (TYM, Bad Boy, IronCraft, Braber, CID) and is prompt-bound to never invent a spec.</li>
+    <li><strong>Requirements (Cloudflare env vars):</strong> <code>ADMIN_PASSCODE</code>, <code>ANTHROPIC_API_KEY</code>, <code>GH_PUBLISH_TOKEN</code> (fine-grained GitHub token, Contents read/write on this repo only — note its expiry date and renew).</li>
+  </ul>
+</section>
+
+<section id="badges">
+  <h2><span class="no">4.</span>Live stock badges</h2>
+  <p>Full spec in <code>STOCK-BADGES.md</code>. The short version:</p>
+  <p><strong>Flow:</strong> Andrew's price sheet has a "Website Feed" tab (only that tab is ever published to the web — costs and margins never leave the other tabs) → the site's <code>/api/stock</code> function fetches it → <code>js/stock-badges.js</code> paints badges on tractor cards, the homepage carousel, and product pages.</p>
+  <p><strong>Badge rules (priority order, max two chips):</strong> Hot Deal (red, from the checkbox) → On the Lot (5+ in stock) → Only N left (1–4) → On Order (0 stock, 1+ on order) → no badge.</p>
+  <div class="rule"><strong>Built to never break the site:</strong> responses are edge-cached 120 seconds; if Google is down or the sheet is unpublished, the last good copy serves for up to 7 days; if there's no copy at all, pages simply render without badges. No errors, no spinners, ever.</div>
+  <p><strong>Andrew's entire workflow</strong> (cheat sheet printable from <code>STOCK-BADGES.md</code>): change the In&nbsp;Stock number in the sheet he already uses; tick/untick <code>hot_deal</code> for the red tag. Sold the last one? Set it to 0 — the badge disappears.</p>
+  <p><strong>Current limits (fixed by the Phase A rebuild, §12):</strong> covers tractors only (24 dealer SKUs mapped in <code>functions/_stock-map.js</code>); can badge a product but <strong>cannot hide it</strong>; no "Sale" tag yet.</p>
+</section>
+
+<section id="deploy">
+  <h2><span class="no">5.</span>Previewing and deploying</h2>
+  <ul>
+    <li><strong>Local preview:</strong> <code>python3 -m http.server</code> from the repo root, then open <code>http://localhost:8000</code>. Always over http — pages fetch data files, so <code>file://</code> won't render category/product pages. Check every change at phone width (~375px) and desktop (~1280px).</li>
+    <li><strong>Local stock-feed testing:</strong> <code>node tools/stock-dev-server.mjs</code> serves the site <em>plus</em> a working <code>/api/stock</code> on port 8788, using the same parsing code the real function runs.</li>
+    <li><strong>Deploys:</strong> Cloudflare Pages builds from the repo automatically — no build command, output directory <code>/</code>. Branch pushes get preview URLs (<code>*.pages.dev</code>); <code>main</code> is the live site.</li>
+    <li><strong>The review rule:</strong> design/code changes go to a test deploy for Andrew's review before promoting to the live domain. No exceptions.</li>
+  </ul>
+</section>
+
+<section id="design">
+  <h2><span class="no">6.</span>Design rules you must not break</h2>
+  <p>The complete handbook is <code>WEB-DESIGNER.md</code> — read it before any design work. The five rules that must survive any change:</p>
+  <ol>
+    <li><strong>60+, phone-first.</strong> Body text ≥16px, contrast ≥4.5:1, the phone number one glance away, nothing important hidden behind tabs or carousels.</li>
+    <li><strong>Never invent data.</strong> No guessed specs, prices, or photos. A blank beats a plausible fake. Never show one model's photo on another (open-station vs cab mix-ups are a real past bug).</li>
+    <li><strong>One design system, two brands.</strong> The red (<code>#cf1f2a</code>) is JJ Riggs's, not a manufacturer's. No "Bad Boy orange" tokens. Tactic Sans headings, Questrial body, the angle-cut <code>.cut-tab</code> motif.</li>
+    <li><strong>No frameworks, no build step, no CMS.</strong> The zero-build site is why it's fast, cheap, and unbreakable.</li>
+    <li><strong>Design tokens are copy-pasted into every page's <code>&lt;style&gt;</code> block</strong> — a page missing them renders a broken header. Copy the full <code>:root</code> set into any new page.</li>
+  </ol>
+</section>
+
+<section id="data">
+  <h2><span class="no">7.</span>The data layer and its one fragility</h2>
+  <div class="rule"><strong>The iron rule: model names are foreign keys.</strong> Feature copy (<code>js/tractor-features.data.js</code>) and photo galleries (<code>js/badboy-tractor-images.data.js</code>) are keyed on exact <code>"Brand|Model"</code> strings. Rename or remove a model without updating those keys and the product page <em>silently</em> loses its features and gallery — no error, just a quietly worse page.</div>
+  <p><strong>After any model rename/removal, always:</strong></p>
+  <ol>
+    <li>Update the matching keys in the feature/gallery files.</li>
+    <li><code>grep</code> the whole repo for the old model string (nav links, the homepage carousel, anchors).</li>
+    <li><code>node --check</code> every touched data file.</li>
+    <li>Load the category page over http and click through to the product page — verify title, Open Station/Cab label, photo, features, gallery.</li>
+  </ol>
+  <p>Say <strong>"Open Station," never "Open"</strong> — that's Andrew's and the customers' language.</p>
+</section>
+
+<section id="tools">
+  <h2><span class="no">8.</span>Command-line tools reference</h2>
+  <p>All run as <code>node tools/&lt;name&gt;.mjs</code> from the repo root (no npm install needed):</p>
+  <div class="tblwrap"><table>
+    <tr><th>Tool</th><th>What it does</th></tr>
+    <tr><td><code>export-to-sheet.mjs</code></td><td>Site data → per-tab CSVs, for bootstrapping the master Google Sheet so nobody retypes anything</td></tr>
+    <tr><td><code>build-feed-from-price-list.mjs</code></td><td>Andrew's price-list CSV → Website Feed CSV + a reconciliation report of anything that didn't match</td></tr>
+    <tr><td><code>stock-dev-server.mjs</code></td><td>Local site + working <code>/api/stock</code> for badge testing</td></tr>
+    <tr><td><code>fb-post-test.mjs</code></td><td>Dry-run of the sheet→Facebook pipeline; writes <code>fb-post-preview.html</code> (§9)</td></tr>
+    <tr><td><code>import-implement-workbook.mjs</code></td><td>Implement research workbook CSV → merged into <code>implements-data.js</code>, deterministic diff printed</td></tr>
+    <tr><td><code>generate-implement-pages.mjs</code></td><td>Regenerates the 21 static implement category pages (edit the generator, never the pages)</td></tr>
+    <tr><td><code>generate-town-pages.mjs</code></td><td>Regenerates the Colville / Kettle Falls / Chewelah local-SEO pages</td></tr>
+    <tr><td><code>generate-sitemap.mjs</code>&nbsp;· <code>validate-implement-pages.mjs</code></td><td>Support tooling</td></tr>
+  </table></div>
+</section>
+
+<section id="facebook">
+  <h2><span class="no">9.</span>Facebook posting from the inventory sheet</h2>
+  <p>Full runbook in <code>FACEBOOK-POSTING.md</code>. Status: <strong>working test harness, not yet live</strong> (needs the one-time Meta app + Page token setup, ~1 hour with the page admin).</p>
+  <ul>
+    <li><strong>How it works:</strong> the Website Feed tab gains a <code>post_fb</code> checkbox. Tick it on a row and the pipeline builds a Facebook post for that machine — photo, title, real specs from the site data, availability wording ("only 2 left"), phone number, product link. Nothing is ever invented; blank fields are skipped.</li>
+    <li><strong>Guardrails:</strong> it refuses to post anything with zero stock and zero on order, anything not on the site, or anything without a real photo. A posted-log guarantees the same model never posts twice by accident.</li>
+    <li><strong>Test it today:</strong> <code>node tools/fb-post-test.mjs</code> — prints every would-be post and writes <code>fb-post-preview.html</code>, a Facebook-look mockup to review with Andrew before anything goes live.</li>
+    <li><strong>The platform reality:</strong> automation can only post to the <strong>business Page</strong> (facebook.com/JJRIGGSEQUIPMENT) — Meta removed personal-profile posting in 2018. That's the better setup anyway: Page posts build an asset the business owns, and Andrew can share them to his personal feed in one tap.</li>
+    <li><strong>Capturing the lot-photo stream:</strong> the backlog comes from Facebook's own "Download your information" export (run it for both the Page and Andrew's personal profile — legit, no scraping). Going forward: the Page can be harvested automatically via the API; the personal-account habit is fixed at the source with phone auto-backup to a shared album. Put the model number in post captions ("T474H on the lot today") and photos can auto-file into per-model folders.</li>
+  </ul>
+</section>
+
+<section id="studio">
+  <h2><span class="no">10.</span>The video / ads studio</h2>
+  <p>Live at <code>/studio/</code> (source in <code>studio-src/</code>, a Next.js app that builds to a static export — the only part of the repo with a build step, and it's pre-built).</p>
+  <ul>
+    <li><strong>What it is:</strong> a full motion-graphics editor in the browser — scene templates (title, spec sheet, price counter, end card…), brand-drawn animations in the JJ Riggs style, captions, music with auto-duck, voiceover.</li>
+    <li><strong>The killer feature:</strong> it exports <strong>real MP4 video (H.264 + AAC) entirely in the browser</strong> — no video backend, no rendering service, no per-render cost. (Chrome/Edge required for MP4; other browsers fall back to WebM.)</li>
+    <li><strong>Inventory-driven:</strong> the built-in Inventory Builder wizard takes a model name, pulls its title/specs/photo from the site's inventory data, and seeds a complete 7-scene unit ad — brand sting → title → spec sheet → walk-around clip → price → fine print → end card. Type a model, upload a lot video, export.</li>
+    <li><strong>Rebuilding after source changes:</strong> <code>cd studio-src &amp;&amp; npm run deploy</code> (builds and copies into <code>studio/</code>).</li>
+  </ul>
+</section>
+
+<section id="dealerkit">
+  <h2><span class="no">11.</span>Packaging this for other dealers — the Dealer Kit</h2>
+  <p>Full plan with effort estimates in <code>LIVE-INVENTORY-AND-DEALER-KIT-PLAN.md</code> (Part 2); client-facing pricing patterns in <code>JJRiggs-Sheet-and-Facebook-Proposal.md</code>.</p>
+  <h3>What you're actually selling</h3>
+  <p>A dealer website that (1) the dealer <strong>owns</strong> (their repo, their domain, near-zero hosting), (2) updates itself from a Google Sheet the dealer already understands, (3) maintains itself through the passcode admin tools, and (4) turns the same inventory sheet into Facebook posts and real video ads. The incumbents (Dealer Spike / LeadVenture-type platforms) charge $300–800/month for slower sites the dealer never owns. That's the pitch.</p>
+  <h3>What already carries over unchanged (~70–80% of the product)</h3>
+  <p>The architecture, the data-driven category/product/implement pages, the admin suite with AI extraction, the live stock feed, the motion studio, and the operating playbooks (<code>WEB-DESIGNER.md</code>, the Claude skills, the change-summary culture — these become the franchise manual).</p>
+  <h3>What blocks a 24-hour setup today (the remaining 20–30%)</h3>
+  <ol>
+    <li><strong>Brand hardcoding</strong> — tokens copy-pasted into ~11 pages; name/phone/GA4/towns inline everywhere. Fix: extract <code>site.css</code> + one <code>site-config.js</code> (identity, colors, logo, brands, analytics).</li>
+    <li><strong>Dealer-specifics in functions</strong> — repo name, manufacturer allowlist, SKU map, email addresses. Fix: environment variables / config module.</li>
+    <li><strong>Font licensing</strong> — Tactic Sans is a licensed webfont and <strong>cannot ship to other clients</strong>. Each kit needs a per-client license or a default open pairing. A legal blocker, not polish.</li>
+    <li><strong>Photo rights</strong> — manufacturer imagery is only defensible for <em>authorized dealers</em> of that brand. Intake must confirm dealer status per brand. New brands (Kubota, Mahindra…) need allowlist entries and a verification pass.</li>
+    <li><strong>No bootstrap tooling yet</strong> — nothing chains intake → themed repo → crawled/extracted catalog → populated sheet. All the pieces exist; the chain doesn't.</li>
+  </ol>
+  <h3>The build (≈3–4 focused weeks, after Phase A ships)</h3>
+  <p>De-hardcode (3–5 days) → template repo + <code>init-dealer</code> bootstrap CLI (~1 week) → ops playbook &amp; cheat sheets (2–3 days) → studio generalization (3–4 days).</p>
+  <h3>The 24-hour promise (realistically 24 working hours over 2–3 calendar days)</h3>
+  <p>Hours 0–2 intake call (logo, colors, hours, brands, inventory list, domain) → 2–8 bootstrap (themed repo, crawler+extract fills the sheet, human reviews the gap report) → 8–14 content pass → 14–18 deploy with live badges + admin handover → day 2–3 dealer review call, fixes, DNS cutover. Same discipline as JJ Riggs: nothing goes live until the dealer has seen it.</p>
+  <h3>Pricing (working numbers)</h3>
+  <div class="tblwrap"><table>
+    <tr><th>Offer</th><th>Price</th></tr>
+    <tr><td>Dealer Site Kit (site + sheet + admin + training)</td><td><strong>$4,500</strong> setup ($3.5k floor / $6k with catalog build)</td></tr>
+    <tr><td>Care plan (hosting, monitoring, small edits)</td><td><strong>$199/mo</strong> ($149–249 band) — ~95% margin</td></tr>
+    <tr><td>Ads studio bundled add-on</td><td><strong>+$49–99/mo</strong></td></tr>
+    <tr><td>Ads-as-a-service (4–6 videos/mo from their sheet)</td><td><strong>$400–600/mo</strong></td></tr>
+    <tr><td>Verified Catalog Build alone (any platform — wedge product)</td><td><strong>$750</strong> to ~75 SKUs, then $15/SKU</td></tr>
+    <tr><td>Live-inventory retrofit on their existing site (wedge)</td><td><strong>$1,200</strong> + $79/mo</td></tr>
+  </table></div>
+  <p>One repo + one Cloudflare project + one sheet per dealer. Don't build multi-tenant until ~20 dealers. First pilots: other TYM/Bad Boy dealers outside Andrew's territory (same extract templates — near-zero marginal engineering), with Andrew's blessing to use the site as the reference.</p>
+</section>
+
+<section id="roadmap">
+  <h2><span class="no">12.</span>Future development roadmap</h2>
+  <p>In build order — each phase makes the next cheaper. Andrew-facing scope/pricing for the first two: <code>JJRiggs-Sheet-and-Facebook-Proposal.md</code> ($1,500 + $700 + $300 add-on).</p>
+
+  <h3>Phase A — Live inventory rebuild (~3–5 days) · the current priority</h3>
+  <p>Spec: <code>LIVE-INVENTORY-AND-DEALER-KIT-PLAN.md</code> Part 1. One canonical Google Sheet, one row per product with everything needed to present it (title, model, brand, specs, description, image URL), plus three control columns:</p>
+  <ul>
+    <li><strong>Status dropdown</strong> — On the Lot / Low Stock / On Order / <strong>Out of Stock</strong> / Discontinued. Out of Stock <strong>hides the product from the site</strong> within minutes (grids, carousel, related rails); direct links get a friendly "Sold — call Andrew" page instead of a 404. One click brings it back.</li>
+    <li><strong>Tag dropdown</strong> — Hot Deal / Sale / Just In / Clearance (the promo chip).</li>
+    <li><strong>Qty</strong> — drives "Only 2 left" automatically, so urgency never goes stale.</li>
+  </ul>
+  <p>Plus: feed keyed by <code>brand|model</code> instead of dealer SKUs (removes the biggest dealer-specific hardcoding), badge coverage extended to mowers and implements, and the homepage featured carousel finally driven by a <code>featured</code> flag in the sheet instead of hardcoded HTML.</p>
+
+  <h3>Phase B — Facebook auto-posting in production (~2–3 days)</h3>
+  <p>Promote the §9 test harness to a scheduled job (GitHub Action cron or Cloudflare Worker): checks the published feed a few times daily, posts flagged rows to the Page, keeps the posted-log in KV. Add the Page photo harvester that files lot photos into per-model folders. One-time Meta app + Page token setup with Andrew. Optional $300 add-on: the photo archive.</p>
+
+  <h3>Phase C — Video tool (studio) generalization (~3–4 days)</h3>
+  <p>Point the studio's inventory wizard at the live data (not the static CSV snapshot); read brand theme from the future <code>site-config</code>; add 9:16 (Reels/Stories) and 1:1 (feed) format presets; let the sheet's Tag column pre-select an ad template — pick a model, the Hot Deal chip, price, and specs are pre-filled, export MP4. This is the Dealer Kit's differentiator and the ads-service profit engine.</p>
+
+  <h3>Ongoing debt (do opportunistically)</h3>
+  <p>Extract shared <code>site.css</code> (tokens are copy-pasted ~11×; also step 1 of the Dealer Kit) · product-page legibility P1 list (<code>INVENTORY-PIPELINE-PLAN.md</code> §5) · v2 flat category grids (<code>*-v2-preview.html</code>) · the inventory-scout crawler for missing specs/photos · delete stale mirrors (<code>csv-inventory/*</code> snapshots, duplicate <code>bb-tractor-images/</code> tree, <code>JJ-RIGGS-ADS-BUILDER/</code>).</p>
+
+  <h3>Decisions parked with Andrew</h3>
+  <p>T5068/T5074 (no data exists — stay off) · T5075/T224/T115/T130 keep-or-pull · tractor price display policy · real photos for 4035H / 5045CH / 5055H / T2025P.</p>
+</section>
+
+<section id="docs">
+  <h2><span class="no">13.</span>Document map</h2>
+  <div class="tblwrap"><table>
+    <tr><th>Document</th><th>What's in it</th></tr>
+    <tr><td><code>USER-GUIDE.md</code></td><td>The source of this page — start here (edits go there, then re-render this file)</td></tr>
+    <tr><td><code>WEB-DESIGNER.md</code></td><td>The complete design/development handbook: system, rules, debt, strategy</td></tr>
+    <tr><td><code>CLAUDE.md</code></td><td>Non-negotiables for AI-assisted work in this repo</td></tr>
+    <tr><td><code>LIVE-INVENTORY-AND-DEALER-KIT-PLAN.md</code></td><td>Phase A spec + full Dealer Kit productization plan</td></tr>
+    <tr><td><code>INVENTORY-PIPELINE-PLAN.md</code></td><td>Original sheet-pipeline spec (workbook schema, validation, product-page P1 list)</td></tr>
+    <tr><td><code>STOCK-BADGES.md</code></td><td>Live badge system: setup, rules, Andrew's cheat sheet</td></tr>
+    <tr><td><code>FACEBOOK-POSTING.md</code></td><td>FB pipeline test harness + go-live runbook</td></tr>
+    <tr><td><code>ADMIN-ACCESS-SETUP.md</code></td><td>Admin passcode + env var setup, security model</td></tr>
+    <tr><td><code>DEPLOY.md</code></td><td>Cloudflare Pages settings, domain, contact-form email setup</td></tr>
+    <tr><td><code>JJRiggs-*-Proposal.md</code></td><td>Client-facing proposals (pricing patterns for future dealers)</td></tr>
+    <tr><td><code>CHANGE-SUMMARY-2026-07-01.md</code></td><td>The reporting style for data reconciliations: every edit, every default, every hold</td></tr>
+    <tr><td><code>.claude/skills/</code></td><td><code>jjriggs-web-designer</code> + <code>jjriggs-inventory-scout</code> — the AI operating playbooks</td></tr>
+  </table></div>
+  <a class="top" href="#top">↑ Back to top</a>
+</section>
+
+</main>
+</div>
+
+<footer>
+  JJ Riggs Equipment website — internal owner's guide. Not linked from the public site; lives under <code>/admin/</code> behind the passcode gate. Source of truth: <code>USER-GUIDE.md</code>.
+</footer>
+
+</body>
+</html>
