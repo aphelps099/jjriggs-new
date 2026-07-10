@@ -25,6 +25,22 @@ const LIB = w.JJ_IMPL;
 const slug = LIB.slug;
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
+// Build a product-specific quote link. The clicked context rides along as
+// sanitized query params so contact.html can preselect Implements and draft the
+// first sentence. Grouped cards (>1 size) pass only the style name — never a
+// specific size — so we don't imply an exact fit the customer didn't pick; a
+// single-size card can safely pass its exact name + sku. Params are omitted when
+// empty so malformed/blank values never reach the quote page.
+const quoteHref = ({ category, item, brand, sku }) => {
+  const q = new URLSearchParams();
+  q.set("type", "implements");
+  if (category) q.set("category", category);
+  if (item) q.set("item", item);
+  if (brand) q.set("brand", brand);
+  if (sku) q.set("sku", sku);
+  return `../../contact.html?${q.toString()}`;
+};
+
 // group items: category -> ordered style groups with size-sorted rows
 const groups = LIB.groupImplements(ITEMS);
 const byCat = new Map();
@@ -35,6 +51,34 @@ for (const g of groups) {
 
 const catMeta = Object.fromEntries(CATS.map((c) => [c.category, c]));
 const allCats = [...byCat.keys()];
+const GROUP_ORDER = w.JJ_GROUP_ORDER || [];
+
+// Category navigator body: every category as a real crawlable anchor, grouped by
+// job (Cutting & mowing, Dirt work…). The current category renders as a marked,
+// non-clickable span so it's clearly "you're here" and keyboard focus skips it.
+const navGroups = (current) => {
+  const byGroup = new Map();
+  for (const c of allCats) {
+    const g = (catMeta[c] && catMeta[c].group) || "Other";
+    if (!byGroup.has(g)) byGroup.set(g, []);
+    byGroup.get(g).push(c);
+  }
+  const order = [
+    ...GROUP_ORDER.filter((g) => byGroup.has(g)),
+    ...[...byGroup.keys()].filter((g) => !GROUP_ORDER.includes(g)),
+  ];
+  return order.map((g) => {
+    const items = byGroup.get(g).map((c) => c === current
+      ? `              <li><span class="cur" aria-current="page">${esc(c)}</span></li>`
+      : `              <li><a href="../${slug(c)}/">${esc(c)}</a></li>`).join("\n");
+    return `          <div class="cat-grp">
+            <div class="gh">${esc(g)}</div>
+            <ul>
+${items}
+            </ul>
+          </div>`;
+  }).join("\n");
+};
 
 const fmtW = (it) => (it.widthIn != null ? `${it.widthIn}"` : it.width != null ? `${it.width}'` : /["']$/.test(it._size || "") ? it._size : "—");
 const fmtHp = (it) => (it.hpMin || it.hpMax ? `${it.hpMin || "?"}–${it.hpMax || "?"} HP` : "—");
@@ -52,8 +96,24 @@ const styleCard = (cat, style, rows) => {
   const notes = [...new Set(rows.map((r) => r.fitNote).filter(Boolean))]
     .filter((t) => !/same page as|verify/i.test(t));
   const dataImg = pick.img ? ` data-img="${esc(pick.img)}"` : "";
+  // one-size cards carry the exact product (name + sku); multi-size cards carry
+  // only the style so the quote never implies a size the customer didn't choose
+  const single = rows.length === 1;
+  const href = quoteHref({
+    category: cat,
+    item: single ? f.name : style,
+    brand: f.brand,
+    sku: single ? f.sku : "",
+  });
+  // "View full image" opens the shared lightbox; only offered when a photo
+  // exists (local or a hotlink the runtime hydrates). Sits bottom-left so it
+  // never overlaps the admin pencil (top-right) or the Get a Quote button.
+  const zoomLabel = `${f.brand ? f.brand + " " : ""}${style}`.trim();
+  const zoom = pick.img
+    ? `<button type="button" class="sc-zoom" aria-label="View full image of ${esc(zoomLabel)}"><span class="szi" aria-hidden="true">⤢</span> Full image</button>`
+    : "";
   return `      <article class="style-card" data-cat="${esc(cat)}" data-style="${esc(style)}">
-        <div class="sc-media"${dataImg}>${img ? `<img src="../../${esc(img)}" alt="${esc(f.brand)} ${esc(style)}" loading="lazy" />` : `<div class="ph"><span>Photo coming<br>to the lot</span></div>`}</div>
+        <div class="sc-media"${dataImg}>${img ? `<img src="../../${esc(img)}" alt="${esc(zoomLabel)}" loading="lazy" />` : `<div class="ph"><span>Photo coming<br>to the lot</span></div>`}${zoom}</div>
         <div class="sc-body">
           <h2>${esc(style)}</h2>
           <div class="badges">${badges}</div>
@@ -64,7 +124,7 @@ ${rows.map((r) => `              <tr><td>${esc(r._size)}</td><td>${esc(fmtW(r))}
             </tbody>
           </table>
           ${notes.length ? `<p class="fitnote">${esc(notes.join(" "))}</p>` : ""}
-          <a class="btn btn-red" href="../../contact.html">Get a Quote</a>
+          <a class="btn btn-quote" href="${esc(href)}">Get a Quote</a>
         </div>
       </article>`;
 };
@@ -73,7 +133,6 @@ const page = (cat, styles) => {
   const meta = catMeta[cat] || {};
   const s = slug(cat);
   const count = [...styles.values()].reduce((n, r) => n + r.length, 0);
-  const others = allCats.filter((c) => c !== cat);
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -105,6 +164,10 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;font-weight:600;font-size:.82rem;letter-spacing:.04em;padding:.85rem 1.5rem;border:1.5px solid transparent;cursor:pointer;transition:background .18s,border-color .18s,color .18s}
 .btn-red{background:var(--red);color:#fff}.btn-red:hover{background:var(--red-deep)}
 .btn-ghost{border-color:rgba(255,255,255,.7);color:#fff;text-transform:uppercase;letter-spacing:.07em}.btn-ghost:hover{background:#fff;color:var(--red);border-color:#fff}
+/* quieter per-card action: dark-neutral, not a wall of red. Red stays a hover
+   accent so hierarchy is clear without shouting. */
+.btn-quote{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn-quote:hover,.btn-quote:focus-visible{background:var(--red);border-color:var(--red)}
 .cut-tab{display:inline-block;background:var(--red);color:#fff;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:clamp(.78rem,1vw,.9rem);letter-spacing:.08em;text-transform:uppercase;line-height:1;padding:.46rem 1.3rem .46rem .95rem;clip-path:polygon(0 0,100% 0,calc(100% - 13px) 100%,0 100%)}
 
 .cat-head{background:var(--ink);color:#fff;padding:clamp(1.8rem,3.4vw,2.6rem) 0 clamp(1.5rem,2.8vw,2.1rem)}
@@ -113,12 +176,19 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .crumb{font-size:.85rem;color:var(--steel)}.crumb a{color:var(--steel-2)}.crumb a:hover{color:#fff}
 
 .cat-list{background:var(--bone);color:var(--ink);padding:clamp(2rem,4.4vw,3.2rem) 0}
-.style-card{display:grid;grid-template-columns:280px 1fr;gap:clamp(1.2rem,2.6vw,2rem);background:#fff;border:1px solid #d9d5c8;border-top:4px solid var(--red);padding:clamp(1.2rem,2.6vw,1.8rem);margin-bottom:1.4rem}
-.sc-media img{width:100%;aspect-ratio:4/3;object-fit:cover;border:1px solid #e2ded2}
-.ph{display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;background:var(--bone);border:1px dashed #c9c5b8;text-align:center;color:#9a948a;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:.95rem;line-height:1.4}
-.sc-media{position:relative}
+.style-card{display:grid;grid-template-columns:280px 1fr;gap:clamp(1.2rem,2.6vw,2rem);align-items:start;background:#fff;border:1px solid #d9d5c8;border-left:3px solid var(--red);padding:clamp(1.2rem,2.6vw,1.8rem);margin-bottom:1.2rem}
+/* stable responsive image stage: a fixed 4/3 frame with object-fit:contain so a
+   tall auger, a wide blade, or a compact fork all show whole — never cropped or
+   oversized. Card heights stay consistent because the stage size is fixed. */
+.sc-media{position:relative;aspect-ratio:4/3;background:#f6f4ee;border:1px solid #e6e2d6;border-radius:2px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.sc-media img{width:100%;height:100%;object-fit:contain;padding:.5rem;border:0}
+.ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bone);text-align:center;color:#9a948a;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:.95rem;line-height:1.4}
 .sc-pencil{position:absolute;top:.5rem;right:.5rem;z-index:5;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:#14171a;color:#fff;border-radius:50%;font-size:1.05rem;line-height:1;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.35);opacity:.9}
 .sc-pencil:hover,.sc-pencil:focus-visible{background:var(--red);opacity:1}
+/* "View full image" trigger — bottom-left, clear of the top-right pencil */
+.sc-zoom{position:absolute;bottom:.5rem;left:.5rem;z-index:4;display:inline-flex;align-items:center;gap:.35rem;min-height:44px;padding:.4rem .8rem;background:rgba(20,23,26,.82);color:#fff;border:0;border-radius:3px;font-family:inherit;font-size:.82rem;letter-spacing:.02em;cursor:pointer}
+.sc-zoom .szi{font-size:1.05rem;line-height:1}
+.sc-zoom:hover,.sc-zoom:focus-visible{background:var(--red)}
 .sc-body h2{font-family:"Michroma","Tactic Sans Bld",sans-serif;text-transform:none;letter-spacing:0;font-size:clamp(1.15rem,2vw,1.5rem);color:var(--ink);margin-bottom:.55rem}
 .badges{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.9rem}
 .badge{border:1px solid rgba(20,23,26,.25);color:#4a5057;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;padding:.3rem .6rem}
@@ -128,20 +198,48 @@ table.sizes{width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:.9r
 .sizes tr:last-child td{border-bottom:0}
 .callprice{color:var(--red);font-weight:600}.callprice:hover{color:var(--red-deep)}
 .fitnote{color:#5a6066;font-size:.92rem;line-height:1.55;margin-bottom:1rem}
-@media(max-width:760px){.style-card{grid-template-columns:1fr}.sizes{font-size:.92rem}.sizes th,.sizes td{padding:.4rem .35rem}}
+@media(max-width:760px){.style-card{grid-template-columns:1fr}.sc-media{max-width:340px;margin-inline:auto}.sizes{font-size:.92rem}.sizes th,.sizes td{padding:.4rem .35rem}}
 
-.more-cats{background:#fff;color:var(--ink);padding:clamp(1.8rem,4vw,2.8rem) 0}
-.more-cats h2{font-family:"Michroma","Tactic Sans Bld",sans-serif;text-transform:none;letter-spacing:0;font-size:clamp(1.2rem,2.2vw,1.6rem);color:var(--ink);margin-bottom:1rem}
-.cat-chips{display:flex;gap:.6rem;flex-wrap:wrap}
-.cat-chip{display:inline-block;border:1.5px solid rgba(20,23,26,.3);color:var(--ink);padding:.55rem 1rem;font-size:.9rem}
-.cat-chip:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+/* progressive-disclosure category navigator: collapsed by default so the page
+   ends calm, not in a wall of buttons. Links are real crawlable anchors grouped
+   by job; the current category is shown non-clickable and marked. */
+.more-cats{background:#fff;color:var(--ink);padding:clamp(1.4rem,3vw,2.2rem) 0}
+.cat-nav{border:1px solid #ddd9cc;border-radius:3px;background:#fcfbf7}
+.cat-nav>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:44px;padding:.6rem 1.1rem;font-family:"Michroma","Tactic Sans Bld",sans-serif;font-size:clamp(.98rem,1.6vw,1.15rem);color:var(--ink)}
+.cat-nav>summary::-webkit-details-marker{display:none}
+.cat-nav>summary::after{content:"⌄";font-size:1.3rem;line-height:1;transition:transform .2s;color:var(--red)}
+.cat-nav[open]>summary::after{transform:rotate(180deg)}
+.cat-nav>summary:hover{color:var(--red)}
+.cat-nav-body{padding:.4rem 1.1rem 1.1rem;border-top:1px solid #eceae0}
+.cat-grp{margin-top:1rem}
+.cat-grp:first-child{margin-top:.4rem}
+.cat-grp .gh{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:#8a857a;margin-bottom:.35rem}
+.cat-grp ul{list-style:none;display:flex;flex-wrap:wrap;gap:.3rem .4rem}
+.cat-grp li{margin:0}
+.cat-grp a,.cat-grp .cur{display:inline-flex;align-items:center;min-height:44px;padding:.4rem .85rem;font-size:.95rem;border:1px solid #ddd9cc;border-radius:2px;color:var(--ink)}
+.cat-grp a:hover,.cat-grp a:focus-visible{background:var(--ink);color:#fff;border-color:var(--ink)}
+.cat-grp .cur{background:#efece2;color:#8a857a;border-color:#e0dccf;cursor:default}
+.cat-grp .cur::after{content:" ·  you're here";font-size:.8rem;letter-spacing:.02em}
 
-.ctaband{position:relative;background-color:var(--red);background-image:linear-gradient(155deg,rgba(207,31,42,.92),rgba(165,21,31,.95)),url('../../img/rocks-bg.jpg');background-size:cover;background-position:center;color:#fff;overflow:hidden;text-align:center}
-.ctaband .wrap{position:relative;z-index:1;padding:clamp(2rem,4vw,3rem) 0}
-.ctaband h2{font-size:clamp(1.7rem,4vw,2.8rem);color:#fff;line-height:.9;letter-spacing:-.02em}
-.ctaband .cs-sub{color:#ffe0e1;font-size:clamp(.98rem,1.5vw,1.1rem);max-width:54ch;margin:.7rem auto 0}
-.ctaband .cs-actions{display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap;margin-top:1.3rem}
+/* quieter closing CTA: a dark-neutral band, not a bright-red wall. Red returns
+   only as the single primary action, so it reads calm and practical. */
+.ctaband{background:var(--ink-2);color:#fff;border-top:1px solid var(--line);text-align:center}
+.ctaband .wrap{padding:clamp(1.8rem,3.4vw,2.6rem) 0}
+.ctaband h2{font-size:clamp(1.4rem,2.6vw,2rem);color:#fff;line-height:1;letter-spacing:-.01em}
+.ctaband .cs-sub{color:var(--steel-2);font-size:clamp(.98rem,1.5vw,1.08rem);max-width:52ch;margin:.7rem auto 0}
+.ctaband .cs-actions{display:flex;gap:.9rem;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:1.2rem}
+.ctaband .cs-or{color:var(--steel-2);font-size:.98rem}
+.ctaband .cs-call{color:#fff;font-weight:600;letter-spacing:.02em}.ctaband .cs-call:hover{color:var(--red)}
 
+/* full-image lightbox (native <dialog>): image is contained within the viewport,
+   never cropped; caption names the product; close button + backdrop + Escape. */
+.lightbox{position:fixed;inset:0;width:100%;height:100%;max-width:100%;max-height:100%;margin:0;padding:0;border:0;background:transparent}
+.lightbox::backdrop{background:rgba(10,12,14,.9)}
+.lightbox .lb-fig{margin:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;padding:clamp(1rem,4vw,3rem)}
+.lightbox .lb-img{max-width:100%;max-height:80vh;width:auto;height:auto;object-fit:contain;background:#fff;border-radius:2px}
+.lightbox .lb-cap{color:var(--bone);font-size:1rem;text-align:center;max-width:60ch;line-height:1.5}
+.lightbox .lb-close{position:fixed;top:.8rem;right:.8rem;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(20,23,26,.72);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:50%;font-size:1.7rem;line-height:1;cursor:pointer}
+.lightbox .lb-close:hover,.lightbox .lb-close:focus-visible{background:var(--red);border-color:var(--red)}
 .site-foot{background:var(--ink-3);color:#aeb3ba;padding:48px 0 30px;font-size:14px;border-top:1px solid var(--line)}
 .foot-min{display:flex;justify-content:space-between;gap:2.5rem;flex-wrap:wrap}
 .fm-brand .nm{font-family:"Michroma","Tactic Sans Bld",sans-serif;font-size:18px;color:#fff;margin-bottom:14px}
@@ -176,25 +274,38 @@ ${[...styles.entries()].map(([st, rows]) => styleCard(cat, st, rows)).join("\n")
 
   <section class="more-cats">
     <div class="wrap">
-      <h2>More implement categories</h2>
-      <div class="cat-chips">
-${others.map((c) => `        <a class="cat-chip" href="../${slug(c)}/">${esc(c)}</a>`).join("\n")}
-      </div>
+      <details class="cat-nav">
+        <summary>Browse other implement categories</summary>
+        <div class="cat-nav-body">
+${navGroups(cat)}
+        </div>
+      </details>
     </div>
   </section>
 
   <section class="ctaband">
     <div class="wrap">
       <h2>Not sure what fits your tractor?</h2>
-      <p class="cs-sub">Tell us your model and the job — we'll match the implement, the size, and the hitch. No pressure, just answers.</p>
+      <p class="cs-sub">Tell us your model and the job — we'll match the implement, the size, and the hitch.</p>
       <div class="cs-actions">
-        <a class="btn btn-ghost" href="tel:+15097382985">Call 509-738-2985</a>
-        <a class="btn btn-ghost" href="../../contact.html">Get a Quote</a>
+        <a class="btn btn-quote" href="../../contact.html?type=implements&amp;category=${encodeURIComponent(cat)}">Get a Quote</a>
+        <span class="cs-or">or call <a class="cs-call" href="tel:+15097382985">509-738-2985</a></span>
       </div>
     </div>
   </section>
 
 </main>
+
+<!-- Shared image lightbox. Wired by js/implements-cards.js: a card's "View full
+     image" button fills and opens this native <dialog>, which gives us Escape,
+     focus trap, and focus-return for free. -->
+<dialog id="imgLightbox" class="lightbox" aria-label="Product image">
+  <figure class="lb-fig">
+    <button type="button" class="lb-close" aria-label="Close image">&times;</button>
+    <img class="lb-img" alt="" />
+    <figcaption class="lb-cap"></figcaption>
+  </figure>
+</dialog>
 
 <footer class="site-foot">
   <div class="wrap">

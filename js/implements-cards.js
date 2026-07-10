@@ -82,3 +82,53 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run);
   else run();
 })();
+
+// Full-image lightbox. Independent of the data layer above so it wires even if
+// the catalog globals are missing. A card's "View full image" button fills the
+// shared <dialog> with that card's CURRENT image (post-hydration, so hotlinked
+// and admin-published photos zoom too) and opens it. Native <dialog> gives us
+// Escape-to-close, focus trapping, and focus-return to the trigger for free.
+(function () {
+  "use strict";
+  var dlg = document.getElementById("imgLightbox");
+  if (!dlg) return;
+  var supported = typeof dlg.showModal === "function";
+
+  function wire() {
+    var zooms = document.querySelectorAll(".sc-zoom");
+    if (!supported) {
+      // no native dialog: don't offer an action we can't fulfill
+      for (var i = 0; i < zooms.length; i++) zooms[i].style.display = "none";
+      return;
+    }
+    var img = dlg.querySelector(".lb-img");
+    var cap = dlg.querySelector(".lb-cap");
+    var close = dlg.querySelector(".lb-close");
+
+    document.addEventListener("click", function (e) {
+      var t = e.target;
+      var btn = t.closest ? t.closest(".sc-zoom") : null;
+      if (btn) {
+        var media = btn.closest(".sc-media");
+        var pic = media && media.querySelector("img");
+        var src = pic && (pic.currentSrc || pic.src);
+        if (!src) return; // still a placeholder — nothing to show
+        img.src = src;
+        var label = (pic.getAttribute("alt") || "Product image").trim();
+        img.alt = label;
+        cap.textContent = label;
+        dlg.showModal();
+        return;
+      }
+      // click on the backdrop / padding area (not the image, caption, or close)
+      if (t === dlg || (t.classList && t.classList.contains("lb-fig"))) dlg.close();
+    });
+
+    if (close) close.addEventListener("click", function () { dlg.close(); });
+    // drop the src on close so reopening never flashes the previous photo
+    dlg.addEventListener("close", function () { img.removeAttribute("src"); });
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", wire);
+  else wire();
+})();
