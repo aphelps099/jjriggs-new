@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "schema": "dealer-kit/v1",
+    "created": "",
+    "filled_by": "",
+    "notes": ""
+  },
+  "business": {
+    "name": "",
+    "display_name": "",
+    "tagline": "",
+    "phone": "",
+    "email": "",
+    "address": { "street": "", "city": "", "state": "", "zip": "" },
+    "hours": "",
+    "towns_served": [],
+    "current_url": ""
+  },
+  "presence": {
+    "google_business_profile": "",
+    "facebook": "",
+    "instagram": "",
+    "youtube": "",
+    "other": ""
+  },
+  "brand": {
+    "accent_color": "#cf1f2a",
+    "theme": "dark",
+    "font_plan": "open-default",
+    "font_license_notes": "",
+    "logo_light_filename": "",
+    "logo_light_base64": "",
+    "favicon_filename": "",
+    "favicon_base64": ""
+  },
+  "lines": {
+    "tractor_brands": [],
+    "mower_brands": [],
+    "implement_brands": [],
+    "other_lines": [],
+    "authorized_confirmed": false,
+    "authorized_brands": [],
+    "inventory_source": ""
+  },
+  "services": {
+    "offers_service": true,
+    "specialties": [],
+    "awards": [],
+    "financing_notes": ""
+  },
+  "infra": {
+    "domain": "",
+    "registrar_access": false,
+    "github_repo": "",
+    "cloudflare_ready": false,
+    "google_sheet_owner": "",
+    "fb_page_admin": false
+  }
+}
