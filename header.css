@@ -77,13 +77,24 @@
 .mm-feature-body .mm-desc{margin:.45rem 0 .9rem}
 .mm-link{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:700;font-size:.74rem;letter-spacing:.05em;text-transform:uppercase;color:#fff;transition:color .15s}
 .mm-feature:hover .mm-link{color:var(--red)}
-.head-actions{display:flex;align-items:center;gap:1.6rem}
+.head-actions{display:flex;align-items:center;gap:1.6rem;flex:none}
 .head-actions .ph{font-family:"Tactic Sans Bld","Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:.98rem;font-weight:400;letter-spacing:.02em;color:#fff}
 .head-actions .ph:hover{color:var(--steel-2)}
-.head-actions .btn{font-family:"Tactic Sans Bld","Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:.02em;padding:.95rem 1.65rem;font-size:1.02rem;transition:padding .2s ease,font-size .2s ease,background .18s,border-color .18s,color .18s}
+.head-actions .btn{font-family:"Tactic Sans Bld","Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:.02em;padding:.95rem 1.65rem;font-size:1.02rem;white-space:nowrap;flex:none;transition:padding .2s ease,font-size .2s ease,background .18s,border-color .18s,color .18s}
 .site-head.scrolled .head-actions .btn{padding:.85rem 1.5rem;font-size:.9rem}
 .burger{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:8px}
 .burger span{width:26px;height:2px;background:#fff;display:block}
+/* Mid-range: nav + logo + button all still show, but 2.5rem gaps and full-size
+   type don't fit before the burger takes over — tighten everything down a
+   notch so nothing overlaps or wraps between the burger switch and ~1180px. */
+@media(max-width:1180px) and (min-width:941px){
+  .brand-logo img{height:60px}
+  .primary-nav>ul{gap:1.15rem}
+  .primary-nav .nav-top{font-size:.96rem}
+  .head-actions{gap:.9rem}
+  .head-actions .btn{padding:.7rem 1.2rem;font-size:.9rem}
+  .site-head .wrap{height:92px}
+}
 @media(max-width:940px){.primary-nav,.head-actions .ph{display:none}.burger{display:flex}.brand-logo img{height:46px}.site-head .wrap{height:82px}
   .head-actions{gap:.6rem}
   .head-actions .btn{padding:.5rem .85rem;font-size:.78rem;white-space:nowrap}}
