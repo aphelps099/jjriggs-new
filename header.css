@@ -13,12 +13,10 @@
 .topbar .t-left a{margin-right:1.6rem}
 .topbar .t-right{justify-self:end;display:flex;align-items:center;gap:1.1rem}
 .topbar .addr{display:inline-flex;align-items:center;gap:.5rem}
-.topbar .tb-ico{width:15px;height:15px;color:var(--red);flex:none}
 .topbar .tb-promo{display:inline-flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.6)}
-@media(max-width:920px){.topbar .t-left{display:none}.topbar .wrap{grid-template-columns:1fr auto}}
-.topbar .soc{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(207,31,42,.55);border-radius:50%;padding:5px;color:#eef1f3;transition:border-color .15s,color .15s}.topbar .soc svg{width:15px;height:15px}
-.topbar .soc:hover{color:#fff;border-color:var(--red)}
-@media(max-width:680px){.topbar .addr,.topbar .hrs{display:none}}
+/* Narrow screens: the tap-to-call number is the one thing that must survive. */
+@media(max-width:920px){.topbar .t-center{display:none}.topbar .wrap{grid-template-columns:1fr auto}}
+@media(max-width:680px){.topbar .hrs{display:none}}
 
 .site-head{position:absolute;top:32px;left:0;right:0;z-index:80;background:transparent;border-bottom:1px solid transparent;transition:background .3s ease,border-color .3s ease}
 .site-head::before{content:"";position:absolute;left:0;right:0;top:0;height:160px;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(10,12,15,.72),rgba(10,12,15,0));opacity:1;transition:opacity .3s ease}

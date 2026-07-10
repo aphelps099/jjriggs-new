@@ -123,8 +123,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
 .hero .lead{max-width:42ch;margin-bottom:2rem;font-size:clamp(1.05rem,1.6vw,1.24rem)}
 .hero-ctas{display:flex;flex-wrap:wrap;gap:1rem}
 .hero-ctas .btn{padding:1.05rem 2.1rem;font-size:1rem}
-/* Service slide — the giant b/w award photo carries it; nothing else special */
-.hero.svc-active .hero-media img{filter:grayscale(1) contrast(1.04) brightness(.92)}
+/* Service slide — the giant award photo carries it; nothing else special */
 .hero-fade{animation:hf .4s ease}@keyframes hf{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 /* hero text — staggered entrance on load */
 @keyframes heroIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
@@ -175,7 +174,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
 .brandbar-logos img{height:34px;width:auto;object-fit:contain}
 .brandbar-logos img[alt="TYM"]{height:42px}
 @media(max-width:640px){.brandbar-logos .wrap{gap:1.8rem}.brandbar-logos img{height:26px}.brandbar-logos img[alt="TYM"]{height:32px}}
-.offer{position:relative;overflow:hidden;min-height:clamp(420px,44vw,540px);
+.offer{position:relative;overflow:hidden;min-height:clamp(340px,36vw,440px);
   background-color:var(--ink-3);
   background-image:linear-gradient(rgba(11,13,16,.85),rgba(11,13,16,.8)),url('img/rocks-bg.jpg');
   background-size:cover;background-position:center}
@@ -185,18 +184,18 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
 .offer-dots{position:absolute;left:var(--gut);bottom:1.4rem;z-index:6;display:flex;gap:.6rem}
 .offer-dot{width:10px;height:10px;border-radius:50%;border:0;background:rgba(255,255,255,.32);cursor:pointer;padding:0;transition:background .2s,transform .2s}
 .offer-dot[aria-selected="true"]{background:var(--red);transform:scale(1.15)}
-.offer-panel{position:relative;z-index:1;display:flex;align-items:flex-start;padding:clamp(2.4rem,5vw,3.8rem) var(--gut) clamp(3.4rem,6vw,5.2rem)}
+.offer-panel{position:relative;z-index:1;display:flex;align-items:flex-start;padding:clamp(1.9rem,3.8vw,2.9rem) var(--gut) clamp(2.6rem,4.6vw,3.8rem)}
 .offer-copy{width:100%;max-width:33rem}
 .offer-copy .eyebrow{margin-bottom:1rem}
 .offer-logo{display:inline-block;margin-bottom:1.1rem}
 .offer-logo img{height:28px;width:auto;display:block;filter:brightness(0) invert(1)}
 .offer-logo img[alt="TYM"]{height:32px}
 .offer-h2{display:flex;flex-direction:column;gap:.15rem;margin-bottom:1rem;letter-spacing:.012em}
-.offer-h2 .lead-in{font-size:clamp(1.5rem,3vw,2.5rem);color:#fff;line-height:1}
+.offer-h2 .lead-in{font-size:clamp(1.3rem,2.5vw,2rem);color:#fff;line-height:1}
 .offer-h2 .offer-rate{display:inline-flex;align-items:flex-end;gap:.45rem;line-height:.74}
-.offer-h2 .num{font-size:clamp(4.2rem,11vw,9rem);color:var(--red);line-height:.72}
-.offer-h2 .num.num-sm{font-size:clamp(3rem,8vw,6.2rem)}
-.offer-h2 .apr{font-size:clamp(1.1rem,2.2vw,1.9rem);color:#fff;padding-bottom:.7rem;letter-spacing:.02em}
+.offer-h2 .num{font-size:clamp(3.4rem,8.8vw,7rem);color:var(--red);line-height:.72}
+.offer-h2 .num.num-sm{font-size:clamp(2.5rem,6.5vw,5rem)}
+.offer-h2 .apr{font-size:clamp(1rem,1.9vw,1.6rem);color:#fff;padding-bottom:.55rem;letter-spacing:.02em}
 .offer-sub{font-family:"Michroma","Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;color:var(--steel-2);font-weight:400;font-size:.92rem;line-height:1.5;margin-bottom:1.5rem}
 .offer-fine{color:var(--steel);font-size:.72rem;letter-spacing:.02em;margin-top:1rem}
 .offer-media{position:relative;overflow:hidden}
@@ -242,7 +241,8 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
 @media(max-width:780px){.andrew .grid{grid-template-columns:1fr}.andrew figure img{aspect-ratio:16/10}}
 
 /* ============================================================ FEATURED EQUIPMENT ============================================================ */
-.featured{background:var(--bone);color:var(--ink);padding:clamp(2.6rem,5vw,4rem) 0;border-top:1px solid var(--line)}
+.featured{background:var(--bone);color:var(--ink);padding:clamp(2.2rem,4vw,3rem) 0 clamp(1.8rem,3.2vw,2.4rem);border-top:1px solid var(--line)}
+.featured .sep-ink{height:1px;background:var(--ink);margin-top:clamp(1.8rem,3.2vw,2.4rem)}
 .featured .ft-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem}
 .featured .h2{font-size:clamp(1.7rem,3.4vw,2.4rem);color:var(--ink);margin:0}
 .ft-nav{display:flex;gap:.5rem}
@@ -266,11 +266,10 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
 .ft-price{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:.92rem;color:var(--red);letter-spacing:.03em;margin-top:.1rem}
 .ft-go{margin-top:auto;padding-top:.6rem;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:.82rem;letter-spacing:.04em;color:var(--red);display:inline-flex;align-items:center;gap:.35rem;transition:gap .15s}
 .ft-card:hover .ft-go{gap:.6rem}
-.ft-cta{display:flex;justify-content:center;margin-top:1.7rem}
 @media(max-width:560px){.ft-track{grid-auto-columns:78vw}}
 
 /* ============================================================ REVIEWS (light bone) ============================================================ */
-.reviews{background:var(--bone);color:var(--ink);padding:clamp(2rem,4vw,3.2rem) 0}
+.reviews{background:var(--bone);color:var(--ink);padding:clamp(1.7rem,3.2vw,2.6rem) 0}
 .r-layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(2.4rem,6vw,5rem);align-items:center}
 .r-intro .h2{max-width:14ch;margin:.6rem 0 0}
 .reviews .score{margin-top:1rem}
@@ -537,9 +536,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
         </div>
       </div>
 
-      <div class="ft-cta">
-        <a class="btn btn-red" href="contact.html">Visit our lot</a>
-      </div>
+      <div class="sep-ink" aria-hidden="true"></div>
     </div>
   </section>
 

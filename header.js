@@ -5,20 +5,13 @@
   var solid=(mount.getAttribute('data-variant')||'solid')!=='overlay';
   function cur(n){return active===n?' current':'';}
 
-  var FB='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V5h-3c-2.2 0-4 1.8-4 4v2H7v4h3v7h4v-7h3l1-4h-4V9c0-.6.4-1 1-1z"/></svg>';
-  var IG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>';
-  var PH='<svg class="tb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
-  var PIN='<svg class="tb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>';
-
   var html=
   '<a class="skip" href="#main">Skip to content</a>'
   +'<div class="topbar"><div class="wrap">'
-  +'<div class="t-left"><a class="tb-promo" href="tel:+15097382985">'+PH+'Call us: 509-738-2985</a></div>'
-  +'<div class="t-center"><span class="addr">'+PIN+'685 Elm Tree Dr, Colville, WA</span></div>'
-  +'<div class="t-right"><span class="hrs">Mon–Fri · 8 to 5</span>'
-  +'<a class="soc" href="https://www.facebook.com/JJRIGGSEQUIPMENT" target="_blank" rel="noopener" aria-label="JJ Riggs on Facebook">'+FB+'</a>'
-  +'<a class="soc" href="https://www.instagram.com/jjriggsequipment/" target="_blank" rel="noopener" aria-label="JJ Riggs on Instagram">'+IG+'</a>'
-  +'</div></div></div>'
+  +'<div class="t-left"><a class="tb-promo" href="tel:+15097382985">Call us: 509-738-2985</a></div>'
+  +'<div class="t-center"><span class="addr">685 Elm Tree Dr, Colville, WA</span></div>'
+  +'<div class="t-right"><span class="hrs">Mon–Fri · 8 to 5</span></div>'
+  +'</div></div>'
   +'<header class="site-head'+(solid?' is-solid':'')+'" id="siteHead"><div class="wrap">'
   +'<div class="brand-lock">'
   +'<a class="brand-logo" href="/index.html" aria-label="JJ Riggs Equipment — home"><img src="/img/jj-riggs-logo-white.png" alt="JJ Riggs Equipment" /></a>'
