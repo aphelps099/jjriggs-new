@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>New Dealer Intake — Dealer Kit</title>
+<style>
+/* Self-contained guided intake form. Output: dealer.config.json
+   (schema: .claude/skills/dealer-kit-builder/dealer.config.template.json).
+   Answers autosave to this browser as you type. */
+:root{--ink:#14171a;--ink-3:#0f1215;--bone:#f3f1ea;--paper:#fbfaf6;--steel:#6b7178;
+  --red:#cf1f2a;--red-deep:#a5151f;--line:#e2ddd0;--ok:#1d7a3c;--maxw:880px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:17px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bone);color:var(--ink);-webkit-font-smoothing:antialiased;padding-bottom:7rem}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(1.1rem,4vw,2.4rem)}
+.mast{background:var(--ink-3);color:#fff;padding:2.2rem 0 2rem;border-bottom:4px solid var(--red)}
+.tab{display:inline-block;background:var(--red);color:#fff;font-weight:800;font-size:.74rem;letter-spacing:.14em;
+  text-transform:uppercase;line-height:1;padding:.5rem 1.3rem .5rem 1rem;
+  clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%);margin-bottom:.9rem}
+.mast h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;text-transform:uppercase;letter-spacing:.02em;line-height:1.1}
+.mast p{color:#b9c0c7;margin-top:.6rem;max-width:62ch}
+section{background:var(--paper);border:1px solid var(--line);padding:clamp(1.2rem,3vw,1.8rem);margin:1.4rem 0}
+h2{font-size:1.05rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem}
+h2 .no{display:inline-flex;align-items:center;justify-content:center;width:1.7em;height:1.7em;border-radius:50%;
+  background:var(--ink);color:#fff;font-size:.8em;margin-right:.55rem;vertical-align:-.25em}
+.why{color:var(--steel);font-size:.92rem;margin-bottom:1.1rem;max-width:70ch}
+label{display:block;font-weight:700;font-size:.86rem;margin:1rem 0 .3rem}
+label .req{color:var(--red)}
+label .hint{font-weight:400;color:var(--steel)}
+input[type=text],input[type=tel],input[type=email],input[type=url],textarea,select{
+  width:100%;font:inherit;font-size:1rem;padding:.65rem .75rem;background:#fff;
+  border:1.5px solid #cfc9ba;border-radius:4px;color:var(--ink)}
+input:focus,textarea:focus{outline:2px solid var(--red);outline-offset:1px}
+textarea{min-height:4.2em;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:0 1.2rem}
+.row3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:0 1.2rem}
+@media(max-width:640px){.row,.row3{grid-template-columns:1fr}}
+.checks{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.35rem}
+.checks label{display:inline-flex;align-items:center;gap:.45rem;margin:0;font-weight:500;font-size:.95rem;
+  background:#fff;border:1.5px solid #cfc9ba;border-radius:4px;padding:.45rem .8rem;cursor:pointer}
+.checks label:has(input:checked){border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
+.checks input{accent-color:var(--red)}
+.confirm{display:flex;gap:.6rem;align-items:flex-start;background:#fff;border-left:4px solid var(--red);
+  padding:.9rem 1rem;margin-top:1.1rem;font-size:.95rem}
+.confirm input{margin-top:.3rem;accent-color:var(--red);flex:none}
+.color-row{display:flex;align-items:center;gap:.8rem}
+.color-row input[type=color]{width:56px;height:40px;border:1.5px solid #cfc9ba;border-radius:4px;background:#fff;padding:2px;cursor:pointer}
+.filehint{font-size:.85rem;color:var(--steel);margin-top:.3rem}
+.fileok{color:var(--ok);font-weight:700;font-size:.85rem}
+/* sticky action bar */
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--ink-3);border-top:3px solid var(--red);padding:.8rem 0;z-index:10}
+.bar .wrap{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.bar .status{color:#b9c0c7;font-size:.85rem;flex:1;min-width:200px}
+.bar .status b{color:#fff}
+button{font:inherit;cursor:pointer;border:0}
+.btn-dl{background:var(--red);color:#fff;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+  font-size:.88rem;padding:.85rem 1.5rem;border-radius:4px}
+.btn-dl:hover{background:var(--red-deep)}
+.btn-clear{background:none;color:#8b939c;font-size:.82rem;text-decoration:underline}
+.miss{outline:2px solid var(--red);outline-offset:1px}
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap">
+    <span class="tab">Dealer Kit · New Customer Intake</span>
+    <h1>Let's build your dealership's website</h1>
+    <p>Six short sections — about 15 minutes. Answers save in this browser as you type, so you can stop and come back. Fields marked <span style="color:#ff8a92">*</span> are required. When you're done, the button below packages everything for your site builder.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section id="s1">
+  <h2><span class="no">1</span>Business basics</h2>
+  <p class="why">This is exactly what appears in your site header, footer, and Google listing — so spell it the way you want customers to see it.</p>
+  <label>Dealership name <span class="req">*</span></label>
+  <input type="text" data-k="business.name" placeholder="e.g. Smith Farm &amp; Tractor">
+  <div class="row">
+    <div><label>Phone customers should call <span class="req">*</span> <span class="hint">— the one you answer</span></label>
+    <input type="tel" data-k="business.phone" placeholder="509-555-0100"></div>
+    <div><label>Email for website leads <span class="req">*</span></label>
+    <input type="email" data-k="business.email" placeholder="sales@yourdealership.com"></div>
+  </div>
+  <label>Street address <span class="req">*</span></label>
+  <input type="text" data-k="business.address.street" placeholder="123 Main St">
+  <div class="row3">
+    <div><label>City <span class="req">*</span></label><input type="text" data-k="business.address.city"></div>
+    <div><label>State <span class="req">*</span></label><input type="text" data-k="business.address.state" placeholder="WA"></div>
+    <div><label>ZIP <span class="req">*</span></label><input type="text" data-k="business.address.zip"></div>
+  </div>
+  <div class="row">
+    <div><label>Hours <span class="req">*</span></label>
+    <input type="text" data-k="business.hours" placeholder="Mon–Fri, 8 AM – 5 PM"></div>
+    <div><label>Tagline <span class="hint">(optional)</span></label>
+    <input type="text" data-k="business.tagline" placeholder="e.g. Family-owned since 1988"></div>
+  </div>
+  <label>Towns &amp; areas you serve <span class="hint">— 3–6, comma-separated; each gets its own local search page</span></label>
+  <input type="text" data-k="business.towns_served" data-list placeholder="Colville, Kettle Falls, Chewelah">
+  <label>Current website <span class="hint">(if you have one — we'll pull anything worth keeping)</span></label>
+  <input type="url" data-k="business.current_url" placeholder="https://…">
+</section>
+
+<section id="s2">
+  <h2><span class="no">2</span>Where you are online</h2>
+  <p class="why">Your Google Business Profile powers the reviews section — your real rating, real review count, and real customer quotes (you approve which ones appear). Facebook and Instagram get linked in the footer, and later your inventory sheet can post to your Facebook page automatically.</p>
+  <label>Google Business Profile link <span class="hint">— the link when you search your business on Google Maps</span></label>
+  <input type="url" data-k="presence.google_business_profile" placeholder="https://maps.google.com/…">
+  <div class="row">
+    <div><label>Facebook page</label><input type="url" data-k="presence.facebook" placeholder="https://facebook.com/…"></div>
+    <div><label>Instagram</label><input type="url" data-k="presence.instagram" placeholder="https://instagram.com/…"></div>
+  </div>
+  <div class="row">
+    <div><label>YouTube <span class="hint">(optional)</span></label><input type="url" data-k="presence.youtube"></div>
+    <div><label>Anything else <span class="hint">(optional)</span></label><input type="url" data-k="presence.other"></div>
+  </div>
+</section>
+
+<section id="s3">
+  <h2><span class="no">3</span>Your brand</h2>
+  <p class="why">The site uses one accent color on a dark, industrial design — your logo carries the rest of your identity. A light/white version of your logo works best on the dark background.</p>
+  <label>Logo — light/white version <span class="hint">(SVG or PNG; if you only have a dark one, send that and we'll adapt it)</span></label>
+  <input type="file" id="logoFile" accept=".svg,.png,.jpg,.jpeg,.webp">
+  <div class="filehint" id="logoStatus">No file chosen — you can also email it to your builder.</div>
+  <label>Favicon / square mark <span class="hint">(optional — we can crop the logo)</span></label>
+  <input type="file" id="favFile" accept=".svg,.png,.ico,.jpg">
+  <div class="filehint" id="favStatus">No file chosen.</div>
+  <label>Accent color</label>
+  <div class="color-row">
+    <input type="color" id="accent" value="#cf1f2a">
+    <input type="text" data-k="brand.accent_color" id="accentHex" value="#cf1f2a" style="max-width:130px">
+    <span class="hint" style="font-size:.85rem;color:var(--steel)">Buttons, badges, highlights. We'll check it stays readable.</span>
+  </div>
+  <label>Fonts</label>
+  <select data-k="brand.font_plan">
+    <option value="open-default">Use the included open fonts (recommended — no cost)</option>
+    <option value="licensed">We own a brand font license (tell us below)</option>
+  </select>
+  <label>Font / brand notes <span class="hint">(optional)</span></label>
+  <textarea data-k="brand.font_license_notes" placeholder="Font name + where the license lives, or anything else about your look"></textarea>
+</section>
+
+<section id="s4">
+  <h2><span class="no">4</span>What you sell</h2>
+  <p class="why">Check every line you carry. We build your catalog from the manufacturers' official pages — which we can only legally do for brands you're an authorized dealer for.</p>
+  <label>Tractor brands</label>
+  <div class="checks" data-group="lines.tractor_brands">
+    <label><input type="checkbox" value="TYM">TYM</label>
+    <label><input type="checkbox" value="Bad Boy">Bad Boy</label>
+    <label><input type="checkbox" value="Kubota">Kubota</label>
+    <label><input type="checkbox" value="Mahindra">Mahindra</label>
+    <label><input type="checkbox" value="Kioti">Kioti</label>
+    <label><input type="checkbox" value="LS">LS</label>
+  </div>
+  <input type="text" data-k="_extra.tractor" placeholder="Other tractor brands…" style="margin-top:.5rem">
+  <label>Mower brands</label>
+  <div class="checks" data-group="lines.mower_brands">
+    <label><input type="checkbox" value="Bad Boy">Bad Boy</label>
+    <label><input type="checkbox" value="Ferris">Ferris</label>
+    <label><input type="checkbox" value="Scag">Scag</label>
+    <label><input type="checkbox" value="Hustler">Hustler</label>
+  </div>
+  <input type="text" data-k="_extra.mower" placeholder="Other mower brands…" style="margin-top:.5rem">
+  <label>Implement / attachment brands</label>
+  <div class="checks" data-group="lines.implement_brands">
+    <label><input type="checkbox" value="IronCraft">IronCraft</label>
+    <label><input type="checkbox" value="Braber">Braber</label>
+    <label><input type="checkbox" value="CID">CID</label>
+    <label><input type="checkbox" value="Land Pride">Land Pride</label>
+  </div>
+  <input type="text" data-k="_extra.implement" placeholder="Other implement brands…" style="margin-top:.5rem">
+  <label>Other lines <span class="hint">(sheds, trailers, UTVs…)</span></label>
+  <input type="text" data-k="lines.other_lines" data-list placeholder="e.g. Old Hickory Sheds">
+  <label>Your inventory list <span class="hint">— any format: spreadsheet, price list, even a photo of the whiteboard. How will you get it to us?</span></label>
+  <textarea data-k="lines.inventory_source" placeholder="e.g. I'll email our price sheet / it's a Google Sheet at …"></textarea>
+  <div class="confirm">
+    <input type="checkbox" id="authConfirm">
+    <span><strong>I confirm we are an authorized dealer for every brand checked above.</strong> This matters: it's what lets your website legally use the manufacturers' photos and spec sheets. <span class="req">*</span></span>
+  </div>
+</section>
+
+<section id="s5">
+  <h2><span class="no">5</span>Service &amp; financing</h2>
+  <p class="why">Word-for-word only — the site never advertises an offer you didn't state. If financing changes seasonally, "Call for financing" is a fine answer.</p>
+  <div class="checks" data-group="services.specialties">
+    <label><input type="checkbox" id="offersService" checked>We do service &amp; repair</label>
+    <label><input type="checkbox" value="Diesel repair">Diesel repair</label>
+    <label><input type="checkbox" value="Welding & fabrication">Welding &amp; fabrication</label>
+    <label><input type="checkbox" value="Mobile / on-site service">Mobile / on-site service</label>
+    <label><input type="checkbox" value="Parts counter">Parts counter</label>
+    <label><input type="checkbox" value="Delivery">Delivery</label>
+  </div>
+  <label>Awards / certifications <span class="hint">(exact wording — e.g. "TYM Gold Dealer, 2024 &amp; 2025")</span></label>
+  <input type="text" data-k="services.awards" data-list placeholder="Leave blank if none — we never invent these">
+  <label>Current financing offers <span class="hint">(rate, term, lender, fine print — exactly as you'd advertise it)</span></label>
+  <textarea data-k="services.financing_notes" placeholder='e.g. "0.99% APR for 60 months on select models, OAC, through …" — or "Call for financing"'></textarea>
+</section>
+
+<section id="s6">
+  <h2><span class="no">6</span>The technical bits</h2>
+  <p class="why">Short answers are fine — your builder handles all of this with you. Nothing goes live until you've reviewed the finished site.</p>
+  <div class="row">
+    <div><label>Your domain name <span class="req">*</span></label>
+    <input type="text" data-k="infra.domain" placeholder="yourdealership.com"></div>
+    <div><label>Can you log in where the domain is registered? <span class="hint">(GoDaddy etc.)</span></label>
+    <select data-k="infra.registrar_access" data-bool><option value="false">Not sure / no</option><option value="true">Yes</option></select></div>
+  </div>
+  <div class="row">
+    <div><label>Who owns the Google account for your inventory sheet?</label>
+    <input type="text" data-k="infra.google_sheet_owner" placeholder="e.g. me — sales@…"></div>
+    <div><label>Are you an admin of your Facebook page?</label>
+    <select data-k="infra.fb_page_admin" data-bool><option value="false">Not sure / no</option><option value="true">Yes</option></select></div>
+  </div>
+  <label>Anything else your builder should know?</label>
+  <textarea data-k="meta.notes" placeholder="Busy seasons, a competitor you watch, pages you definitely want…"></textarea>
+</section>
+
+</div>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="status" id="status">Answers save automatically in this browser.</div>
+    <button class="btn-clear" id="clearBtn" type="button">Start over</button>
+    <button class="btn-dl" id="dlBtn" type="button">Download dealer.config.json</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var LS='dealerIntakeV1';
+  var state=JSON.parse(localStorage.getItem(LS)||'{}');
+  function set(k,v){state[k]=v;localStorage.setItem(LS,JSON.stringify(state));ping();}
+  function ping(){var el=document.getElementById('status');el.innerHTML='Saved <b>'+new Date().toLocaleTimeString()+'</b> — answers stay in this browser until you download.';}
+
+  // wire plain fields
+  document.querySelectorAll('[data-k]').forEach(function(el){
+    var k=el.getAttribute('data-k');
+    if(state[k]!=null){el.value=state[k];}
+    el.addEventListener('input',function(){set(k,el.value);});
+    el.addEventListener('change',function(){set(k,el.value);});
+  });
+  // checkbox groups
+  document.querySelectorAll('[data-group]').forEach(function(g){
+    var k=g.getAttribute('data-group');
+    var saved=state[k]||[];
+    g.querySelectorAll('input[type=checkbox][value]').forEach(function(cb){
+      if(saved.indexOf(cb.value)>-1)cb.checked=true;
+      cb.addEventListener('change',function(){
+        var vals=[].slice.call(g.querySelectorAll('input[type=checkbox][value]:checked')).map(function(c){return c.value;});
+        set(k,vals);
+      });
+    });
+  });
+  // special toggles
+  var auth=document.getElementById('authConfirm');
+  if(state['lines.authorized_confirmed'])auth.checked=true;
+  auth.addEventListener('change',function(){set('lines.authorized_confirmed',auth.checked);});
+  var svc=document.getElementById('offersService');
+  if(state['services.offers_service']===false)svc.checked=false;
+  svc.addEventListener('change',function(){set('services.offers_service',svc.checked);});
+  // accent color sync
+  var ac=document.getElementById('accent'),ah=document.getElementById('accentHex');
+  if(state['brand.accent_color']){ac.value=state['brand.accent_color'];ah.value=state['brand.accent_color'];}
+  ac.addEventListener('input',function(){ah.value=ac.value;set('brand.accent_color',ac.value);});
+  ah.addEventListener('input',function(){if(/^#[0-9a-fA-F]{6}$/.test(ah.value)){ac.value=ah.value;}set('brand.accent_color',ah.value);});
+  // files → base64 (small files only)
+  function wireFile(inputId,statusId,keyBase){
+    var inp=document.getElementById(inputId),st=document.getElementById(statusId);
+    if(state[keyBase+'_filename'])st.innerHTML='<span class="fileok">✓ '+state[keyBase+'_filename']+' attached'+'</span> — choose again to replace.';
+    inp.addEventListener('change',function(){
+      var f=inp.files[0];if(!f)return;
+      if(f.size>2*1024*1024){st.textContent='That file is over 2 MB — email it to your builder instead.';return;}
+      var r=new FileReader();
+      r.onload=function(){set(keyBase+'_base64',String(r.result).split(',')[1]||'');set(keyBase+'_filename',f.name);
+        st.innerHTML='<span class="fileok">✓ '+f.name+' attached</span> — it travels inside the download.';};
+      r.readAsDataURL(f);
+    });
+  }
+  wireFile('logoFile','logoStatus','brand.logo_light');
+  wireFile('favFile','favStatus','brand.favicon');
+
+  // required fields
+  var REQ=['business.name','business.phone','business.email','business.address.street',
+    'business.address.city','business.address.state','business.address.zip','business.hours','infra.domain'];
+
+  function toList(v){return String(v||'').split(',').map(function(s){return s.trim();}).filter(Boolean);}
+  function get(k){return state[k]!=null?state[k]:'';}
+
+  document.getElementById('dlBtn').addEventListener('click',function(){
+    // validate
+    var missing=[];
+    document.querySelectorAll('.miss').forEach(function(e){e.classList.remove('miss');});
+    REQ.forEach(function(k){
+      if(!String(get(k)).trim()){missing.push(k);var el=document.querySelector('[data-k="'+k+'"]');if(el)el.classList.add('miss');}
+    });
+    var anyBrand=(get('lines.tractor_brands')||[]).length||(get('lines.mower_brands')||[]).length||
+      (get('lines.implement_brands')||[]).length||toList(get('lines.other_lines')).length||
+      toList(get('_extra.tractor')).length||toList(get('_extra.mower')).length||toList(get('_extra.implement')).length;
+    if(!anyBrand){missing.push('at least one brand');document.getElementById('s4').scrollIntoView({behavior:'smooth'});}
+    if(!auth.checked){missing.push('authorized-dealer confirmation');document.getElementById('authConfirm').closest('.confirm').classList.add('miss');}
+    if(missing.length){
+      document.getElementById('status').innerHTML='<b style="color:#ff8a92">Missing: '+missing.length+' required item(s)</b> — highlighted above.';
+      var firstEl=document.querySelector('.miss');if(firstEl)firstEl.scrollIntoView({behavior:'smooth',block:'center'});
+      return;
+    }
+    var tract=(get('lines.tractor_brands')||[]).concat(toList(get('_extra.tractor')));
+    var mow=(get('lines.mower_brands')||[]).concat(toList(get('_extra.mower')));
+    var impl=(get('lines.implement_brands')||[]).concat(toList(get('_extra.implement')));
+    var specialties=(get('services.specialties')||[]).filter(function(s){return s!=='on';});
+    var cfg={
+      meta:{schema:'dealer-kit/v1',created:new Date().toISOString(),filled_by:get('business.email'),notes:get('meta.notes')},
+      business:{name:get('business.name'),display_name:get('business.name'),tagline:get('business.tagline'),
+        phone:get('business.phone'),email:get('business.email'),
+        address:{street:get('business.address.street'),city:get('business.address.city'),
+          state:get('business.address.state'),zip:get('business.address.zip')},
+        hours:get('business.hours'),towns_served:toList(get('business.towns_served')),current_url:get('business.current_url')},
+      presence:{google_business_profile:get('presence.google_business_profile'),facebook:get('presence.facebook'),
+        instagram:get('presence.instagram'),youtube:get('presence.youtube'),other:get('presence.other')},
+      brand:{accent_color:get('brand.accent_color')||'#cf1f2a',theme:'dark',font_plan:get('brand.font_plan')||'open-default',
+        font_license_notes:get('brand.font_license_notes'),
+        logo_light_filename:get('brand.logo_light_filename'),logo_light_base64:get('brand.logo_light_base64'),
+        favicon_filename:get('brand.favicon_filename'),favicon_base64:get('brand.favicon_base64')},
+      lines:{tractor_brands:tract,mower_brands:mow,implement_brands:impl,
+        other_lines:toList(get('lines.other_lines')),
+        authorized_confirmed:!!state['lines.authorized_confirmed'],
+        authorized_brands:tract.concat(mow,impl),
+        inventory_source:get('lines.inventory_source')},
+      services:{offers_service:state['services.offers_service']!==false,specialties:specialties,
+        awards:toList(get('services.awards')),financing_notes:get('services.financing_notes')},
+      infra:{domain:get('infra.domain'),registrar_access:get('infra.registrar_access')==='true',
+        github_repo:'',cloudflare_ready:false,google_sheet_owner:get('infra.google_sheet_owner'),
+        fb_page_admin:get('infra.fb_page_admin')==='true'}
+    };
+    var blob=new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='dealer.config.json';
+    a.click();
+    document.getElementById('status').innerHTML='<b style="color:#7ee2a0">✓ Downloaded.</b> Send dealer.config.json to your builder — that\'s everything they need to start.';
+  });
+
+  document.getElementById('clearBtn').addEventListener('click',function(){
+    if(confirm('Clear every answer on this form?')){localStorage.removeItem(LS);location.reload();}
+  });
+})();
+</script>
+</body>
+</html>
