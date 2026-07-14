@@ -51,6 +51,7 @@ The `functions/` folder is picked up automatically, so `POST /api/lead` works on
 | `ELEVENLABS_API_KEY` | For voiceover | Powers `/api/admin/voiceover` (script → speech in the studio). **Store as Secret type**, not plaintext. |
 | `ELEVENLABS_VOICE_ID` | No | Default ElevenLabs voice (Andrew's clone) so the studio picks it automatically. |
 | `STOCK_FEED_URL` | For badges | Published-to-web CSV of the sheet's "Website Feed" tab; feeds `/api/stock`. |
+| `REVIEW_NOTIFY_TO` | No | Where ad-review decisions/notes are emailed (needs `RESEND_API_KEY`). Default `aaronphelps.c@gmail.com`. |
 
 **Scope matters:** each variable is set per environment (Production / Preview). Anything you
 want working on branch-preview URLs must be added to **Preview** too — and env changes only
@@ -74,8 +75,17 @@ and the one-tap ad-music library to an R2 bucket. One-time setup:
 Until the binding exists, every cloud feature degrades gracefully (uploads
 report "not configured"; the music list is just empty). Bucket layout:
 `renders/` (timestamped MP4s), `vo/` (voiceover takes, exact filenames so
-projects relink), `music/` (the ad library), `uploads/` (misc). Everything
-under `/media/*` is publicly readable by design — don't put secrets in it.
+projects relink), `music/` (the ad library), `uploads/` (misc), `reviews/`
+(review records). Everything under `/media/*` is publicly readable by
+design — don't put secrets in it.
+
+**Review links:** "Save & create review link" in the editors uploads the
+render and mints a no-login page at `/review/{token}` where Andrew watches
+the ad and taps **Approve** or sends a note. Decisions and notes are stored
+on the review record and emailed to `REVIEW_NOTIFY_TO`. The token is the
+credential (unguessable, Google-Docs-style); approving never auto-posts
+anything. Each new version of an ad gets its own link — records are never
+edited in place, so there's no confusion about which cut was approved.
 
 **Email routing:** quote requests → `LEAD_TO_QUOTE` (sales@), visit + service requests → `LEAD_TO_SERVICE` (service@); every dealer notification is BCC'd to `LEAD_BCC`. `LEAD_TO`, if set, overrides all of that with a single address.
 

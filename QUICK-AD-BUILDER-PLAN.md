@@ -314,6 +314,14 @@ Each phase is shippable and reviewed on a test deploy before the next.
   `music/`). Setup: DEPLOY.md §3b (bucket `jjriggs-media`, binding `MEDIA`).
   Still open from Phase B: the `js/ad-media.data.js` manifest, product
   video uploads, and readiness rules.
+  Also shipped on top: **no-login review links** (`/review/{token}` pages —
+  `functions/api/admin/review.js` + `functions/api/review.js` +
+  `review.html`). One immutable link per rendered version; Andrew taps
+  Approve or sends a note; decisions live on the review record (R2
+  `reviews/`) and email `REVIEW_NOTIFY_TO`. These records are the embryonic
+  Phase C Ad Queue — same statuses (`pending → approved /
+  changes-requested`), designed to migrate into the KV job store rather
+  than exist beside it.
 - **Phase C — Ad Queue (1–2 days).** KV jobs + statuses + dashboard;
   campaign snapshots; dedup; Open-in-Studio handoff.
 - **Phase D — Facebook (1 day + the token hour with Andrew).** Approve →
