@@ -10,7 +10,49 @@
      hear is what exports.
    ═══════════════════════════════════════════════════════ */
 
-import { MotionDoc, AudioMap, VideoMap, AudioAsset, docDuration } from './types';
+import { MotionDoc, AudioMap, VideoMap, AudioAsset, VoClip, docDuration } from './types';
+
+/** A time window (ms) on the timeline where narration is speaking. */
+export interface VoWindow { s: number; e: number }
+
+/**
+ * The document's effective narration clips: the VO lane when it has
+ * entries, else the legacy single take (voId from voStart, full length).
+ */
+export function effectiveVoClips(doc: MotionDoc, audio: AudioMap): VoClip[] {
+  if (doc.voClips && doc.voClips.length) {
+    return doc.voClips.filter((c) => c.audioId && audio[c.audioId] && c.duration > 0);
+  }
+  const legacy = doc.voId ? audio[doc.voId] : null;
+  if (!legacy) return [];
+  return [{
+    id: '__legacy-vo', audioId: doc.voId as string,
+    start: doc.voStart, offset: 0, duration: legacy.buffer.duration * 1000,
+  }];
+}
+
+/**
+ * Speaking windows for the duck curve — clip spans clamped to their
+ * source length, sorted, and merged when closer than a duck ramp so the
+ * music doesn't bounce between back-to-back clips.
+ */
+export function voWindowsFor(doc: MotionDoc, audio: AudioMap): VoWindow[] {
+  const spans = effectiveVoClips(doc, audio)
+    .map((c) => {
+      const buf = audio[c.audioId].buffer;
+      const dur = Math.min(c.duration, Math.max(0, buf.duration * 1000 - c.offset));
+      return { s: c.start, e: c.start + dur };
+    })
+    .filter((w) => w.e > w.s)
+    .sort((a, b) => a.s - b.s);
+  const merged: VoWindow[] = [];
+  for (const w of spans) {
+    const last = merged[merged.length - 1];
+    if (last && w.s - last.e < DUCK_RAMP_MS * 2) last.e = Math.max(last.e, w.e);
+    else merged.push({ ...w });
+  }
+  return merged;
+}
 
 const MIX_SAMPLE_RATE = 48000;
 const MIX_CHANNELS = 2;
@@ -56,9 +98,10 @@ export async function loadAudioAsset(file: File): Promise<AudioAsset> {
 /**
  * Music gain at global time t — linear fade-in from 0, hold at
  * doc.audioVolume, linear fade-out to 0 at the end. Fades are clamped
- * so they never overlap on very short documents.
+ * so they never overlap on very short documents. `voWindows` are the
+ * speaking spans the duck curve dips under (see voWindowsFor).
  */
-export function musicGainAt(doc: MotionDoc, tMs: number, totalMs: number, voDurMs = 0): number {
+export function musicGainAt(doc: MotionDoc, tMs: number, totalMs: number, voWindows: VoWindow[] = []): number {
   const vol = Math.max(0, Math.min(1, doc.audioVolume));
   if (totalMs <= 0) return 0;
   const fadeIn = Math.max(0, Math.min(doc.audioFadeIn, totalMs / 2));
@@ -66,25 +109,24 @@ export function musicGainAt(doc: MotionDoc, tMs: number, totalMs: number, voDurM
   let g = 1;
   if (fadeIn > 0 && tMs < fadeIn) g = Math.min(g, tMs / fadeIn);
   if (fadeOut > 0 && tMs > totalMs - fadeOut) g = Math.min(g, (totalMs - tMs) / fadeOut);
-  return Math.max(0, Math.min(1, g)) * vol * duckGainAt(doc, tMs, voDurMs);
+  return Math.max(0, Math.min(1, g)) * vol * duckGainAt(doc, tMs, voWindows);
 }
 
 const DUCK_RAMP_MS = 300;
 
 /**
- * Duck multiplier at global time t — 1 outside the voiceover window,
- * doc.audioDuckLevel while the VO plays, linear ramps either side.
- * voDurMs comes from the decoded VO buffer (0 = no VO loaded).
+ * Duck multiplier at global time t — 1 outside every speaking window,
+ * doc.audioDuckLevel inside one, linear ramps either side.
  */
-export function duckGainAt(doc: MotionDoc, tMs: number, voDurMs: number): number {
-  if (!doc.audioDuckOn || !doc.voId || voDurMs <= 0 || doc.voVolume <= 0) return 1;
+export function duckGainAt(doc: MotionDoc, tMs: number, voWindows: VoWindow[]): number {
+  if (!doc.audioDuckOn || !voWindows.length || doc.voVolume <= 0) return 1;
   const lvl = Math.max(0, Math.min(1, doc.audioDuckLevel ?? 0.3));
-  const s = doc.voStart;
-  const e = doc.voStart + voDurMs;
   let duck = 0;
-  if (tMs >= s && tMs <= e) duck = 1;
-  else if (tMs > s - DUCK_RAMP_MS && tMs < s) duck = (tMs - (s - DUCK_RAMP_MS)) / DUCK_RAMP_MS;
-  else if (tMs > e && tMs < e + DUCK_RAMP_MS) duck = 1 - (tMs - e) / DUCK_RAMP_MS;
+  for (const { s, e } of voWindows) {
+    if (tMs >= s && tMs <= e) { duck = 1; break; }
+    if (tMs > s - DUCK_RAMP_MS && tMs < s) duck = Math.max(duck, (tMs - (s - DUCK_RAMP_MS)) / DUCK_RAMP_MS);
+    else if (tMs > e && tMs < e + DUCK_RAMP_MS) duck = Math.max(duck, 1 - (tMs - e) / DUCK_RAMP_MS);
+  }
   return 1 - duck * (1 - lvl);
 }
 
@@ -127,11 +169,12 @@ export async function renderMixdown(
     acc += scene.duration;
   }
 
-  // Voiceover — plays once from voStart
-  const vo = doc.voId ? audio[doc.voId] : null;
-  if (vo && doc.voVolume > 0) {
-    const startMs = Math.max(0, Math.min(doc.voStart, totalMs));
-    addClip(vo.buffer, startMs, 0, totalMs - startMs, doc.voVolume);
+  // Voiceover — every clip on the VO lane (or the legacy single take)
+  if (doc.voVolume > 0) {
+    for (const c of effectiveVoClips(doc, audio)) {
+      const startMs = Math.max(0, Math.min(c.start, totalMs));
+      addClip(audio[c.audioId].buffer, startMs, c.offset, Math.min(c.duration, totalMs - startMs), doc.voVolume);
+    }
   }
 
   if (!musicAudible && clips.length === 0) return null;
@@ -160,19 +203,22 @@ export async function renderMixdown(
     }
 
     // Duck envelope multiplies the fade envelope via a second gain node
-    // in series — same ramps duckGainAt() gives the preview.
-    const voBuf = doc.voId ? audio[doc.voId]?.buffer : null;
+    // in series — same ramps duckGainAt() gives the preview, one dip per
+    // merged speaking window.
     const duck = octx.createGain();
     duck.gain.value = 1;
-    if (doc.audioDuckOn && voBuf && doc.voVolume > 0) {
+    if (doc.audioDuckOn && doc.voVolume > 0) {
       const lvl = Math.max(0, Math.min(1, doc.audioDuckLevel ?? 0.3));
       const ramp = DUCK_RAMP_MS / 1000;
-      const s = Math.max(0, Math.min(doc.voStart, totalMs)) / 1000;
-      const e = Math.min(s + voBuf.duration, totalS);
-      duck.gain.setValueAtTime(1, Math.max(0, s - ramp));
-      duck.gain.linearRampToValueAtTime(lvl, s);
-      duck.gain.setValueAtTime(lvl, e);
-      duck.gain.linearRampToValueAtTime(1, Math.min(totalS, e + ramp));
+      for (const w of voWindowsFor(doc, audio)) {
+        const s = Math.max(0, Math.min(w.s, totalMs)) / 1000;
+        const e = Math.min(w.e / 1000, totalS);
+        if (e <= s) continue;
+        duck.gain.setValueAtTime(1, Math.max(0, s - ramp));
+        duck.gain.linearRampToValueAtTime(lvl, s);
+        duck.gain.setValueAtTime(lvl, e);
+        duck.gain.linearRampToValueAtTime(1, Math.min(totalS, e + ramp));
+      }
     }
 
     src.connect(gain).connect(duck).connect(octx.destination);

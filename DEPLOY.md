@@ -45,6 +45,16 @@ The `functions/` folder is picked up automatically, so `POST /api/lead` works on
 | `SEND_CONFIRMATIONS` | No | `on` (default) sends the customer auto-reply; set `off` to disable (recommended during test mode, since customer confirmations can't deliver until the domain is verified). |
 | `TURNSTILE_SECRET_KEY` | No | Cloudflare Turnstile secret for spam protection on `/api/lead`. Create a widget at dash.cloudflare.com → Turnstile (domains: the pages.dev domain + jjriggsequipment.com), set this to its **Secret Key**, and paste its **Site Key** into `TS_SITE_KEY` in `contact.html`. Until set, verification is skipped (honeypot still active). |
 | `RESEND_API_URL` | No | Override the Resend endpoint (testing only; defaults to `https://api.resend.com/emails`). |
+| `ADMIN_PASSCODE` | For /admin | Gates `/admin/*` + `/api/admin/*` (passcode login → signed session cookie). Unset = admin tools run in legacy open mode. |
+| `GH_PUBLISH_TOKEN` | For /admin | GitHub token the publish endpoint commits with (data files + `img/uploads/` only, per its path allowlist). |
+| `ANTHROPIC_API_KEY` | For AI tools | Powers `/api/admin/extract` (product facts from manufacturer pages) and `/api/admin/storyboard` (flyer image → video-ad storyboard). |
+| `ELEVENLABS_API_KEY` | For voiceover | Powers `/api/admin/voiceover` (script → speech in the studio). **Store as Secret type**, not plaintext. |
+| `ELEVENLABS_VOICE_ID` | No | Default ElevenLabs voice (Andrew's clone) so the studio picks it automatically. |
+| `STOCK_FEED_URL` | For badges | Published-to-web CSV of the sheet's "Website Feed" tab; feeds `/api/stock`. |
+
+**Scope matters:** each variable is set per environment (Production / Preview). Anything you
+want working on branch-preview URLs must be added to **Preview** too — and env changes only
+apply to deployments created *after* the change, so push (or retry a deploy) afterwards.
 
 **Email routing:** quote requests → `LEAD_TO_QUOTE` (sales@), visit + service requests → `LEAD_TO_SERVICE` (service@); every dealer notification is BCC'd to `LEAD_BCC`. `LEAD_TO`, if set, overrides all of that with a single address.
 
