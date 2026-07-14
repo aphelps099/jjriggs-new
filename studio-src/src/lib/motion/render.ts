@@ -310,24 +310,42 @@ function drawImageCover(
   img: HTMLImageElement,
   W: number, H: number,
   progress: number,
-  kenBurns: Scene['kenBurns'],
+  scene: Pick<Scene, 'kenBurns' | 'kenBurnsEase' | 'kenBurnsSpeed' | 'imageFocusX' | 'imageFocusY'>,
 ) {
   const iw = img.naturalWidth || 1;
   const ih = img.naturalHeight || 1;
   const cover = Math.max(W / iw, H / ih);
+  const { kenBurns } = scene;
+  const speed = Math.max(0.25, Math.min(3, scene.kenBurnsSpeed ?? 1));
+
+  // Time ramp — how the move spends its travel across the scene
+  const raw = clamp01(progress);
+  const ease = scene.kenBurnsEase ?? 'in-out';
+  const p =
+    ease === 'linear' ? raw :
+    ease === 'in' ? raw * raw * raw :
+    ease === 'out' ? 1 - Math.pow(1 - raw, 3) :
+    easeInOutCubic(raw);
 
   let zoom = 1;
   let panX = 0;
-  const p = easeInOutCubic(clamp01(progress));
-  if (kenBurns === 'zoom-in') zoom = 1 + 0.09 * p;
-  else if (kenBurns === 'zoom-out') zoom = 1.09 - 0.09 * p;
-  else if (kenBurns === 'pan-left') { zoom = 1.12; panX = (0.5 - p) * 0.07 * W; }
-  else if (kenBurns === 'pan-right') { zoom = 1.12; panX = (p - 0.5) * 0.07 * W; }
+  const zAmt = 0.09 * speed;
+  const pAmt = 0.07 * speed;
+  if (kenBurns === 'zoom-in') zoom = 1 + zAmt * p;
+  else if (kenBurns === 'zoom-out') zoom = 1 + zAmt * (1 - p);
+  else if (kenBurns === 'pan-left') { zoom = 1 + pAmt + 0.05; panX = (0.5 - p) * pAmt * W; }
+  else if (kenBurns === 'pan-right') { zoom = 1 + pAmt + 0.05; panX = (p - 0.5) * pAmt * W; }
 
   const s = cover * zoom;
   const dw = iw * s;
   const dh = ih * s;
-  ctx.drawImage(img, (W - dw) / 2 - panX, (H - dh) / 2, dw, dh);
+  // Focal point picks which part of the photo the cover crop keeps:
+  // 0 pins the left/top edge, 1 the right/bottom, 0.5 centers (legacy).
+  const fx = clamp01(scene.imageFocusX ?? 0.5);
+  const fy = clamp01(scene.imageFocusY ?? 0.5);
+  const dx = Math.min(0, W - dw) * fx;
+  const dy = Math.min(0, H - dh) * fy;
+  ctx.drawImage(img, dx - panX, dy, dw, dh);
 }
 
 /**
@@ -833,7 +851,7 @@ function drawScene(
   ctx.fillStyle = scheme.bg;
   ctx.fillRect(0, 0, W, H);
   if (isImage) {
-    drawImageCover(ctx, assets[scene.imageId as string].img, W, H, t / scene.duration, scene.kenBurns);
+    drawImageCover(ctx, assets[scene.imageId as string].img, W, H, t / scene.duration, scene);
     drawOverlay(ctx, W, H, scene, scheme);
   } else if (isVideo) {
     drawVideoCover(ctx, videos[scene.videoId as string].video, W, H);
@@ -863,7 +881,7 @@ function drawScene(
 
   // Text scale: shrink the type by scaling the unit the templates size
   // with, while the palette frame stays at full scale so margins hold.
-  const textScale = Math.max(0.2, Math.min(1.5, scene.textScale || 1));
+  const textScale = Math.max(0.2, Math.min(3, scene.textScale || 1));
   const tsc: SceneCtx = textScale === 1 ? sc : { ...sc, u: u * textScale };
   const palette: Palette = { fg, muted, accent, anchorX, align, frame };
 

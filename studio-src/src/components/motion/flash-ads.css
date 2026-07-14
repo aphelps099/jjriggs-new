@@ -256,6 +256,13 @@
   font-size: 12px;
 }
 
+.fa-story-head {
+  margin: 0;
+  font-family: 'Questrial', sans-serif;
+  font-size: 13.5px;
+  color: #fbfbf9;
+}
+
 .fa-export {
   padding: 14px 16px;
   background: #cf1f2a;

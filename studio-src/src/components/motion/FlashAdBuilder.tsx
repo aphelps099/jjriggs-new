@@ -27,11 +27,10 @@ import {
 } from '@/lib/motion/export';
 import { loadAudioAsset, renderMixdown, musicGainAt } from '@/lib/motion/audio';
 import { ensureFontsReady } from '@/lib/motion/fonts';
+import { harvestLibrary, fetchableUrl, SITE_BASE, LibraryModel } from '@/lib/site-library';
 import './flash-ads.css';
 
 const ASSET_BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
-// The site root above the studio — where /js/*.data.js and /img/ live
-const SITE_BASE = ASSET_BASE.replace(/\/studio\/?$/, '');
 
 // ── Brand color pairs (site style guide — warm darks, one Bad Boy Red) ──
 const RED_ON_WHITE: CustomScheme = { bg: '#fbfbf9', fg: '#cf1f2a', accent: '#14171a' };
@@ -221,92 +220,46 @@ function loadImage(url: string): Promise<HTMLImageElement> {
   });
 }
 
+/** Downscale a flyer photo to ≤1600px JPEG base64 for the storyboard API. */
+async function flyerToBase64(file: File): Promise<{ b64: string; mediaType: string }> {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await loadImage(url);
+    const scale = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.max(1, Math.round(img.naturalWidth * scale));
+    const h = Math.max(1, Math.round(img.naturalHeight * scale));
+    const c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    const ctx = c.getContext('2d');
+    if (!ctx) throw new Error('Canvas unavailable');
+    ctx.drawImage(img, 0, 0, w, h);
+    return { b64: c.toDataURL('image/jpeg', 0.85).split(',')[1], mediaType: 'image/jpeg' };
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+interface StoryboardFacts {
+  offer_headline: string | null;
+  urgency: string | null;
+  phone: string | null;
+  website: string | null;
+  photo_description: string | null;
+  requires_fine_print: boolean;
+}
+
+interface StoryboardProject {
+  doc: { scenes: Array<Partial<Scene> & { template: string }> };
+}
+
+interface StoryboardResult {
+  project: StoryboardProject;
+  facts: StoryboardFacts;
+}
+
 function fmtSecs(ms: number): string {
   return `${(ms / 1000).toFixed(1)}s`;
-}
-
-// ── The website image library (same data files the site renders from) ──
-
-interface LibraryModel {
-  label: string;
-  group: string;
-  urls: string[];
-}
-
-interface SiteModelRow { model?: string; image?: string; img?: string }
-
-declare global {
-  interface Window {
-    TYM_MODELS?: SiteModelRow[];
-    BADBOY_MODELS?: SiteModelRow[];
-    MOWER_MODELS?: SiteModelRow[];
-    TRACTOR_GALLERY?: Record<string, string[]>;
-  }
-}
-
-function loadSiteScript(src: string): Promise<void> {
-  return new Promise((resolve) => {
-    const s = document.createElement('script');
-    s.src = src;
-    s.onload = () => resolve();
-    s.onerror = () => resolve(); // a missing file just shrinks the library
-    document.head.appendChild(s);
-  });
-}
-
-/** Read the site's data files and build {model → image urls}, grouped. */
-async function harvestLibrary(): Promise<LibraryModel[]> {
-  await Promise.all([
-    loadSiteScript(`${SITE_BASE}/js/tym-models.data.js`),
-    loadSiteScript(`${SITE_BASE}/js/badboy-models.data.js`),
-    loadSiteScript(`${SITE_BASE}/js/mower-models.data.js`),
-    loadSiteScript(`${SITE_BASE}/js/badboy-tractor-images.data.js`),
-  ]);
-  // Admin uploads override hand-maintained galleries — load order matters.
-  await loadSiteScript(`${SITE_BASE}/js/uploads-gallery.data.js`);
-
-  const byLabel = new Map<string, LibraryModel>();
-  const add = (label: string, group: string, url?: string | string[]) => {
-    const urls = (Array.isArray(url) ? url : [url]).filter((u): u is string => !!u && !!u.trim());
-    if (!urls.length) return;
-    const entry = byLabel.get(label) ?? { label, group, urls: [] };
-    for (const u of urls) if (!entry.urls.includes(u)) entry.urls.push(u);
-    byLabel.set(label, entry);
-  };
-
-  for (const m of window.TYM_MODELS ?? []) {
-    if (m.model) add(`TYM ${m.model}`, 'TYM tractors', m.image ?? m.img);
-  }
-  for (const m of window.BADBOY_MODELS ?? []) {
-    if (m.model) add(`Bad Boy ${m.model}`, 'Bad Boy tractors', m.image ?? m.img);
-  }
-  for (const m of window.MOWER_MODELS ?? []) {
-    if (m.model) add(`Bad Boy ${m.model}`, 'Bad Boy mowers', m.image ?? m.img);
-  }
-  for (const [key, urls] of Object.entries(window.TRACTOR_GALLERY ?? {})) {
-    const [brand, model] = key.split('|');
-    if (!model) continue;
-    const label = `${brand} ${model}`;
-    const group = brand === 'TYM' ? 'TYM tractors' : 'Bad Boy tractors';
-    add(label, group, urls);
-  }
-
-  return Array.from(byLabel.values()).sort(
-    (a, b) => a.group.localeCompare(b.group) || a.label.localeCompare(b.label),
-  );
-}
-
-/** A URL the browser can draw AND export from (same-origin or proxied blob). */
-function fetchableUrl(raw: string): string {
-  if (/^https?:\/\//i.test(raw)) {
-    try {
-      if (new URL(raw).host === window.location.host) return raw;
-    } catch { /* fall through to the proxy */ }
-    // Old data rows still hotlink jjriggsequipment.com / manufacturer hosts —
-    // the site's own allowlisted proxy keeps the canvas untainted.
-    return `${SITE_BASE}/api/fetch-image?url=${encodeURIComponent(raw)}`;
-  }
-  return `${SITE_BASE}/${raw.replace(/^\/+/, '')}`;
 }
 
 export default function FlashAdBuilder() {
@@ -332,6 +285,11 @@ export default function FlashAdBuilder() {
   const [musicName, setMusicName] = useState<string | null>(null);
   const [musicBusy, setMusicBusy] = useState(false);
   const musicFileRef = useRef<HTMLInputElement>(null);
+
+  // Flyer → storyboard (AI)
+  const [flyerBusy, setFlyerBusy] = useState(false);
+  const [storyboard, setStoryboard] = useState<StoryboardResult | null>(null);
+  const flyerFileRef = useRef<HTMLInputElement>(null);
 
   const [playing, setPlaying] = useState(true);
   const [exporting, setExporting] = useState(false);
@@ -552,6 +510,64 @@ export default function FlashAdBuilder() {
     setMusicName(null);
   }, []);
 
+  // ── Flyer → storyboard (AI) ──
+  const handleFlyerFile = useCallback(async (file: File) => {
+    setFlyerBusy(true);
+    setStatus(null);
+    setStoryboard(null);
+    try {
+      const { b64, mediaType } = await flyerToBase64(file);
+      const res = await fetch(`${SITE_BASE}/api/admin/storyboard`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ image_b64: b64, media_type: mediaType }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const msg = res.status === 401
+          ? 'Sign in first: open /admin in another tab, enter the passcode, then try again.'
+          : (data as { error?: string }).error ?? `Storyboard failed (${res.status}).`;
+        throw new Error(msg);
+      }
+      setStoryboard(data as StoryboardResult);
+    } catch (e) {
+      setStatus({ ok: false, msg: e instanceof Error ? e.message : 'Storyboard failed — try again.' });
+    } finally {
+      setFlyerBusy(false);
+    }
+  }, []);
+
+  const applyStoryboardLines = useCallback(() => {
+    if (!storyboard) return;
+    const titles = storyboard.project.doc.scenes
+      .filter((s) => s.template === 'statement' || s.template === 'title')
+      .map((s) => (s.title ?? '').trim())
+      .filter(Boolean)
+      .slice(0, MAX_CARDS);
+    if (!titles.length) {
+      setStatus({ ok: false, msg: 'The storyboard has no headline cards to use here.' });
+      return;
+    }
+    setRawLines(titles.join('\n'));
+    finePrintTouched.current = true;
+    setFinePrint(storyboard.facts.requires_fine_print);
+    setStatus({
+      ok: true,
+      msg: storyboard.facts.photo_description
+        ? `Lines loaded. The flyer's photo: ${storyboard.facts.photo_description} — pick a match under "Add photo background".`
+        : 'Lines loaded from the flyer.',
+    });
+  }, [storyboard]);
+
+  const downloadStoryboardProject = useCallback(() => {
+    if (!storyboard) return;
+    downloadBlob(
+      new Blob([JSON.stringify(storyboard.project, null, 2)], { type: 'application/json' }),
+      'flyer-storyboard.project.json',
+    );
+    setStatus({ ok: true, msg: 'Project saved — open the Advanced editor and use ⬆ Load.' });
+  }, [storyboard]);
+
   // ── Export ──
   const handleExport = useCallback(async () => {
     if (exportingRef.current) return;
@@ -593,6 +609,52 @@ export default function FlashAdBuilder() {
   return (
     <div className="fa-root">
       <aside className="fa-controls">
+
+        <section className="fa-block">
+          <h2 className="fa-label">Build from a flyer</h2>
+          <div className="fa-row">
+            <button
+              type="button"
+              className="fa-mini-btn"
+              onClick={() => flyerFileRef.current?.click()}
+              disabled={flyerBusy}
+            >
+              {flyerBusy ? 'Reading the flyer…' : 'Upload a flyer'}
+            </button>
+            <input
+              ref={flyerFileRef}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFlyerFile(f); e.target.value = ''; }}
+            />
+            <span className="fa-sub">AI turns a promo flyer into scenes</span>
+          </div>
+          {storyboard && (
+            <div className="fa-panel">
+              <p className="fa-story-head">
+                {storyboard.project.doc.scenes.length} scenes
+                {storyboard.facts.offer_headline ? ` · “${storyboard.facts.offer_headline}”` : ''}
+                {storyboard.facts.requires_fine_print ? ' · fine print included' : ''}
+              </p>
+              {storyboard.facts.photo_description && (
+                <p className="fa-hint">Flyer photo: {storyboard.facts.photo_description}</p>
+              )}
+              <div className="fa-row">
+                <button type="button" className="fa-mini-btn" onClick={applyStoryboardLines}>
+                  Use the lines here
+                </button>
+                <button type="button" className="fa-mini-btn" onClick={downloadStoryboardProject}>
+                  Save for Advanced editor
+                </button>
+              </div>
+              <p className="fa-hint">
+                Every word is read off the flyer — check it before posting.
+                The full storyboard (photo scenes, fine print, end card) loads in the Advanced editor via ⬆ Load.
+              </p>
+            </div>
+          )}
+        </section>
 
         <section className="fa-block">
           <h2 className="fa-label">Your lines <span className="fa-count">{lines.length}/{MAX_CARDS} cards</span></h2>
