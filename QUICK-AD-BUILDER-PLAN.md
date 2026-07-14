@@ -286,6 +286,11 @@ Each phase is shippable and reviewed on a test deploy before the next.
   rotation and pace (within the safety cap), render. No product data or
   media required, so it has no dependency on §2/§3 — the cheapest way to
   put a working ad generator in front of Andrew.
+  **SHIPPED (July 2026)** as `studio-src/src/components/motion/FlashAdBuilder.tsx`,
+  served at **`/studio/ads/`** — the route's native export path, kept
+  public like the studio itself since it holds no secrets and writes
+  nothing. It folds into `/admin/ads/` as the wizard's "Simple" tab when
+  Phase A lands and gating starts to matter (media upload, queue, FB).
 - **Phase B — durable media (1–2 days).** R2 bucket + upload endpoint;
   `js/ad-media.data.js` manifest with roles/focal points; video upload from
   the wizard; readiness rules; URL-loaded media in the engine.

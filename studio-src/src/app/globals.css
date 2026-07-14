@@ -2,14 +2,14 @@
    The brand trio per the visual style guide: Tactic Sans Bld (display,
    self-hosted from the site's own kit), Questrial (body) and Michroma
    (technical labels), both self-hosted latin subsets so the canvas
-   never waits on a CDN. Paths are absolute to the GitHub Pages base
-   (/jjriggs-new/studio). */
+   never waits on a CDN. Paths are absolute to the deploy base — keep
+   them in sync with BASE in next.config.js (plain CSS can't read env). */
 
 @font-face {
   font-family: 'Tactic Sans Bld';
   src:
-    url('/jjriggs-new/studio/fonts/tactic-sans-bld.woff2') format('woff2'),
-    url('/jjriggs-new/studio/fonts/tactic-sans-bld.woff') format('woff');
+    url('/studio/fonts/tactic-sans-bld.woff2') format('woff2'),
+    url('/studio/fonts/tactic-sans-bld.woff') format('woff');
   font-weight: 400 800;
   font-style: normal;
   font-display: swap;
@@ -17,7 +17,7 @@
 
 @font-face {
   font-family: 'Questrial';
-  src: url('/jjriggs-new/studio/fonts/questrial.woff2') format('woff2');
+  src: url('/studio/fonts/questrial.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -25,7 +25,7 @@
 
 @font-face {
   font-family: 'Michroma';
-  src: url('/jjriggs-new/studio/fonts/michroma.woff2') format('woff2');
+  src: url('/studio/fonts/michroma.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
