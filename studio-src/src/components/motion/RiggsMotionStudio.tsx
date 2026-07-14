@@ -9,7 +9,10 @@ import {
   EMOJI_MOTIONS, EMOJI_AMOUNTS, EMOJI_SIZES,
   defaultDoc, makeScene, makeCue, getAspect, resolveScheme, docDuration, sceneAt,
 } from '@/lib/motion/types';
-import { harvestLibrary, fetchLibraryPhoto, fetchableUrl, LibraryModel } from '@/lib/site-library';
+import {
+  harvestLibrary, fetchLibraryPhoto, fetchableUrl, LibraryModel,
+  fetchMusicList, uploadMedia, absoluteMediaUrl, CloudTrack,
+} from '@/lib/site-library';
 import { renderFrame } from '@/lib/motion/render';
 import {
   exportMp4, exportWebm, exportPng, downloadBlob, supportsMp4Export,
@@ -83,6 +86,59 @@ function parseCsv(text: string): Record<string, string>[] {
   const [head, ...body] = rows;
   if (!head) return [];
   return body.map((r) => Object.fromEntries(head.map((h, i) => [h.trim(), r[i] ?? ''])));
+}
+
+/** Tiny stable hash for filenames (djb2 → base36). */
+function hash6(s: string): string {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  return Math.abs(h).toString(36).slice(0, 6);
+}
+
+/** Slice an AudioBuffer span to a 16-bit PCM WAV blob (for re-voicing). */
+function bufferSliceToWav(buf: AudioBuffer, offsetMs: number, durMs: number): Blob {
+  const sr = buf.sampleRate;
+  const start = Math.max(0, Math.floor((offsetMs / 1000) * sr));
+  const len = Math.max(1, Math.min(buf.length - start, Math.floor((durMs / 1000) * sr)));
+  const ch = Math.min(2, buf.numberOfChannels);
+  const bytes = 44 + len * ch * 2;
+  const view = new DataView(new ArrayBuffer(bytes));
+  const ws = (o: number, s: string) => { for (let i = 0; i < s.length; i++) view.setUint8(o + i, s.charCodeAt(i)); };
+  ws(0, 'RIFF'); view.setUint32(4, bytes - 8, true); ws(8, 'WAVE'); ws(12, 'fmt ');
+  view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, ch, true);
+  view.setUint32(24, sr, true); view.setUint32(28, sr * ch * 2, true);
+  view.setUint16(32, ch * 2, true); view.setUint16(34, 16, true);
+  ws(36, 'data'); view.setUint32(40, len * ch * 2, true);
+  for (let c = 0; c < ch; c++) {
+    const data = buf.getChannelData(c);
+    for (let i = 0; i < len; i++) {
+      const v = Math.max(-1, Math.min(1, data[start + i] ?? 0));
+      view.setInt16(44 + (i * ch + c) * 2, Math.round(v * 32767), true);
+    }
+  }
+  return new Blob([view.buffer], { type: 'audio/wav' });
+}
+
+/** Break a narration script into caption-sized lines (~35 chars). */
+function chunkScript(text: string): string[] {
+  const words = text.replace(/\s+/g, ' ').trim().split(' ').filter(Boolean);
+  const chunks: string[] = [];
+  let cur = '';
+  for (const w of words) {
+    const next = cur ? `${cur} ${w}` : w;
+    if (next.length > 34 && cur) {
+      chunks.push(cur);
+      cur = w;
+    } else {
+      cur = next;
+    }
+    if (/[.!?]$/.test(w) && cur.length > 12) {
+      chunks.push(cur);
+      cur = '';
+    }
+  }
+  if (cur) chunks.push(cur);
+  return chunks;
 }
 
 /** Snap a Ken Burns travel multiplier to the nearest preset id. */
@@ -1021,13 +1077,13 @@ export default function RiggsMotionStudio() {
   const srtInputRef = useRef<HTMLInputElement>(null);
   const [captionStatus, setCaptionStatus] = useState<{ ok: boolean; msg: string } | null>(null);
 
-  const handleSrtFile = async (file: File) => {
-    const entries = parseSrt(await file.text());
-    if (!entries.length) {
-      setCaptionStatus({ ok: false, msg: 'No captions found — is that an SRT file?' });
-      return;
-    }
-    // Slice the global SRT times into scene-local caption cues
+  /** Slice global-time caption entries into scene-local caption cues.
+      'replace' clears existing captions first (SRT import); 'append'
+      layers on top (auto-captions per generated take). */
+  const applyCaptionEntries = useCallback((
+    entries: { start: number; end: number; text: string }[],
+    mode: 'replace' | 'append',
+  ): number => {
     const d = docRef.current;
     const perScene = new Map<string, TextCue[]>();
     let placed = 0;
@@ -1050,9 +1106,22 @@ export default function RiggsMotionStudio() {
       ...dd,
       scenes: dd.scenes.map((s) => ({
         ...s,
-        cues: [...(s.cues ?? []).filter((c) => c.style !== 'caption'), ...(perScene.get(s.id) ?? [])],
+        cues: [
+          ...(s.cues ?? []).filter((c) => (mode === 'replace' ? c.style !== 'caption' : true)),
+          ...(perScene.get(s.id) ?? []),
+        ],
       })),
     }));
+    return placed;
+  }, []);
+
+  const handleSrtFile = async (file: File) => {
+    const entries = parseSrt(await file.text());
+    if (!entries.length) {
+      setCaptionStatus({ ok: false, msg: 'No captions found — is that an SRT file?' });
+      return;
+    }
+    const placed = applyCaptionEntries(entries, 'replace');
     const skipped = entries.length - placed;
     setCaptionStatus({
       ok: true,
@@ -1323,11 +1392,56 @@ export default function RiggsMotionStudio() {
     }
   };
 
+  // Cloud relink — generated VO takes live in the media bucket under
+  // their filename, so a reloaded project can pull them back without a
+  // manual re-upload. Silent when the bucket isn't wired or signed out.
+  const recoverAttempted = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    const names = missingMedia.filter(
+      (n) => /\.(mp3|m4a|wav)$/i.test(n) && !recoverAttempted.current.has(n),
+    );
+    if (!names.length) return;
+    names.forEach((n) => recoverAttempted.current.add(n));
+    (async () => {
+      for (const n of names) {
+        try {
+          const res = await fetch(`${SITE_BASE}/media/vo/${encodeURIComponent(n)}`);
+          if (!res.ok) continue;
+          const blob = await res.blob();
+          await handleAudioFile(new File([blob], n, { type: blob.type || 'audio/mpeg' }), 'vo');
+        } catch { /* stays on the missing list */ }
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [missingMedia]);
+
+  // ── Cloud music library (the media bucket's music/ folder) ──
+  const [cloudTracks, setCloudTracks] = useState<CloudTrack[]>([]);
+  useEffect(() => {
+    let alive = true;
+    fetchMusicList().then((t) => { if (alive) setCloudTracks(t); });
+    return () => { alive = false; };
+  }, []);
+
+  const pickCloudTrack = async (track: CloudTrack) => {
+    try {
+      const res = await fetch(track.url);
+      if (!res.ok) throw new Error(`Track failed to load (${res.status})`);
+      const blob = await res.blob();
+      const fname = track.url.split('/').pop() ?? `${track.name}.mp3`;
+      await handleAudioFile(new File([blob], fname, { type: blob.type || 'audio/mpeg' }), 'music');
+    } catch (e) {
+      setAudioStatus({ ok: false, msg: e instanceof Error ? e.message : 'Track failed to load.' });
+    }
+  };
+
   // ── VO lane: ElevenLabs script + editable clips on a second layer ──
   const [voScript, setVoScript] = useState('');
   const [voVoices, setVoVoices] = useState<{ id: string; name: string }[] | null>(null);
   const [voVoiceId, setVoVoiceId] = useState('');
   const [voGenBusy, setVoGenBusy] = useState(false);
+  const [autoCaptions, setAutoCaptions] = useState(true);
+  const [revoiceBusy, setRevoiceBusy] = useState(false);
   const [selVoClipId, setSelVoClipId] = useState<string | null>(null);
   const voLaneRef = useRef<HTMLDivElement>(null);
   const voDragRef = useRef<{ id: string; startX: number; origStart: number; laneW: number } | null>(null);
@@ -1385,19 +1499,85 @@ export default function RiggsMotionStudio() {
         throw new Error(msg);
       }
       const blob = await res.blob();
-      const slug = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 32) || 'take';
-      const file = new File([blob], `vo-${slug}.mp3`, { type: 'audio/mpeg' });
+      const slug = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 28) || 'take';
+      const file = new File([blob], `vo-${slug}-${hash6(text)}.mp3`, { type: 'audio/mpeg' });
       const asset = await loadAudioAsset(file);
       audioRef.current[asset.id] = asset;
       setAudioTracks((list) => [...list, asset]);
-      addVoClipForAsset(asset);
-      setVoStatus({ ok: true, msg: `Generated ${fmtTime(asset.buffer.duration * 1000)} — dropped on the VO lane at the playhead. Drag to place, ✂ to split.` });
+      const clip = addVoClipForAsset(asset);
+
+      // Sound-off insurance: the script becomes caption cues, timed
+      // proportionally by character count across the take.
+      let capMsg = '';
+      if (autoCaptions) {
+        const chunks = chunkScript(text);
+        const totalChars = chunks.reduce((a, c) => a + c.length, 0) || 1;
+        const durMs = asset.buffer.duration * 1000;
+        let cum = 0;
+        const entries = chunks.map((c) => {
+          const start = clip.start + (cum / totalChars) * durMs;
+          cum += c.length;
+          const end = clip.start + (cum / totalChars) * durMs;
+          return { start, end: Math.max(start + 350, end - 80), text: c };
+        });
+        const placed = applyCaptionEntries(entries, 'append');
+        capMsg = ` ${placed} caption${placed === 1 ? '' : 's'} added.`;
+      }
+
+      // Durable copy in the media bucket so saved projects can relink
+      // after a reload (silent when the bucket isn't wired yet).
+      uploadMedia('vo', file.name, blob).catch(() => {});
+
+      setVoStatus({ ok: true, msg: `Generated ${fmtTime(asset.buffer.duration * 1000)} — dropped on the VO lane at the playhead.${capMsg} Drag to place, ✂ to split.` });
     } catch (e) {
       setVoStatus({ ok: false, msg: e instanceof Error ? e.message : 'Voice generation failed — try again.' });
     } finally {
       setVoGenBusy(false);
     }
-  }, [voScript, voVoiceId, addVoClipForAsset]);
+  }, [voScript, voVoiceId, addVoClipForAsset, autoCaptions, applyCaptionEntries]);
+
+  /** Re-voice the selected lane clip: same words and pacing, the
+      ElevenLabs voice applied (speech-to-speech). Works on uploads and
+      previously generated takes alike. */
+  const revoiceSelectedClip = useCallback(async () => {
+    const d = docRef.current;
+    const clip = (d.voClips ?? []).find((c) => c.id === selVoClipId);
+    const take = clip ? audioRef.current[clip.audioId] : null;
+    if (!clip || !take) { setVoStatus({ ok: false, msg: 'Select a clip on the VO lane first.' }); return; }
+    setRevoiceBusy(true);
+    setVoStatus(null);
+    try {
+      const wav = bufferSliceToWav(take.buffer, clip.offset, clip.duration);
+      const form = new FormData();
+      form.set('audio', new File([wav], 'clip.wav', { type: 'audio/wav' }));
+      if (voVoiceId) form.set('voice_id', voVoiceId);
+      const res = await fetch(`${SITE_BASE}/api/admin/voiceover`, { method: 'POST', body: form });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        const msg = res.status === 401
+          ? 'Sign in first: open /admin in another tab, enter the passcode, then try again.'
+          : (data as { error?: string }).error ?? `Re-voice failed (${res.status}).`;
+        throw new Error(msg);
+      }
+      const blob = await res.blob();
+      const name = `vo-revoiced-${hash6(take.name + clip.offset + clip.duration)}.mp3`;
+      const file = new File([blob], name, { type: 'audio/mpeg' });
+      const asset = await loadAudioAsset(file);
+      audioRef.current[asset.id] = asset;
+      setAudioTracks((list) => [...list, asset]);
+      const newDur = Math.round(asset.buffer.duration * 1000);
+      patchDoc({
+        voClips: (docRef.current.voClips ?? []).map((c) =>
+          (c.id === clip.id ? { ...c, audioId: asset.id, offset: 0, duration: newDur } : c)),
+      });
+      uploadMedia('vo', name, blob).catch(() => {});
+      setVoStatus({ ok: true, msg: `Clip re-voiced (${fmtTime(newDur)}) — same words, new voice. The original take stays in the track list.` });
+    } catch (e) {
+      setVoStatus({ ok: false, msg: e instanceof Error ? e.message : 'Re-voice failed — try again.' });
+    } finally {
+      setRevoiceBusy(false);
+    }
+  }, [selVoClipId, voVoiceId, patchDoc]);
 
   /** Split the clip under the playhead into two at the playhead. */
   const splitVoClipAtPlayhead = useCallback(() => {
@@ -1653,6 +1833,8 @@ export default function RiggsMotionStudio() {
   const [exporting, setExporting] = useState<null | 'mp4' | 'webm' | 'png'>(null);
   const [progress, setProgress] = useState(0);
   const [exportStatus, setExportStatus] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [lastRender, setLastRender] = useState<{ blob: Blob; name: string } | null>(null);
+  const [cloudBusy, setCloudBusy] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   // Resolved after mount so SSR and first client render match
   const [mp4Supported, setMp4Supported] = useState<boolean | null>(null);
@@ -1682,7 +1864,9 @@ export default function RiggsMotionStudio() {
         });
       }
       const base = modTitle ? `jjriggs-${modTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-')}` : 'jjriggs-unit';
-      downloadBlob(blob, `${base}-${doc.aspect.replace(':', 'x')}-${stamp}.${kind}`);
+      const fileName = `${base}-${doc.aspect.replace(':', 'x')}-${stamp}.${kind}`;
+      downloadBlob(blob, fileName);
+      setLastRender({ blob, name: fileName });
       setExportStatus({ ok: true, msg: `${kind.toUpperCase()} exported — check your downloads.` });
     } catch (e) {
       if (e instanceof DOMException && e.name === 'AbortError') {
@@ -2718,6 +2902,15 @@ export default function RiggsMotionStudio() {
               hidden
               onChange={(e) => { const f = e.target.files?.[0]; if (f) handleAudioFile(f, 'music'); e.target.value = ''; }}
             />
+            {cloudTracks.length > 0 && (
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
+                {cloudTracks.map((tk) => (
+                  <button key={tk.url} className="ms-btn" onClick={() => pickCloudTrack(tk)} title="From the ad-music library">
+                    ♪ {tk.name}
+                  </button>
+                ))}
+              </div>
+            )}
             {audioStatus && (
               <p className={`ms-status ${audioStatus.ok ? 'is-ok' : 'is-err'}`}>{audioStatus.msg}</p>
             )}
@@ -2803,6 +2996,15 @@ export default function RiggsMotionStudio() {
             {voVoices !== null && voVoices.length === 0 && (
               <p className="ms-hint">Voice list unavailable — sign in at /admin and set ELEVENLABS_API_KEY on the server to enable generation.</p>
             )}
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, cursor: 'pointer', fontSize: 12 }}>
+              <input
+                type="checkbox"
+                checked={autoCaptions}
+                onChange={(e) => setAutoCaptions(e.target.checked)}
+                style={{ accentColor: '#cf1f2a' }}
+              />
+              Auto captions from the script (most Facebook viewers watch muted)
+            </label>
           </Field>
           <Field label="Track">
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -2857,10 +3059,19 @@ export default function RiggsMotionStudio() {
                 >
                   ✕ Remove clip
                 </button>
+                <button
+                  className="ms-btn"
+                  disabled={!selVoClipId || revoiceBusy}
+                  onClick={revoiceSelectedClip}
+                  title="Re-record the selected clip in the ElevenLabs voice — same words and pacing"
+                >
+                  {revoiceBusy ? 'Re-voicing…' : '🎤 Re-voice clip'}
+                </button>
               </div>
               <p className="ms-hint">
                 Drag clips on the lane under the timeline to place them. Music auto-ducks
-                under every clip.
+                under every clip. Re-voice turns any take — an old generation or a phone
+                recording — into the selected voice, keeping the words and pacing.
               </p>
             </Field>
           )}
@@ -3114,13 +3325,35 @@ export default function RiggsMotionStudio() {
               </button>
             </div>
           )}
+          {lastRender && !exporting && (
+            <button
+              className="ms-btn"
+              style={{ marginTop: 8, width: '100%' }}
+              disabled={cloudBusy}
+              onClick={async () => {
+                setCloudBusy(true);
+                try {
+                  const url = await uploadMedia('renders', lastRender.name, lastRender.blob);
+                  const link = absoluteMediaUrl(url);
+                  await navigator.clipboard.writeText(link).catch(() => {});
+                  setExportStatus({ ok: true, msg: `Saved to cloud — link copied: ${link}` });
+                } catch (e) {
+                  setExportStatus({ ok: false, msg: e instanceof Error ? e.message : 'Cloud save failed.' });
+                } finally {
+                  setCloudBusy(false);
+                }
+              }}
+            >
+              {cloudBusy ? 'Uploading…' : '☁ Save to cloud & copy link'}
+            </button>
+          )}
           {exportStatus && (
             <p className={`ms-status ${exportStatus.ok ? 'is-ok' : 'is-err'}`}>{exportStatus.msg}</p>
           )}
           <p className="ms-hint">
             MP4 renders offline frame-by-frame with music + clip audio mixed in — output is
-            exactly what the preview shows. Long exercise clips take a few minutes; the export
-            steps through the clip frame by frame.
+            exactly what the preview shows. Cloud saves give you a link to text Andrew for
+            approval before anything posts.
           </p>
         </Section>
       </aside>

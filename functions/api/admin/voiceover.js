@@ -2,6 +2,9 @@
 //
 //   GET  → { voices: [{id, name}], default_voice_id }   (account voice list)
 //   POST { text, voice_id? } → audio/mpeg bytes          (text-to-speech)
+//   POST multipart { audio, voice_id? } → audio/mpeg     (speech-to-speech:
+//        re-voice an existing recording — same words and pacing, the
+//        target voice applied)
 //
 // The ElevenLabs key stays server-side (env ELEVENLABS_API_KEY), same as
 // the Anthropic key on extract/storyboard. ELEVENLABS_VOICE_ID optionally
@@ -42,9 +45,17 @@ export async function onRequestGet({ request, env }) {
   );
 }
 
+const MAX_STS_BYTES = 25 * 1024 * 1024;
+const STS_MODEL_ID = "eleven_multilingual_sts_v2";
+
 export async function onRequestPost({ request, env }) {
   const blocked = await guard(request, env);
   if (blocked) return blocked;
+
+  // Speech-to-speech: multipart audio in, the target voice out
+  if ((request.headers.get("content-type") || "").includes("multipart/form-data")) {
+    return revoice(request, env);
+  }
 
   let body;
   try {
@@ -91,6 +102,47 @@ export async function onRequestPost({ request, env }) {
       "Content-Type": "audio/mpeg",
       "Cache-Control": "no-store",
     },
+  });
+}
+
+async function revoice(request, env) {
+  let form;
+  try {
+    form = await request.formData();
+  } catch {
+    return err("Unreadable form data", 400);
+  }
+  const audio = form.get("audio");
+  if (!audio || typeof audio === "string") return err("audio file is required", 400);
+  if (audio.size > MAX_STS_BYTES) return err("Recording too large (max 25MB)", 413);
+  const voiceId = String(form.get("voice_id") || env.ELEVENLABS_VOICE_ID || "");
+  if (!/^[A-Za-z0-9]{8,40}$/.test(voiceId)) {
+    return err("No voice selected and no ELEVENLABS_VOICE_ID default is configured", 400);
+  }
+
+  const upstream = new FormData();
+  upstream.set("audio", audio, audio.name || "clip.wav");
+  upstream.set("model_id", STS_MODEL_ID);
+
+  let res;
+  for (let attempt = 0; ; attempt++) {
+    res = await fetch(`${EL_BASE}/speech-to-speech/${voiceId}?output_format=mp3_44100_128`, {
+      method: "POST",
+      headers: { "xi-api-key": env.ELEVENLABS_API_KEY },
+      body: upstream,
+    });
+    if ((res.status === 429 || res.status >= 500) && attempt === 0) {
+      await new Promise((r) => setTimeout(r, 2000));
+      continue;
+    }
+    break;
+  }
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    return err("ElevenLabs: " + (data?.detail?.message || data?.detail || res.status), 502);
+  }
+  return new Response(res.body, {
+    headers: { "Content-Type": "audio/mpeg", "Cache-Control": "no-store" },
   });
 }
 

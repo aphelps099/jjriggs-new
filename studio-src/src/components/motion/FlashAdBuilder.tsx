@@ -23,11 +23,14 @@ import {
 } from '@/lib/motion/types';
 import { renderFrame } from '@/lib/motion/render';
 import {
-  exportMp4, exportWebm, downloadBlob, supportsMp4Export, ExportProgress,
+  exportMp4, exportWebm, exportPng, downloadBlob, supportsMp4Export, ExportProgress,
 } from '@/lib/motion/export';
 import { loadAudioAsset, renderMixdown, musicGainAt } from '@/lib/motion/audio';
 import { ensureFontsReady } from '@/lib/motion/fonts';
-import { harvestLibrary, fetchableUrl, SITE_BASE, LibraryModel } from '@/lib/site-library';
+import {
+  harvestLibrary, fetchableUrl, SITE_BASE, LibraryModel,
+  fetchMusicList, uploadMedia, absoluteMediaUrl, CloudTrack,
+} from '@/lib/site-library';
 import './flash-ads.css';
 
 const ASSET_BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
@@ -284,7 +287,12 @@ export default function FlashAdBuilder() {
   const [audioOn, setAudioOn] = useState(false);
   const [musicName, setMusicName] = useState<string | null>(null);
   const [musicBusy, setMusicBusy] = useState(false);
+  const [cloudTracks, setCloudTracks] = useState<CloudTrack[]>([]);
   const musicFileRef = useRef<HTMLInputElement>(null);
+
+  // Cloud
+  const [lastRender, setLastRender] = useState<{ blob: Blob; name: string } | null>(null);
+  const [cloudBusy, setCloudBusy] = useState(false);
 
   // Flyer → storyboard (AI)
   const [flyerBusy, setFlyerBusy] = useState(false);
@@ -328,6 +336,12 @@ export default function FlashAdBuilder() {
 
   useEffect(() => {
     ensureFontsReady(['Tactic Sans Bld', 'Questrial', 'Michroma']);
+  }, []);
+
+  useEffect(() => {
+    let alive = true;
+    fetchMusicList().then((t) => { if (alive) setCloudTracks(t); });
+    return () => { alive = false; };
   }, []);
 
   useEffect(() => {
@@ -589,11 +603,15 @@ export default function FlashAdBuilder() {
       const stamp = `${d.aspect.replace(':', 'x')}`;
       if (supportsMp4Export()) {
         const blob = await exportMp4(d, assetsRef.current, onP, undefined, { audioBuffer });
-        downloadBlob(blob, `jjriggs-flash-ad-${stamp}.mp4`);
+        const name = `jjriggs-flash-ad-${stamp}.mp4`;
+        downloadBlob(blob, name);
+        setLastRender({ blob, name });
         setStatus({ ok: true, msg: 'MP4 saved to your downloads.' });
       } else {
         const blob = await exportWebm(d, assetsRef.current, onP, undefined, {});
-        downloadBlob(blob, `jjriggs-flash-ad-${stamp}.webm`);
+        const name = `jjriggs-flash-ad-${stamp}.webm`;
+        downloadBlob(blob, name);
+        setLastRender({ blob, name });
         setStatus({ ok: true, msg: 'Saved as WebM (no sound) — use Chrome or Edge for MP4 with music.' });
       }
     } catch (e) {
@@ -602,6 +620,52 @@ export default function FlashAdBuilder() {
       setExporting(false);
     }
   }, [rawLines]);
+
+  /** Snapshot the hook card's midpoint as the Facebook video cover. */
+  const handleCover = useCallback(async () => {
+    try {
+      await ensureFontsReady(['Tactic Sans Bld', 'Questrial', 'Michroma']);
+      const d = docRef.current;
+      const t = Math.min(Math.max(200, d.scenes[0].duration * 0.7), docDuration(d) - 50);
+      const blob = await exportPng(d, assetsRef.current, t, {});
+      downloadBlob(blob, `jjriggs-flash-cover-${d.aspect.replace(':', 'x')}.png`);
+      setStatus({ ok: true, msg: 'Cover image saved — use it as the video thumbnail on Facebook.' });
+    } catch (e) {
+      setStatus({ ok: false, msg: e instanceof Error ? e.message : 'Cover export failed.' });
+    }
+  }, []);
+
+  const saveToCloud = useCallback(async () => {
+    if (!lastRender) return;
+    setCloudBusy(true);
+    try {
+      const url = await uploadMedia('renders', lastRender.name, lastRender.blob);
+      const link = absoluteMediaUrl(url);
+      await navigator.clipboard.writeText(link).catch(() => {});
+      setStatus({ ok: true, msg: `Saved to cloud — link copied: ${link}` });
+    } catch (e) {
+      setStatus({ ok: false, msg: e instanceof Error ? e.message : 'Cloud save failed.' });
+    } finally {
+      setCloudBusy(false);
+    }
+  }, [lastRender]);
+
+  const pickCloudTrack = useCallback(async (track: CloudTrack) => {
+    setMusicBusy(true);
+    setStatus(null);
+    try {
+      const res = await fetch(track.url);
+      if (!res.ok) throw new Error(`Track failed to load (${res.status})`);
+      const blob = await res.blob();
+      const fname = track.url.split('/').pop() ?? `${track.name}.mp3`;
+      const file = new File([blob], fname, { type: blob.type || 'audio/mpeg' });
+      setMusicAsset(await loadAudioAsset(file), track.name);
+    } catch (e) {
+      setStatus({ ok: false, msg: e instanceof Error ? e.message : 'Track failed to load.' });
+    } finally {
+      setMusicBusy(false);
+    }
+  }, [setMusicAsset]);
 
   const longLines = lines.filter((l) => wordCount(l) > MAX_WORDS);
   const { w: aw, h: ah } = getAspect(aspect);
@@ -877,7 +941,7 @@ export default function FlashAdBuilder() {
                 )}
                 {musicBusy && <span className="fa-sub">Loading…</span>}
               </div>
-              {BUNDLED_TRACKS.length > 0 && (
+              {(BUNDLED_TRACKS.length > 0 || cloudTracks.length > 0) && (
                 <div className="fa-row">
                   {BUNDLED_TRACKS.map((t) => (
                     <button
@@ -888,6 +952,18 @@ export default function FlashAdBuilder() {
                       disabled={musicBusy}
                     >
                       {t.label}
+                    </button>
+                  ))}
+                  {cloudTracks.map((t) => (
+                    <button
+                      key={t.url}
+                      type="button"
+                      className={`fa-seg-btn fa-seg-sm${musicName === t.name ? ' is-on' : ''}`}
+                      onClick={() => pickCloudTrack(t)}
+                      disabled={musicBusy}
+                      title="From the ad-music library"
+                    >
+                      ♪ {t.name}
                     </button>
                   ))}
                 </div>
@@ -919,10 +995,20 @@ export default function FlashAdBuilder() {
           {exporting && (
             <div className="fa-bar"><span style={{ width: `${progress * 100}%` }} /></div>
           )}
+          <div className="fa-row">
+            <button type="button" className="fa-mini-btn" onClick={handleCover} disabled={exporting}>
+              Save cover (PNG)
+            </button>
+            {lastRender && (
+              <button type="button" className="fa-mini-btn" onClick={saveToCloud} disabled={cloudBusy}>
+                {cloudBusy ? 'Uploading…' : '☁ Save to cloud & copy link'}
+              </button>
+            )}
+          </div>
           {status && (
             <p className={`fa-status${status.ok ? ' is-ok' : ' is-err'}`} role="status">{status.msg}</p>
           )}
-          <p className="fa-hint">The end card with the logo and phone number is always included. Use Chrome or Edge for MP4.</p>
+          <p className="fa-hint">The end card with the logo and phone number is always included. Use Chrome or Edge for MP4. The cover PNG is the video&rsquo;s Facebook thumbnail; the cloud link is for approval before posting.</p>
         </section>
 
       </aside>
