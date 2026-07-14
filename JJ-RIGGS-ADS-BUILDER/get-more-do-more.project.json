@@ -1,0 +1,129 @@
+{
+  "app": "jjriggs-motion",
+  "version": 1,
+  "doc": {
+    "aspect": "4:5",
+    "fps": 30,
+    "fontHeading": "Tactic Sans Bld",
+    "fontBody": "Questrial",
+    "fontLabel": "Michroma",
+    "accentSkewDeg": -13,
+    "watermark": "",
+    "showGrain": false,
+    "audioId": null,
+    "audioVolume": 0.7,
+    "audioFadeIn": 300,
+    "audioFadeOut": 900,
+    "scenes": [
+      {
+        "template": "statement",
+        "title": "0% FINANCING",
+        "duration": 2200,
+        "anim": "scale-in",
+        "transition": "cut",
+        "align": "center",
+        "serifTitle": true,
+        "customScheme": { "bg": "#fbfbf9", "fg": "#cf1f2a", "accent": "#14171a" }
+      },
+      {
+        "template": "statement",
+        "title": "OR CASH REBATES",
+        "duration": 2000,
+        "anim": "scale-in",
+        "transition": "cut",
+        "align": "center",
+        "serifTitle": true,
+        "customScheme": { "bg": "#cf1f2a", "fg": "#fbfbf9", "accent": "#14171a" }
+      },
+      {
+        "template": "statement",
+        "title": "LIMITED TIME ONLY.",
+        "duration": 1800,
+        "anim": "mask-reveal",
+        "transition": "cut",
+        "align": "center",
+        "serifTitle": true,
+        "customScheme": { "bg": "#14171a", "fg": "#f3f1ea", "accent": "#cf1f2a" }
+      },
+      {
+        "template": "title",
+        "kicker": "JJ RIGGS EQUIPMENT · SALES · SERVICE · PARTS",
+        "title": "GET MORE. DO MORE.",
+        "subtitle": "Family owned in Colville, WA",
+        "duration": 3000,
+        "anim": "rise",
+        "transition": "wipe",
+        "align": "center",
+        "serifTitle": true,
+        "imageId": "img-flyer-hero",
+        "kenBurns": "zoom-in",
+        "overlay": "scrim",
+        "overlayOpacity": 0.6,
+        "customScheme": { "bg": "#14171a", "fg": "#fbfbf9", "accent": "#cf1f2a" }
+      },
+      {
+        "template": "image",
+        "kicker": "",
+        "title": "",
+        "subtitle": "",
+        "duration": 2500,
+        "anim": "rise",
+        "transition": "cut",
+        "imageId": "img-flyer-hero",
+        "kenBurns": "pan-right",
+        "overlay": "gradient-bottom",
+        "overlayOpacity": 0.35,
+        "customScheme": { "bg": "#14171a", "fg": "#fbfbf9", "accent": "#cf1f2a" }
+      },
+      {
+        "template": "list",
+        "kicker": "WHY JJ RIGGS",
+        "body": "6-year powertrain warranty\nFull line of tractors & attachments\nExpert service & support",
+        "duration": 3500,
+        "anim": "rise",
+        "transition": "fade",
+        "align": "lower-left",
+        "listMarkers": false,
+        "customScheme": { "bg": "#14171a", "fg": "#fbfbf9", "accent": "#cf1f2a" }
+      },
+      {
+        "template": "title",
+        "kicker": "BUILT FOR NORTHEAST WASHINGTON",
+        "title": "READY TO WORK.",
+        "subtitle": "Grapples · Forks · Box Blades · Hay Spears · Mowers",
+        "duration": 2500,
+        "anim": "mask-reveal",
+        "transition": "cut",
+        "align": "center",
+        "serifTitle": true,
+        "customScheme": { "bg": "#f3f1ea", "fg": "#14171a", "accent": "#cf1f2a" }
+      },
+      {
+        "template": "disclaimer",
+        "kicker": "THE FINE PRINT",
+        "body": "0% financing and cash rebates on approved credit, on select models, for a limited time. Offers subject to change without notice. See dealer for complete details.",
+        "duration": 4500,
+        "anim": "rise",
+        "transition": "fade",
+        "align": "center",
+        "customScheme": { "bg": "#0f1215", "fg": "#f3f1ea", "accent": "#cf1f2a" }
+      },
+      {
+        "template": "endcard",
+        "kicker": "CALL TODAY",
+        "title": "509-738-2985",
+        "subtitle": "JJ Riggs Equipment · Colville, WA · jjriggsequipment.com",
+        "duration": 3500,
+        "anim": "rise",
+        "transition": "fade",
+        "serifTitle": true,
+        "customScheme": { "bg": "#14171a", "fg": "#fbfbf9", "accent": "#cf1f2a" }
+      }
+    ]
+  },
+  "media": {
+    "videos": {},
+    "images": { "jjriggs-lot-tractor.jpg": "img-flyer-hero" },
+    "audio": {}
+  }
+}
