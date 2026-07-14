@@ -11,15 +11,15 @@
    studio renders preview and MP4, so what plays is what
    downloads.
 
-   Phase A+ of QUICK-AD-BUILDER-PLAN.md. Brand constants
-   here mirror RiggsMotionStudio.tsx — if the schemes or
-   end-card copy change there, change them here too.
+   Phase A+ of QUICK-AD-BUILDER-PLAN.md. The card
+   generator itself lives in @/lib/flash-template and is
+   shared with the studio's Flash Ads section.
    ═══════════════════════════════════════════════════════ */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  MotionDoc, Scene, CustomScheme, AspectId, TextAnimId, AssetMap, AudioAsset, ImageAsset,
-  makeScene, getAspect, docDuration, defaultDoc,
+  Scene, AspectId, TextAnimId, AssetMap, AudioAsset, ImageAsset,
+  getAspect, docDuration,
 } from '@/lib/motion/types';
 import { renderFrame } from '@/lib/motion/render';
 import {
@@ -28,58 +28,16 @@ import {
 import { loadAudioAsset, renderMixdown, musicGainAt } from '@/lib/motion/audio';
 import { ensureFontsReady } from '@/lib/motion/fonts';
 import {
+  ROTATIONS, PACES, FLASH_ANIMS, MAX_CARDS, MAX_WORDS,
+  FLASH_PHOTO_ID, FLASH_MUSIC_ID, splitLines, wordCount, buildFlashDoc,
+} from '@/lib/flash-template';
+import {
   harvestLibrary, fetchableUrl, SITE_BASE, LibraryModel,
   fetchMusicList, uploadMedia, absoluteMediaUrl, createReviewLink, CloudTrack,
 } from '@/lib/site-library';
 import './flash-ads.css';
 
 const ASSET_BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
-
-// ── Brand color pairs (site style guide — warm darks, one Bad Boy Red) ──
-const RED_ON_WHITE: CustomScheme = { bg: '#fbfbf9', fg: '#cf1f2a', accent: '#14171a' };
-const WHITE_ON_RED: CustomScheme = { bg: '#cf1f2a', fg: '#fbfbf9', accent: '#14171a' };
-const RED_ON_INK: CustomScheme   = { bg: '#14171a', fg: '#cf1f2a', accent: '#fbfbf9' };
-const BONE_ON_INK: CustomScheme  = { bg: '#14171a', fg: '#f3f1ea', accent: '#cf1f2a' };
-const INK_ON_BONE: CustomScheme  = { bg: '#f3f1ea', fg: '#14171a', accent: '#cf1f2a' };
-const BONE_ON_DEEP: CustomScheme = { bg: '#0f1215', fg: '#f3f1ea', accent: '#cf1f2a' };
-
-interface Rotation {
-  id: string;
-  label: string;
-  hint: string;
-  cycle: CustomScheme[];
-}
-
-// Fixed rotations of validated pairs — no free color picker by design.
-const ROTATIONS: Rotation[] = [
-  {
-    id: 'red-flash', label: 'Red Flash', hint: 'White → red → black',
-    cycle: [RED_ON_WHITE, WHITE_ON_RED, RED_ON_INK],
-  },
-  {
-    id: 'bold-dark', label: 'Bold Dark', hint: 'Black → red → deep',
-    cycle: [BONE_ON_INK, WHITE_ON_RED, BONE_ON_DEEP],
-  },
-  {
-    id: 'clean-bone', label: 'Clean Bone', hint: 'Paper → white → red',
-    cycle: [INK_ON_BONE, RED_ON_WHITE, WHITE_ON_RED],
-  },
-];
-
-// SAFETY FLOOR — 600ms/card keeps color changes under ~2 per second,
-// inside WCAG 2.3.1's three-flashes-per-second line and Meta's
-// no-strobe creative policy. Don't add a faster preset.
-const PACES = [
-  { id: 'steady', label: 'Steady', ms: 1200 },
-  { id: 'quick',  label: 'Quick',  ms: 900 },
-  { id: 'rapid',  label: 'Rapid',  ms: 600 },
-] as const;
-
-const ANIMS: { id: TextAnimId; label: string }[] = [
-  { id: 'scale-in',    label: 'Pop' },
-  { id: 'mask-reveal', label: 'Reveal' },
-  { id: 'rise',        label: 'Rise' },
-];
 
 const AD_ASPECTS: { id: AspectId; label: string; hint: string }[] = [
   { id: '4:5',  label: 'Feed',   hint: '1080×1350' },
@@ -99,120 +57,13 @@ type PhotoPlacement = (typeof PHOTO_PLACEMENTS)[number]['id'];
 // Empty until real licensed tracks are chosen — see public/music/README.txt.
 const BUNDLED_TRACKS: { file: string; label: string }[] = [];
 
-const MAX_CARDS = 6;
-const MAX_WORDS = 5;
-
-// Mirrors RIGGS_SCENE_DEFAULTS.endcard / DEFAULT_DISCLAIMER in the studio.
-const END_CARD = {
-  kicker: 'FAMILY OWNED IN COLVILLE',
-  title: 'JJRIGGSEQUIPMENT.COM',
-  subtitle: 'JJ Riggs Equipment · Colville, WA · 509-738-2985',
-};
-const FINE_PRINT =
-  'Financing on approved credit. Advertised price excludes tax, title, freight, and dealer fees. '
-  + 'Offers subject to change without notice. Equipment availability and specifications may vary. '
-  + 'See dealer for complete details.';
-
 // Default lines are all true statements — the offer line is typed in,
 // never invented for the user (site rule: never invent offers/prices).
 const DEFAULT_LINES = 'TYM TRACTORS\nBAD BOY MOWERS\nFAMILY OWNED IN COLVILLE\nCALL ANDREW TODAY';
 
-const FLASH_PHOTO_ID = '__flash-photo';
-const FLASH_MUSIC_ID = '__flash-music';
-
-function splitLines(raw: string): string[] {
-  return raw.split('\n').map((l) => l.trim()).filter(Boolean).slice(0, MAX_CARDS);
-}
-
-function wordCount(line: string): number {
-  return line.split(/\s+/).filter(Boolean).length;
-}
-
-/** Assemble the MotionDoc — the whole template lives in this function. */
-function buildFlashDoc(opts: {
-  lines: string[];
-  rotation: Rotation;
-  paceMs: number;
-  anim: TextAnimId;
-  aspect: AspectId;
-  finePrint: boolean;
-  photoOn: boolean;
-  hasPhoto: boolean;
-  photoPlacement: PhotoPlacement;
-  audioOn: boolean;
-  hasMusic: boolean;
-}): MotionDoc {
-  const {
-    lines, rotation, paceMs, anim, aspect, finePrint,
-    photoOn, hasPhoto, photoPlacement, audioOn, hasMusic,
-  } = opts;
-
-  const photoActive = photoOn && hasPhoto;
-  const photoOnCard = (i: number) =>
-    photoActive && (
-      photoPlacement === 'all'
-      || (photoPlacement === 'hook' && i === 0)
-      || (photoPlacement === 'alt' && i % 2 === 0)
-    );
-
-  const scenes: Scene[] = lines.map((line, i) =>
-    makeScene('statement', {
-      title: line.toUpperCase(),
-      serifTitle: true,
-      anim,
-      transition: 'cut',
-      duration: paceMs,
-      customScheme: { ...rotation.cycle[i % rotation.cycle.length] },
-      align: 'center',
-      textScale: 1,
-      ...(photoOnCard(i)
-        ? { imageId: FLASH_PHOTO_ID, kenBurns: 'zoom-in' as const, overlay: 'scrim' as const, overlayOpacity: 0.55 }
-        : {}),
-    }),
-  );
-
-  if (finePrint) {
-    scenes.push(
-      makeScene('disclaimer', {
-        kicker: 'THE FINE PRINT',
-        body: FINE_PRINT,
-        anim: 'rise',
-        transition: 'fade',
-        duration: 5000,
-        customScheme: { ...BONE_ON_INK },
-        align: 'center',
-      }),
-    );
-  }
-
-  scenes.push(
-    makeScene('endcard', {
-      ...END_CARD,
-      serifTitle: true,
-      anim: 'rise',
-      transition: 'fade',
-      duration: 3200,
-      customScheme: { ...BONE_ON_INK },
-    }),
-  );
-
-  return {
-    ...defaultDoc(),
-    aspect,
-    fps: 30,
-    scenes,
-    fontHeading: 'Tactic Sans Bld',
-    fontBody: 'Questrial',
-    fontLabel: 'Michroma',
-    accentSkewDeg: -13,
-    showGrain: false,
-    watermark: '',
-    audioId: audioOn && hasMusic ? FLASH_MUSIC_ID : null,
-    audioVolume: 0.7,
-    audioFadeIn: 300,
-    audioFadeOut: 900,
-  };
-}
+/** The studio's autosave slot — writing here then opening /studio/ hands
+    the current ad to the advanced editor with full editing power. */
+const STUDIO_AUTOSAVE_KEY = 'jjriggs-motion-autosave-v1';
 
 function loadImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -307,10 +158,15 @@ export default function FlashAdBuilder() {
   const lines = splitLines(rawLines);
   const rotation = ROTATIONS.find((r) => r.id === rotationId) ?? ROTATIONS[0];
   const paceMs = PACES.find((p) => p.id === paceId)?.ms ?? 900;
+  const photoActive = photoOn && !!photoName;
   const doc = buildFlashDoc({
     lines, rotation, paceMs, anim, aspect, finePrint,
-    photoOn, hasPhoto: !!photoName, photoPlacement,
-    audioOn, hasMusic: !!musicName,
+    hasMusic: audioOn && !!musicName,
+    photoOnCard: (i) => photoActive && (
+      photoPlacement === 'all'
+      || (photoPlacement === 'hook' && i === 0)
+      || (photoPlacement === 'alt' && i % 2 === 0)
+    ),
   });
   const totalMs = docDuration(doc);
 
@@ -656,6 +512,35 @@ export default function FlashAdBuilder() {
     }
   }, [lastRender, rawLines]);
 
+  /** Hand the current ad to the advanced editor via its autosave slot —
+      full timeline, photos per card, emoji layers, VO, the works. */
+  const openInStudio = useCallback(() => {
+    const photo = assetsRef.current[FLASH_PHOTO_ID];
+    const music = musicRef.current;
+    const payload = {
+      app: 'jjriggs-motion',
+      version: 1,
+      doc: docRef.current,
+      media: {
+        videos: {},
+        images: photo ? { [photo.name]: FLASH_PHOTO_ID } : {},
+        audio: music ? { [music.name]: FLASH_MUSIC_ID } : {},
+      },
+    };
+    try {
+      localStorage.setItem(STUDIO_AUTOSAVE_KEY, JSON.stringify(payload));
+      window.open(`${ASSET_BASE}/`, '_blank');
+      setStatus({
+        ok: true,
+        msg: photo || music
+          ? 'Opened in the studio — re-add the photo/music there by the same name to relink.'
+          : 'Opened in the studio — full timeline editing from here.',
+      });
+    } catch {
+      setStatus({ ok: false, msg: "Couldn't hand off — use Save for Advanced editor instead." });
+    }
+  }, []);
+
   const pickCloudTrack = useCallback(async (track: CloudTrack) => {
     setMusicBusy(true);
     setStatus(null);
@@ -786,7 +671,7 @@ export default function FlashAdBuilder() {
         <section className="fa-block">
           <h2 className="fa-label">Text motion</h2>
           <div className="fa-seg" role="group">
-            {ANIMS.map((a) => (
+            {FLASH_ANIMS.map((a) => (
               <button
                 key={a.id}
                 type="button"
@@ -1004,6 +889,9 @@ export default function FlashAdBuilder() {
           <div className="fa-row">
             <button type="button" className="fa-mini-btn" onClick={handleCover} disabled={exporting}>
               Save cover (PNG)
+            </button>
+            <button type="button" className="fa-mini-btn" onClick={openInStudio} disabled={exporting} title="Full timeline editing — photos per card, emoji, voiceover">
+              Open in Advanced Studio →
             </button>
             {lastRender && (
               <button type="button" className="fa-mini-btn" onClick={saveToCloud} disabled={cloudBusy}>
