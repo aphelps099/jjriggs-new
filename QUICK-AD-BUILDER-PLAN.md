@@ -291,6 +291,16 @@ Each phase is shippable and reviewed on a test deploy before the next.
   public like the studio itself since it holds no secrets and writes
   nothing. It folds into `/admin/ads/` as the wizard's "Simple" tab when
   Phase A lands and gating starts to matter (media upload, queue, FB).
+  Since shipped on top: photo backgrounds from the site's own image
+  library (or upload), a music bed mixed into the export
+  (`BUNDLED_TRACKS` slot awaits licensed files — `public/music/README.txt`),
+  and **Build from a flyer** — `functions/api/admin/storyboard.js` (gated
+  like extract.js, same structured-outputs pattern, ANTHROPIC_API_KEY)
+  reads an uploaded flyer image and returns a hook-first storyboard as a
+  loadable studio project; the Flash Ads page applies its headline cards
+  directly or saves the full project for the Advanced editor. Verbatim-
+  extraction rules and the forced fine-print/end-card scenes are enforced
+  server-side in the assembler, not just in the prompt.
 - **Phase B — durable media (1–2 days).** R2 bucket + upload endpoint;
   `js/ad-media.data.js` manifest with roles/focal points; video upload from
   the wizard; readiness rules; URL-loaded media in the engine.
