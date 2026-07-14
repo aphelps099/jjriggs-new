@@ -33,6 +33,19 @@ const TYPE_SUBJECT = {
   service: "New service request",
 };
 
+// Campaign attribution — captured client-side by js/meta-ads.js and attached
+// to the payload by contact.html. Rendered as a separate "Marketing source"
+// section so the sales team sees which ad produced the lead.
+const ATTR_LABELS = {
+  utm_source: "Source",
+  utm_medium: "Medium",
+  utm_campaign: "Campaign",
+  utm_term: "Audience",
+  utm_content: "Ad",
+  fbclid: "Facebook click ID",
+  landing_page: "Landing page",
+};
+
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -112,11 +125,20 @@ export async function onRequestPost({ request, env }) {
     .filter((k) => data[k] && String(data[k]).trim() && k !== "company" && k !== "hp_trap")
     .map((k) => [FIELD_LABELS[k] || k, String(data[k]).trim()]);
 
-  const text = rows.map(([k, v]) => `${k}: ${v}`).join("\n");
-  const html =
-    `<h2 style="font-family:Arial,sans-serif">${esc(subject)}</h2>` +
+  // Marketing source rows (kept out of the main block — different audience:
+  // the salesperson reads the top, whoever runs the ads reads this).
+  const attrRows = Object.keys(ATTR_LABELS)
+    .filter((k) => data[k] && String(data[k]).trim())
+    .map((k) => [ATTR_LABELS[k], String(data[k]).trim().slice(0, 200)]);
+
+  const text =
+    rows.map(([k, v]) => `${k}: ${v}`).join("\n") +
+    (attrRows.length
+      ? `\n\n— Marketing source —\n` + attrRows.map(([k, v]) => `${k}: ${v}`).join("\n")
+      : "");
+  const mkTable = (rws) =>
     `<table style="font-family:Arial,sans-serif;font-size:14px;border-collapse:collapse">` +
-    rows
+    rws
       .map(
         ([k, v]) =>
           `<tr><td style="padding:4px 12px 4px 0;color:#666;vertical-align:top"><strong>${esc(
@@ -125,6 +147,13 @@ export async function onRequestPost({ request, env }) {
       )
       .join("") +
     `</table>`;
+  const html =
+    `<h2 style="font-family:Arial,sans-serif">${esc(subject)}</h2>` +
+    mkTable(rows) +
+    (attrRows.length
+      ? `<h3 style="font-family:Arial,sans-serif;margin-top:18px;color:#666">Marketing source</h3>` +
+        mkTable(attrRows)
+      : "");
 
   // Route by request type: quotes -> sales, visits & service -> service.
   // env.LEAD_TO (if set) forces ALL mail to one address — handy for testing
