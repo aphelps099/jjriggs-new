@@ -148,6 +148,33 @@ doesn't.** Today scene 1 is "JJ RIGGS EQUIPMENT"; in ads the offer is scene 1.
 Sale/clearance. They differ in hook copy, which scenes are mandatory
 (financing always carries the fine-print scene), and stock rules.
 
+### The fourth family: Flash Cards ("Simple" mode)
+
+A pure-typography attention ad — no product media required. The user types
+3–6 short sales lines ("0% FINANCING" · "HUGE SUMMER SALE" · "ENDS AUG 31" ·
+"CALL ANDREW"); the generator emits one short `statement` scene per line with
+**hard cuts and alternating inverse brand schemes** (red-on-white →
+white-on-red → red-on-ink → bone-on-ink …), Tactic Sans at full bleed, and
+always closes on the logo + phone end card. Everything needed already exists
+in the engine: `statement` scenes, the five brand schemes, per-scene
+durations, cut transitions, and the text animations — this family is a
+generator + a simpler wizard tab, zero engine work.
+
+Its own locked rules, on top of the shared ones:
+- **Pace is capped for photosensitivity and Facebook policy**: minimum
+  ~600ms per card, no more than 2 scheme changes per second, no strobe
+  toggle. (WCAG's three-flashes-per-second line is the hard floor; Meta
+  rejects strobing creatives.) "Grabby" comes from the cuts and the type,
+  not from a blink rate.
+- Cards are text-only or text-over-one-library-photo; ≤5 words per card.
+- Color pairs come from a fixed rotation of validated brand combinations —
+  never a free color picker.
+- Optional images come from the site's own galleries / `img/uploads/`
+  (the §3 library) — same never-invent, never-cross-assign rules.
+- The 65% real-imagery rule is waived for this family only (it's a
+  typographic ad by design); product-photo families keep it.
+- Total runtime 6–15s; end card is mandatory and un-deletable.
+
 **Rules locked into the generator, not into a style guide nobody reads:**
 - Hook input is capped at 5 words; spec picker allows at most 3.
 - ≥65% of runtime on real equipment imagery (generator computes it and
@@ -254,6 +281,16 @@ Each phase is shippable and reviewed on a test deploy before the next.
   wizard with photo-motion sequences from existing galleries; bundled music;
   in-browser render; download. *Acceptance: Andrew makes a financing ad for
   the T474H on his phone in under 5 minutes with zero uploads.*
+- **Phase A+ — Flash Cards / Simple mode (≈1 day, can even ship first).**
+  The §4 typographic flash-ad family: type the lines, pick the color
+  rotation and pace (within the safety cap), render. No product data or
+  media required, so it has no dependency on §2/§3 — the cheapest way to
+  put a working ad generator in front of Andrew.
+  **SHIPPED (July 2026)** as `studio-src/src/components/motion/FlashAdBuilder.tsx`,
+  served at **`/studio/ads/`** — the route's native export path, kept
+  public like the studio itself since it holds no secrets and writes
+  nothing. It folds into `/admin/ads/` as the wizard's "Simple" tab when
+  Phase A lands and gating starts to matter (media upload, queue, FB).
 - **Phase B — durable media (1–2 days).** R2 bucket + upload endpoint;
   `js/ad-media.data.js` manifest with roles/focal points; video upload from
   the wizard; readiness rules; URL-loaded media in the engine.
