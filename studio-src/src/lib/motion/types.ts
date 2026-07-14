@@ -154,6 +154,25 @@ export const TEXT_SCALES = [
   { id: '0.5', label: '50%' },
   { id: '0.7', label: '70%' },
   { id: '1',   label: '100%' },
+  { id: '2',   label: '200%' },
+  { id: '3',   label: '300%' },
+] as const;
+
+// ── Ken Burns time ramp (easing of the motion over the scene) ──
+export const KEN_BURNS_EASES = [
+  { id: 'in-out', label: 'Smooth' },
+  { id: 'linear', label: 'Linear' },
+  { id: 'in',     label: 'Ramp Up' },
+  { id: 'out',    label: 'Ramp Down' },
+] as const;
+
+export type KenBurnsEaseId = typeof KEN_BURNS_EASES[number]['id'];
+
+// ── Ken Burns strength (how far the move travels) ──
+export const KEN_BURNS_SPEEDS = [
+  { id: '0.5', label: 'Subtle' },
+  { id: '1',   label: 'Normal' },
+  { id: '2',   label: 'Strong' },
 ] as const;
 
 // ── Alignment ──
@@ -261,6 +280,14 @@ export interface Scene {
   // Image template
   imageId: string | null;
   kenBurns: KenBurnsId;
+  /** Time ramp of the Ken Burns move over the scene. */
+  kenBurnsEase: KenBurnsEaseId;
+  /** Travel multiplier for the Ken Burns move (0.5 subtle · 1 · 2 strong). */
+  kenBurnsSpeed: number;
+  /** Cover-crop focal point, 0–1 (0.5/0.5 = center). Picks which part of
+      the photo stays in frame when it's cropped to cover the canvas. */
+  imageFocusX: number;
+  imageFocusY: number;
   overlay: OverlayId;
   /** 0–1 overlay strength. */
   overlayOpacity: number;
@@ -397,6 +424,10 @@ export function makeScene(template: TemplateId, overrides: Partial<Scene> = {}):
     statSuffix: '',
     imageId: null,
     kenBurns: 'zoom-in',
+    kenBurnsEase: 'in-out',
+    kenBurnsSpeed: 1,
+    imageFocusX: 0.5,
+    imageFocusY: 0.5,
     overlay: 'gradient-bottom',
     overlayOpacity: 0.65,
     videoId: null,

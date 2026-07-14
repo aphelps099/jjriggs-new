@@ -5,9 +5,10 @@ import {
   MotionDoc, Scene, TemplateId, AssetMap, ImageAsset, VideoAsset, VideoMap, AudioAsset, AudioMap,
   CustomScheme, TransitionId, TextCue,
   ASPECTS, TEMPLATES, TEXT_ANIMS, TRANSITIONS, KEN_BURNS, OVERLAYS, ALIGNMENTS,
-  PIP_POSITIONS, TEXT_SCALES, CUE_STYLES, CUE_POSITIONS,
+  PIP_POSITIONS, TEXT_SCALES, CUE_STYLES, CUE_POSITIONS, KEN_BURNS_EASES, KEN_BURNS_SPEEDS,
   defaultDoc, makeScene, makeCue, getAspect, resolveScheme, docDuration, sceneAt,
 } from '@/lib/motion/types';
+import { harvestLibrary, fetchLibraryPhoto, fetchableUrl, LibraryModel } from '@/lib/site-library';
 import { renderFrame } from '@/lib/motion/render';
 import {
   exportMp4, exportWebm, exportPng, downloadBlob, supportsMp4Export,
@@ -81,6 +82,43 @@ function parseCsv(text: string): Record<string, string>[] {
   const [head, ...body] = rows;
   if (!head) return [];
   return body.map((r) => Object.fromEntries(head.map((h, i) => [h.trim(), r[i] ?? ''])));
+}
+
+/** Snap a Ken Burns travel multiplier to the nearest preset id. */
+function nearestSpeedId(speed?: number): typeof KEN_BURNS_SPEEDS[number]['id'] {
+  const v = speed ?? 1;
+  return v < 0.75 ? '0.5' : v < 1.5 ? '1' : '2';
+}
+
+/** 3×3 focal-point picker — which part of the photo the cover crop keeps. */
+function FocalGrid({ fx, fy, onPick }: {
+  fx?: number; fy?: number; onPick: (x: number, y: number) => void;
+}) {
+  const STOPS = [0, 0.5, 1];
+  const NAMES = ['left', 'center', 'right'];
+  const ROWS = ['top', 'middle', 'bottom'];
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 24px)', gap: 3 }}>
+      {STOPS.map((y, yi) => STOPS.map((x, xi) => {
+        const on = Math.abs((fx ?? 0.5) - x) < 0.17 && Math.abs((fy ?? 0.5) - y) < 0.17;
+        return (
+          <button
+            key={`${x}-${y}`}
+            type="button"
+            title={`${ROWS[yi]} ${NAMES[xi]}`}
+            aria-label={`Focus ${ROWS[yi]} ${NAMES[xi]}`}
+            aria-pressed={on}
+            onClick={() => onPick(x, y)}
+            style={{
+              width: 24, height: 24, cursor: 'pointer', borderRadius: 3, padding: 0,
+              border: `1.5px solid ${on ? '#cf1f2a' : 'rgba(255,255,255,0.25)'}`,
+              background: on ? '#cf1f2a' : '#1b2025',
+            }}
+          />
+        );
+      }))}
+    </div>
+  );
 }
 
 /** Snap an arbitrary scale to the nearest preset id for the Seg control. */
@@ -1147,6 +1185,25 @@ export default function RiggsMotionStudio() {
     }
   };
 
+  // ── Website image library (the site's own js/*.data.js photos) ──
+  const [libOpen, setLibOpen] = useState(false);
+  const [library, setLibrary] = useState<LibraryModel[] | null>(null);
+  const [libModel, setLibModel] = useState('');
+  const [libBusy, setLibBusy] = useState(false);
+
+  const toggleLibrary = () => {
+    setLibOpen((o) => !o);
+    if (library === null) harvestLibrary().then(setLibrary).catch(() => setLibrary([]));
+  };
+
+  const pickLibraryPhoto = async (url: string, label: string) => {
+    setLibBusy(true);
+    try {
+      await handleImageFile(await fetchLibraryPhoto(url, label));
+    } catch { /* photo didn't load — bin unchanged */ }
+    setLibBusy(false);
+  };
+
   // ── Video upload (main clip + coach cam) ──
   const videoInputRef = useRef<HTMLInputElement>(null);
   const pipInputRef = useRef<HTMLInputElement>(null);
@@ -1514,6 +1571,59 @@ export default function RiggsMotionStudio() {
     : 10000;
 
   const selectedImage = selected?.imageId ? assetsRef.current[selected.imageId] ?? null : null;
+
+  // "▤ Website" button + picker panel, shared by the Image and Background
+  // fields. Photos come from the site's own library and land in the bin
+  // as normal named assets (so projects relink like any upload).
+  const libSelected = library?.find((l) => l.label === libModel) ?? null;
+  const websiteLibraryUi = (
+    <>
+      <button className="ms-file-btn" onClick={toggleLibrary}>▤ Website</button>
+      {libOpen && (
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {library === null && <p className="ms-hint">Loading the website&rsquo;s photo library…</p>}
+          {library !== null && library.length === 0 && (
+            <p className="ms-hint">Library isn&rsquo;t reachable here — upload a photo instead.</p>
+          )}
+          {!!library?.length && (
+            <select
+              className="ms-input"
+              value={libModel}
+              onChange={(e) => setLibModel(e.target.value)}
+            >
+              <option value="">Choose equipment…</option>
+              {Array.from(new Set(library.map((l) => l.group))).map((g) => (
+                <optgroup key={g} label={g}>
+                  {library.filter((l) => l.group === g).map((l) => (
+                    <option key={l.label} value={l.label}>{l.label}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          )}
+          {libSelected && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4, opacity: libBusy ? 0.5 : 1 }}>
+              {libSelected.urls.slice(0, 12).map((u) => (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  key={u}
+                  src={fetchableUrl(u)}
+                  alt={libSelected.label}
+                  loading="lazy"
+                  onClick={() => { if (!libBusy) pickLibraryPhoto(u, libSelected.label); }}
+                  style={{
+                    width: '100%', aspectRatio: '4 / 3', objectFit: 'cover',
+                    borderRadius: 3, border: '1.5px solid rgba(255,255,255,0.16)',
+                    cursor: libBusy ? 'progress' : 'pointer', background: '#0f1215',
+                  }}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </>
+  );
   const hasBgMedia = !!selected && (
     selected.template === 'image' || selected.template === 'video'
     || !!selectedImage || !!selectedVideo
@@ -1771,6 +1881,7 @@ export default function RiggsMotionStudio() {
                     <button className="ms-file-btn" onClick={() => imageInputRef.current?.click()}>
                       ⬆ Upload image
                     </button>
+                    {websiteLibraryUi}
                     {images.length > 0 && (
                       <select
                         className="ms-input"
@@ -1789,6 +1900,26 @@ export default function RiggsMotionStudio() {
                 <Field label="Motion">
                   <Seg options={KEN_BURNS} value={selected.kenBurns} onChange={(v) => patchScene(selected.id, { kenBurns: v })} small />
                 </Field>
+                {selected.kenBurns !== 'none' && (
+                  <>
+                    <Field label="Motion strength">
+                      <Seg options={KEN_BURNS_SPEEDS} value={nearestSpeedId(selected.kenBurnsSpeed)} onChange={(v) => patchScene(selected.id, { kenBurnsSpeed: Number(v) })} small />
+                    </Field>
+                    <Field label="Motion ramp">
+                      <Seg options={KEN_BURNS_EASES} value={selected.kenBurnsEase ?? 'in-out'} onChange={(v) => patchScene(selected.id, { kenBurnsEase: v })} small />
+                    </Field>
+                  </>
+                )}
+                {selected.imageId && (
+                  <Field label="Position">
+                    <FocalGrid
+                      fx={selected.imageFocusX}
+                      fy={selected.imageFocusY}
+                      onPick={(x, y) => patchScene(selected.id, { imageFocusX: x, imageFocusY: y })}
+                    />
+                    <p className="ms-hint">Which part of the photo stays in frame when it&rsquo;s cropped to fit.</p>
+                  </Field>
+                )}
               </>
             )}
 
@@ -1881,6 +2012,7 @@ export default function RiggsMotionStudio() {
                     <button className="ms-file-btn" onClick={() => videoInputRef.current?.click()}>
                       ⬆ Video
                     </button>
+                    {websiteLibraryUi}
                   </div>
                   {(images.length > 0 || videos.length > 0) && (
                     <div style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
@@ -1918,9 +2050,29 @@ export default function RiggsMotionStudio() {
                   </p>
                 </Field>
                 {selectedImage && !selectedVideo && (
-                  <Field label="Photo motion">
-                    <Seg options={KEN_BURNS} value={selected.kenBurns} onChange={(v) => patchScene(selected.id, { kenBurns: v })} small />
-                  </Field>
+                  <>
+                    <Field label="Photo motion">
+                      <Seg options={KEN_BURNS} value={selected.kenBurns} onChange={(v) => patchScene(selected.id, { kenBurns: v })} small />
+                    </Field>
+                    {selected.kenBurns !== 'none' && (
+                      <>
+                        <Field label="Motion strength">
+                          <Seg options={KEN_BURNS_SPEEDS} value={nearestSpeedId(selected.kenBurnsSpeed)} onChange={(v) => patchScene(selected.id, { kenBurnsSpeed: Number(v) })} small />
+                        </Field>
+                        <Field label="Motion ramp">
+                          <Seg options={KEN_BURNS_EASES} value={selected.kenBurnsEase ?? 'in-out'} onChange={(v) => patchScene(selected.id, { kenBurnsEase: v })} small />
+                        </Field>
+                      </>
+                    )}
+                    <Field label="Position">
+                      <FocalGrid
+                        fx={selected.imageFocusX}
+                        fy={selected.imageFocusY}
+                        onPick={(x, y) => patchScene(selected.id, { imageFocusX: x, imageFocusY: y })}
+                      />
+                      <p className="ms-hint">Which part of the photo stays in frame when it&rsquo;s cropped to fit.</p>
+                    </Field>
+                  </>
                 )}
                 {selectedVideo && (
                   <>
@@ -2168,9 +2320,15 @@ export default function RiggsMotionStudio() {
               <Slider
                 value={selected.duration}
                 onChange={(v) => patchScene(selected.id, { duration: v })}
-                min={1500} max={durationMax} step={250}
+                min={100} max={durationMax} step={100}
                 format={(v) => fmtTime(v)}
               />
+              {selected.duration < 600 && (
+                <p className="ms-hint">
+                  Fast cut — great for photo strobes. Use Cut transitions, and keep
+                  the whole ad under ~2 flashes/sec or Facebook may reject it.
+                </p>
+              )}
             </Field>
 
             <Field label="Color scheme">
