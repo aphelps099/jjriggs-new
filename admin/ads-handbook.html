@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<!-- Rendered from FACEBOOK-GEOFENCING-PLAYBOOK.md + ADS-FUNDAMENTALS.md at the repo root.
+     Edit those, re-render this (scratchpad build script or ask the AI assistant). -->
+<title>JJ Riggs — Paid Ads &amp; Geofencing Handbook</title>
+<style>
+@font-face {
+  font-family: 'Tactic Sans Bld';
+  src: url('/fonts/tactic-sans-bld.woff2') format('woff2'), url('/fonts/tactic-sans-bld.woff') format('woff');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+:root {
+  --red:#cf1f2a; --red-deep:#a5151f;
+  --green:#1d7a3c;
+  --bg:#f3f1ea; --panel:#fbfbf9; --ink:#14171a;
+  --muted:#5a6066; --faint:#c3c8ce; --line:#dcd8cc;
+  --code-bg:#1b2025; --code-ink:#e8e6df;
+  --link:#a5151f;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:#14171a; --panel:#1b2025; --ink:#fbfbf9;
+    --muted:#8b939c; --faint:#5a6066; --line:#2a3036;
+    --code-bg:#0f1215; --code-ink:#d9d6cd;
+    --link:#e4707a;
+  }
+}
+:root[data-theme="light"] {
+  --bg:#f3f1ea; --panel:#fbfbf9; --ink:#14171a;
+  --muted:#5a6066; --faint:#c3c8ce; --line:#dcd8cc;
+  --code-bg:#1b2025; --code-ink:#e8e6df;
+  --link:#a5151f;
+}
+:root[data-theme="dark"] {
+  --bg:#14171a; --panel:#1b2025; --ink:#fbfbf9;
+  --muted:#8b939c; --faint:#5a6066; --line:#2a3036;
+  --code-bg:#0f1215; --code-ink:#d9d6cd;
+  --link:#e4707a;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  font-size: 16.5px; line-height: 1.55;
+}
+.display { font-family: "Tactic Sans Bld", "Bebas Neue", "Arial Narrow", sans-serif; font-weight: 400; text-transform: uppercase; }
+
+.masthead { border-bottom: 3px solid var(--ink); padding: 2.2rem 1.4rem 1.6rem; }
+.masthead-inner { max-width: 1120px; margin: 0 auto; }
+.eyebrow { font-size: .72rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.masthead h1 { margin: .45rem 0 .3rem; font-size: clamp(1.9rem, 5.2vw, 3.1rem); line-height: .95; letter-spacing: .01em; text-wrap: balance; }
+.masthead h1 .red { color: var(--red); }
+.masthead p { margin: .5rem 0 0; max-width: 62ch; color: var(--muted); }
+
+.shell { max-width: 1120px; margin: 0 auto; padding: 0 1.4rem 5rem; display: grid; grid-template-columns: 248px minmax(0, 1fr); gap: 3rem; }
+nav.toc { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 1.6rem 0 2rem; font-size: .82rem; }
+nav.toc .group { margin-bottom: 1.5rem; }
+nav.toc .group-label { font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: .55rem; padding-bottom: .35rem; border-bottom: 1px solid var(--line); }
+nav.toc a { display: block; color: var(--ink); text-decoration: none; padding: .28rem 0 .28rem .75rem; border-left: 2px solid var(--line); line-height: 1.3; }
+nav.toc a:hover, nav.toc a:focus-visible { border-left-color: var(--red); color: var(--red-deep); }
+:root[data-theme="dark"] nav.toc a:hover, :root[data-theme="dark"] nav.toc a:focus-visible { color: var(--link); }
+
+main { min-width: 0; padding-top: 1.6rem; }
+article { max-width: 68ch; }
+.doc-head { margin: 3.2rem 0 1rem; }
+.doc-head:first-child { margin-top: 0; }
+.doc-head .eyebrow { color: var(--red); }
+.doc-head h2 { margin: .35rem 0 .4rem; font-size: clamp(1.5rem, 3.4vw, 2.1rem); line-height: .98; text-wrap: balance; }
+.doc-head .meta { font-size: .85rem; color: var(--muted); }
+
+article h2 { font-family: "Tactic Sans Bld", "Bebas Neue", "Arial Narrow", sans-serif; font-weight: 400; text-transform: uppercase; font-size: 1.35rem; line-height: 1.05; letter-spacing: .015em; margin: 2.6rem 0 .8rem; padding-top: 1.4rem; border-top: 1px solid var(--line); text-wrap: balance; }
+article h3 { font-size: 1.02rem; margin: 1.8rem 0 .5rem; letter-spacing: .01em; }
+article h4 { font-size: .92rem; margin: 1.4rem 0 .4rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+article p { margin: 0 0 1rem; }
+article a { color: var(--link); text-underline-offset: 2px; }
+article ul, article ol { margin: 0 0 1.1rem; padding-left: 1.35rem; display: flex; flex-direction: column; gap: .35rem; }
+article li { padding-left: .15rem; }
+article hr { border: 0; border-top: 1px solid var(--line); margin: 2rem 0; }
+article blockquote { margin: 1.2rem 0; padding: .9rem 1.2rem; border-left: 3px solid var(--red); background: var(--panel); font-size: 1.02rem; }
+article blockquote p { margin: 0; }
+article code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .84em; background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: .08em .35em; }
+.codewrap { overflow-x: auto; margin: 0 0 1.2rem; border-radius: 5px; }
+.codewrap pre { margin: 0; background: var(--code-bg); color: var(--code-ink); padding: 1rem 1.2rem; font-size: .8rem; line-height: 1.5; min-width: min-content; }
+.codewrap code { background: none; border: 0; padding: 0; font-size: inherit; color: inherit; }
+.tablewrap { overflow-x: auto; margin: 0 0 1.3rem; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); }
+table { border-collapse: collapse; width: 100%; font-size: .88rem; }
+th { text-align: left; font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); padding: .65rem .85rem; border-bottom: 2px solid var(--line); white-space: nowrap; }
+td { padding: .6rem .85rem; border-bottom: 1px solid var(--line); vertical-align: top; min-width: 9ch; }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 600; }
+table code, th code { white-space: nowrap; }
+
+ul.checklist { list-style: none; padding-left: 0; }
+ul.checklist li { display: flex; gap: .6rem; align-items: baseline; }
+ul.checklist .box { flex: none; width: .85em; height: .85em; transform: translateY(.08em); border: 1.5px solid var(--muted); border-radius: 2px; }
+ul.checklist li.done .box { background: var(--green); border-color: var(--green); }
+
+.divider { display: flex; align-items: center; gap: 1rem; margin: 4rem 0 0; }
+.divider::before, .divider::after { content: ""; flex: 1; border-top: 3px solid var(--ink); }
+.divider span { font-size: .72rem; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+
+footer.colophon { border-top: 3px solid var(--ink); margin-top: 4rem; padding: 1.4rem 1.4rem 2.5rem; }
+footer.colophon .inner { max-width: 1120px; margin: 0 auto; font-size: .8rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: .4rem 2rem; }
+footer.colophon a { color: inherit; }
+
+@media (max-width: 860px) {
+  .shell { grid-template-columns: 1fr; gap: 0; }
+  nav.toc { position: static; max-height: none; padding: 1.2rem 0 0; }
+  nav.toc details { border: 1px solid var(--line); border-radius: 5px; background: var(--panel); }
+  nav.toc summary { cursor: pointer; padding: .75rem 1rem; font-size: .72rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+  nav.toc .panels { padding: .3rem 1rem 1rem; }
+}
+@media (min-width: 861px) { nav.toc summary { display: none; } nav.toc details { display: contents; } }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="eyebrow">JJ Riggs Equipment · Colville, WA · Internal — not for distribution</div>
+    <h1 class="display">Paid Ads &amp; <span class="red">Geofencing</span> Handbook</h1>
+    <p>The operating playbook for Facebook/Meta campaigns and geofencing, plus the fundamentals that explain why every rule exists. Two documents, one page. July 2026 · Playbook v1.1.</p>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="toc" aria-label="Contents">
+    <details open>
+      <summary>Jump to a section</summary>
+      <div class="panels">
+        <div class="group">
+          <div class="group-label">I · The Playbook</div>
+          <a href="#pb-1-what-we-are-trying-to-accomplish">1. What we are trying to accomplish</a><a href="#pb-2-four-activities-that-must-not-be-confused">2. Four activities that must not be confused</a><a href="#pb-3-recommended-strategy-in-one-page">3. Recommended strategy in one page</a><a href="#pb-4-known-competitor-research">4. Known competitor research</a><a href="#pb-5-targeting-worksheet-schema">5. Targeting worksheet schema</a><a href="#pb-6-responsibilities">6. Responsibilities</a><a href="#pb-7-access-and-ownership-setup">7. Access and ownership setup</a><a href="#pb-8-website-tracking-work-required-in-jjriggs-new">8. Website tracking work required in `jjriggs-new`</a><a href="#pb-9-utm-naming-rules">9. UTM naming rules</a><a href="#pb-10-campaign-structure">10. Campaign structure</a><a href="#pb-11-simple-ads-manager-launch-procedure">11. Simple Ads Manager launch procedure</a><a href="#pb-12-creative-playbook">12. Creative playbook</a><a href="#pb-13-how-the-quick-ad-builder-should-support-paid-campaigns">13. How the Quick Ad Builder should support paid campaigns</a><a href="#pb-14-true-geofencing-setup">14. True geofencing setup</a><a href="#pb-15-lead-handling">15. Lead handling</a><a href="#pb-16-reporting-and-decision-rules">16. Reporting and decision rules</a><a href="#pb-17-the-90-day-operating-plan">17. The 90-day operating plan</a><a href="#pb-18-andrew-s-simple-weekly-workflow">18. Andrew's simple weekly workflow</a><a href="#pb-19-repo-structure-v1-1-follows-this-repo-s-conventions">19. Repo structure (v1.1: follows this repo's conventions)</a><a href="#pb-20-preflight-checklist">20. Preflight checklist</a><a href="#pb-21-first-seven-actions">21. First seven actions</a><a href="#pb-22-geographic-expansion-beyond-the-core-market">22. Geographic expansion beyond the core market</a><a href="#pb-23-source-notes">23. Source notes</a><a href="#pb-24-version-change-log">24. Version change log</a>
+        </div>
+        <div class="group">
+          <div class="group-label">II · Fundamentals</div>
+          <a href="#fd-1-you-don-t-buy-ads-you-bid-in-an-auction">1. You don't buy ads. You bid in an auction.</a><a href="#fd-2-the-learning-phase-why-the-playbook-says-one-ad-set">2. The learning phase — why the playbook says ONE ad set</a><a href="#fd-3-the-pixel-and-attribution-how-meta-knows-an-ad-worked">3. The pixel and attribution — how Meta &quot;knows&quot; an ad worked</a><a href="#fd-4-audiences-why-broad-beats-clever-in-a-small-market">4. Audiences — why &quot;broad&quot; beats clever in a small market</a><a href="#fd-5-geo-targeting-what-meta-actually-knows-about-location">5. Geo-targeting — what Meta actually knows about location</a><a href="#fd-6-true-geofencing-the-data-supply-chain-honestly-explained">6. True geofencing — the data supply chain, honestly explained</a><a href="#fd-7-organic-vs-boost-vs-ads-manager">7. Organic vs. Boost vs. Ads Manager</a><a href="#fd-8-the-money-math-the-funnel-that-decides-everything">8. The money math — the funnel that decides everything</a><a href="#fd-9-operating-principles-the-expert-habits">9. Operating principles — the expert habits</a><a href="#fd-10-glossary">10. Glossary</a>
+        </div>
+      </div>
+    </details>
+  </nav>
+
+  <main>
+    <article>
+      <div class="doc-head" id="playbook">
+        <div class="eyebrow">Part I · Strategy &amp; Operations</div>
+        <h2 class="display">Facebook Advertising + Geofencing Playbook</h2>
+        <div class="meta">Version 1.1 · repo file <code>FACEBOOK-GEOFENCING-PLAYBOOK.md</code></div>
+      </div>
+      <p><strong>Version:</strong> 1.1 (amended after repo verification — see change log at the end) <strong>Prepared:</strong> July 2026 <strong>Primary market:</strong> Colville, Kettle Falls, Chewelah, and northern Stevens County, Washington <strong>Primary conversion:</strong> A qualified phone call, quote request, or scheduled lot visit <strong>Recommended test period:</strong> 90 days</p>
+<blockquote><p><strong>Companion reading:</strong> <code>ADS-FUNDAMENTALS.md</code> explains the mechanics behind every decision in this playbook — the ad auction, the learning phase, attribution, geo-targeting resolution, and how true geofencing actually works. Read it once before running a campaign; it is what makes this playbook's rules make sense instead of feeling arbitrary.</p></blockquote>
+<h2 id="pb-1-what-we-are-trying-to-accomplish">1. What we are trying to accomplish</h2>
+<p>JJ Riggs does not need “more impressions.” It needs more conversations with nearby property owners who are actively considering a tractor, mower, implement, service work, or a package purchase.</p>
+<p>The advertising system should:</p>
+<ol><li>Make JJ Riggs visible to qualified buyers within a realistic driving distance of Colville.</li><li>Defend the local market against nearby Kubota, KIOTI, mower, and outdoor power-equipment dealers.</li><li>Promote real equipment that is available or available to order.</li><li>Turn inventory data and lot photos into repeatable Facebook ads.</li><li>Send prospects to a useful product page, quote form, phone number, or lot appointment—not to a generic homepage with no next step.</li><li>Track which ads produce qualified leads, quotes, visits, and sales.</li><li>Give Andrew a simple role: identify the equipment and promotion, approve the ad, and follow up with the lead.</li></ol>
+<p>The business goal is:</p>
+<blockquote><p>Generate trackable sales conversations and lot visits from rural northeast Washington buyers, then learn which equipment, offers, locations, and messages produce profitable sales.</p></blockquote>
+<h2 id="pb-2-four-activities-that-must-not-be-confused">2. Four activities that must not be confused</h2>
+<h3 id="pb-a-organic-facebook-inventory-posting">A. Organic Facebook inventory posting</h3>
+<p>This is the system already described in <code>FACEBOOK-POSTING.md</code>.</p>
+<ul><li>Andrew checks <code>post_fb</code> in the inventory sheet.</li><li>The system creates a normal post on the JJ Riggs Facebook business Page.</li><li>No advertising budget is involved.</li><li>The post can later be used as creative or social proof for a paid ad.</li></ul>
+<p>Organic posting keeps the Page active. It is not geofencing and it is not a paid campaign.</p>
+<h3 id="pb-b-paid-meta-location-advertising">B. Paid Meta location advertising</h3>
+<p>These are ads purchased through Meta Ads Manager and shown on Facebook and Instagram.</p>
+<p>Meta can target people within selected geographic areas. This is often called “Facebook geofencing,” but it is better described as <strong>location or radius targeting</strong>. It is useful for reaching the Colville trade area.</p>
+<p><strong>Resolution limit (important):</strong> Meta's smallest targeting unit is roughly a 1-mile radius around a map pin — coarser still if an ad is classified as a credit/financing ad. In a market the size of Colville, a radius around a competitor's lot and the core local audience are <strong>the same people</strong>. Meta therefore cannot deliver meaningful competitor-lot targeting here; that job belongs to true geofencing (D below) if Andrew wants it at all.</p>
+<h3 id="pb-c-retargeting">C. Retargeting</h3>
+<p>Retargeting shows paid ads to people who have already interacted with JJ Riggs, including:</p>
+<ul><li>Website visitors</li><li>Product-page visitors</li><li>Facebook or Instagram engagers</li><li>Video viewers</li><li>People who opened but did not submit a Meta lead form</li></ul>
+<p>Retargeting becomes useful after enough traffic has accumulated. It should not consume much budget on day one.</p>
+<h3 id="pb-d-true-geofencing">D. True geofencing</h3>
+<p>True geofencing uses mapped physical properties or location-visit data to build an audience or measure visits. A platform such as GroundTruth may be used for this. Meta alone should not be presented as exact property-level, device-visit geofencing.</p>
+<p>True geofencing is a separate media buy, setup process, and reporting system. It should be added only after Andrew confirms that this is what he means by “get the geofencing ads going again.”</p>
+<h2 id="pb-3-recommended-strategy-in-one-page">3. Recommended strategy in one page</h2>
+<h3 id="pb-phase-1-meta-location-campaign">Phase 1: Meta location campaign</h3>
+<p>Run a 90-day Facebook and Instagram lead campaign.</p>
+<ul><li><strong>Campaign goal:</strong> qualified quote requests, phone calls, and lot visits</li><li><strong>Core geography:</strong> Colville, Kettle Falls, Chewelah, and northern Stevens County</li><li><strong>Starting media budget:</strong> $25–$35 per day, paid directly by JJ Riggs</li><li><strong>Audience structure:</strong> one core local audience, full budget. (v1.1 change: the earlier competitor-area ad set was removed — Meta's ~1-mile minimum radius makes a &quot;competitor area&quot; in Colville/Chewelah identical to the core audience, so a second ad set would only split the budget against itself and starve Meta's learning phase. Competitor targeting moves to Phase 3.)</li><li><strong>Creative:</strong> three clear ad angles using real local people and equipment</li><li><strong>Landing experience:</strong> product page or prefilled quote form</li><li><strong>Measurement:</strong> Meta, GA4, UTMs, call tracking, and a dealership lead log</li></ul>
+<h3 id="pb-phase-2-retargeting">Phase 2: Retargeting</h3>
+<p>Add a small retargeting audience after the site and Page have enough traffic. Show specific inventory, service reassurance, testimonials, and reminder ads.</p>
+<h3 id="pb-phase-3-true-geofencing-pilot">Phase 3: True geofencing pilot</h3>
+<p>If Andrew confirms that he wants property-level competitor or event targeting, run a separate six-to-eight-week pilot through a qualified geofencing platform. Keep its budget and results separate from Meta.</p>
+<h2 id="pb-4-known-competitor-research">4. Known competitor research</h2>
+<p>The following locations were verified from the businesses' own websites in July 2026. Addresses and brands must be rechecked immediately before campaign launch.</p>
+<div class="tablewrap"><table><thead><tr><th>Business</th><th>Address</th><th>Competitive overlap</th><th>Research takeaway</th></tr></thead><tbody><tr><td><strong>Adams Tractor Colville</strong></td><td>635 Hwy 395 S, Colville, WA 99114</td><td>Kubota tractors; implements; lawn and garden; parts and service</td><td>JJ Riggs must compete against a long-established dealer with packages, price-led offers, service, and broad brand recognition.</td></tr><tr><td><strong>Hartill's Mountain Saw &amp; Tractor</strong></td><td>101 W Robert Ave, Chewelah, WA 99109</td><td>KIOTI tractors; Bush Hog, Erskine and Rankin implements; outdoor power equipment; parts and service</td><td>JJ Riggs can position TYM, Bad Boy, local support, straightforward guidance, delivery, and real owner involvement.</td></tr><tr><td><strong>JJ Riggs Equipment</strong></td><td>685 Elm Tree Dr, Colville, WA 99114</td><td>TYM tractors; Bad Boy mowers; implements; repair, financing and delivery</td><td>This is the conversion location and the center of the local service-area campaign.</td></tr></tbody></table></div>
+<p><strong>How this research is actually used (v1.1 clarification):</strong> Adams Tractor is about two miles from JJ Riggs, and Chewelah (Hartill's) is already inside the core service area. Competitor research here does NOT feed a Meta &quot;competitor ad set&quot; — it feeds (a) ad positioning (the questions below), and (b) the polygon target list for a true-geofencing pilot (Section 14), if Andrew approves one. The list is also likely incomplete: the trade area extends south toward Deer Park and Spokane and east into the Idaho panhandle, where Kubota, Deere, and KIOTI dealers compete for the same buyers. Research those before any geographic expansion (Section 22).</p>
+<h3 id="pb-what-the-ads-should-learn-from-competitors">What the ads should learn from competitors</h3>
+<p>Do not copy competitor branding and do not mention competitors in ad copy. Instead, answer the questions their positioning creates:</p>
+<ul><li>Why should someone consider TYM instead of defaulting to Kubota or KIOTI?</li><li>Can JJ Riggs help choose the correct tractor and implements?</li><li>Is service available after the sale?</li><li>Can Andrew explain the machine without sales pressure?</li><li>Is the equipment actually on the lot or available to order?</li><li>Are financing, delivery, implements, and setup available?</li></ul>
+<h3 id="pb-competitor-research-checklist">Competitor research checklist</h3>
+<p>Before each 90-day campaign cycle:</p>
+<ol><li>Confirm the business is still operating at the listed address.</li><li>Save the exact map pin and latitude/longitude.</li><li>Record the tractor, mower, implement, service, and financing brands shown.</li><li>Review the competitor's website promotions.</li><li>Review its public Facebook Page and recent ad themes.</li><li>Record whether it leads with price, financing, inventory, service, or heritage.</li><li>Screenshot the research with the date.</li><li>Add the finding to the targeting worksheet.</li><li>Never use an unverified address in a paid campaign.</li></ol>
+<h3 id="pb-additional-location-categories-to-research">Additional location categories to research</h3>
+<p>These are research categories, not automatically approved targeting locations:</p>
+<ul><li>Farm and ranch supply stores</li><li>Feed stores</li><li>Implement and attachment dealers</li><li>Equipment auctions</li><li>County fairgrounds and agricultural events</li><li>Large rural-property and hobby-farm corridors</li><li>Areas with meaningful concentrations of 2–20 acre properties</li></ul>
+<p>Do not add a location merely because it seems relevant. Confirm that the audience and likely buyer behavior fit JJ Riggs.</p>
+<h2 id="pb-5-targeting-worksheet-schema">5. Targeting worksheet schema</h2>
+<p>Keep the targeting worksheet in the shared Google Sheet workflow Andrew already uses (NOT committed to this repo — see Section 19). Columns:</p>
+<div class="codewrap"><pre><code>location_name,location_type,address,city,state,zip,latitude,longitude,brand_overlap,reason_to_target,meta_target_method,true_geofence_method,status,last_verified,source_url,notes
+Adams Tractor Colville,competitor,635 Hwy 395 S,Colville,WA,99114,,,Kubota tractors and equipment,Direct local tractor competitor,None — radius overlaps core audience,Property polygon,RESEARCHED,2026-07-13,https://www.adamstractor.com/,Verify map pin before launch
+Hartill's Mountain Saw &amp; Tractor,competitor,101 W Robert Ave,Chewelah,WA,99109,,,KIOTI tractors and implements,Direct southern service-area competitor,None — inside core audience already,Property polygon,RESEARCHED,2026-07-13,https://www.hartills.com/,Verify map pin before launch
+JJ Riggs Equipment,conversion,685 Elm Tree Dr,Colville,WA,99114,,,TYM and Bad Boy,Store visit conversion location,Core service area,Conversion polygon,APPROVED,2026-07-13,https://jjriggsequipment.com/,Primary conversion location</code></pre></div>
+<p>Allowed status values:</p>
+<ul><li><code>RESEARCH</code></li><li><code>RESEARCHED</code></li><li><code>APPROVED</code></li><li><code>ACTIVE</code></li><li><code>PAUSED</code></li><li><code>RETIRED</code></li></ul>
+<p>No target may move to <code>ACTIVE</code> without an address check and Andrew's approval.</p>
+<h2 id="pb-6-responsibilities">6. Responsibilities</h2>
+<h3 id="pb-andrew-jj-riggs">Andrew / JJ Riggs</h3>
+<ul><li>Owns the Meta Business Portfolio, Page, Instagram account, ad account, and payment method.</li><li>Identifies the priority equipment and approved offer.</li><li>Supplies accurate financing terms and expiration dates.</li><li>Approves creative before it runs.</li><li>Names one person responsible for every incoming lead.</li><li>Records whether leads became quotes, visits, or sales.</li></ul>
+<h3 id="pb-aaron-campaign-manager">Aaron / campaign manager</h3>
+<ul><li>Performs competitor and audience research.</li><li>Builds the campaign and tracking.</li><li>Produces or assembles approved creative.</li><li>Checks delivery, lead quality, budget, and technical errors.</li><li>Reports weekly and recommends changes.</li><li>Does not promise exact sales volume or exact store-visit attribution.</li></ul>
+<h3 id="pb-sales-lead-owner">Sales lead owner</h3>
+<ul><li>Responds to each new lead within one business hour.</li><li>Calls, texts, or emails based on the information provided.</li><li>Makes follow-up attempts on day 0, day 1, and day 3 when appropriate.</li><li>Updates the lead log with equipment interest and outcome.</li></ul>
+<p>Do not launch until a lead owner is named. Advertising cannot compensate for unanswered calls or ignored forms.</p>
+<h2 id="pb-7-access-and-ownership-setup">7. Access and ownership setup</h2>
+<p>Complete this once with Andrew.</p>
+<h3 id="pb-meta-business-assets">Meta business assets</h3>
+<ol><li>Sign in to the Meta business account that owns the JJ Riggs Facebook Page.</li><li>Confirm the business owns the Page—not Aaron's personal account.</li><li>Connect the JJ Riggs Instagram account.</li><li>Create or confirm the JJ Riggs ad account.</li><li>Set the correct business name, timezone, and currency.</li><li>Have Andrew add JJ Riggs's payment method directly.</li><li>Give Aaron partner or employee access needed to manage campaigns.</li><li>Require two-factor authentication.</li><li>Record the Business Portfolio ID, ad account ID, Page ID, Instagram ID, dataset/pixel ID, and domain verification status in a private credential record. Do not commit tokens, passwords, or payment information to GitHub.</li></ol>
+<h3 id="pb-website-assets">Website assets</h3>
+<p>Confirm access to:</p>
+<ul><li>Cloudflare Pages project</li><li><code>aphelps099/jjriggs-new</code></li><li>GA4 property</li><li>Google Tag Manager, if used</li><li>Domain/DNS settings</li><li>Resend lead-form environment variables</li><li>Call-tracking provider</li></ul>
+<h3 id="pb-previous-campaign-recovery">Previous campaign recovery</h3>
+<p>Ask Andrew for:</p>
+<ul><li>Previous geofencing vendor name</li><li>Previous invoices</li><li>Old campaign reports</li><li>Old creative</li><li>Meta ad account access</li><li>Prior target list</li><li>Prior monthly spend</li><li>Any known sales attributed to the campaigns</li></ul>
+<p>Do not rebuild an unknown past campaign until this recovery step is complete.</p>
+<h2 id="pb-8-website-tracking-work-required-in-jjriggs-new">8. Website tracking work required in <code>jjriggs-new</code></h2>
+<p>The repo already has useful foundations:</p>
+<ul><li><code>js/analytics.js</code> defines GA4 events for call clicks, contact-page views, quote/service intent, and form interactions.</li><li><code>contact.html</code> provides quote, visit, and service forms.</li><li><code>functions/api/lead.js</code> emails successful leads to JJ Riggs.</li><li>Product and local town pages can serve as campaign landing pages.</li></ul>
+<p><strong>However (v1.1 correction — verified against the repo): GA4 is not actually live today.</strong> Two gaps must be closed before any paid campaign:</p>
+<ol><li><code>js/analytics.js</code> still contains the placeholder measurement ID (<code>GA_ID = 'G-XXXXXXXXXX'</code>), so every event currently goes to a console stub, not to GA4.</li><li>The script is loaded on only 12 of 28 root pages. The missing pages include the ones that matter most: <code>index.html</code>, <code>contact.html</code> (the conversion page — its <code>schedule_view</code> event can never fire today), <code>product.html</code>, <code>financing.html</code>, and <code>services.html</code>.</li></ol>
+<p>There is no Meta Pixel anywhere in the repo, and no UTM handling. There is also <strong>no shared HTML include</strong> — this is a zero-build static site where each page carries its own <code>&lt;script&gt;</code> tags. The closest thing to a shared hook is <code>header.js</code> (loaded on 21 pages). Decide deliberately: either inject analytics + pixel from <code>header.js</code>, or edit every public page (root pages plus each <code>implements/*/index.html</code>). Do the analytics.js coverage fix and the pixel install in the same pass.</p>
+<h3 id="pb-phase-0-make-ga4-real-prerequisite">Phase 0: Make GA4 real (prerequisite)</h3>
+<ol><li>Set the real GA4 measurement ID in <code>js/analytics.js</code>.</li><li>Add <code>js/analytics.js</code> to every public page (or inject via <code>header.js</code>).</li><li>Verify <code>call_click</code>, <code>schedule_view</code>, and form events arrive in GA4 real-time reports from a phone.</li></ol>
+<h3 id="pb-phase-a-minimum-viable-measurement">Phase A: Minimum viable measurement</h3>
+<ol><li>Create <code>js/meta-ads.js</code> as the shared Meta tracking module.</li><li>Load the Meta base pixel on all public pages using the same injection mechanism chosen in Phase 0.</li><li>Record <code>PageView</code> on every page.</li><li>Record <code>ViewContent</code> on tractor, mower, implement, and product pages.</li><li>Record <code>Lead</code> <strong>only after</strong> <code>/api/lead</code> returns success.</li><li>Record call-button clicks as a contact event, while retaining the existing GA4 <code>call_click</code> event.</li><li>Test every event with Meta's testing tools before launch.</li></ol>
+<p>Do not record a lead when someone merely opens or clicks the form.</p>
+<h3 id="pb-phase-b-campaign-attribution">Phase B: Campaign attribution</h3>
+<ol><li>Preserve these URL parameters when a visitor arrives:</li><li><code>utm_source</code></li><li><code>utm_medium</code></li><li><code>utm_campaign</code></li><li><code>utm_content</code></li><li><code>utm_term</code></li><li><code>fbclid</code></li><li>Store them for the visitor's session.</li><li>Add them to the successful <code>/api/lead</code> payload.</li><li>Add the fields to the email sent to the sales team.</li><li>Add a human-readable “Marketing source” section to the lead email.</li></ol>
+<h3 id="pb-phase-c-server-side-confirmation">Phase C: Server-side confirmation</h3>
+<p>After browser tracking works, consider sending a matching server-side Meta Conversions API <code>Lead</code> event from the successful lead endpoint. Use a shared event ID to deduplicate browser and server events. Review privacy disclosures, data handling, consent requirements, and Meta's current implementation rules before shipping.</p>
+<h3 id="pb-call-tracking">Call tracking</h3>
+<p>Use one campaign phone number that forwards to <code>509-738-2985</code>.</p>
+<ul><li>Show the tracking number only to paid-campaign visitors where practical.</li><li>Keep the canonical dealership number everywhere else.</li><li>Record call time, duration, source, and campaign.</li><li>Do not record calls without satisfying applicable notification and consent requirements.</li></ul>
+<h2 id="pb-9-utm-naming-rules">9. UTM naming rules</h2>
+<p>Use lowercase, short, stable values.</p>
+<p>Example:</p>
+<div class="codewrap"><pre><code>utm_source=facebook
+utm_medium=paid_social
+utm_campaign=2026_q3_local_equipment
+utm_term=core_colville
+utm_content=tym_t474h_local_service_4x5_v1</code></pre></div>
+<p>Geofencing-pilot example (if Phase 3 runs — different source so the two media buys never blur in reporting):</p>
+<div class="codewrap"><pre><code>utm_source=groundtruth
+utm_medium=geofence
+utm_campaign=2026_q4_competitor_pilot
+utm_term=polygon_adams
+utm_content=tym_compact_display_300x250_v1</code></pre></div>
+<p>Never rename a live campaign merely to make it look cleaner. Stable names make reporting reliable.</p>
+<h2 id="pb-10-campaign-structure">10. Campaign structure</h2>
+<p>Keep the first campaign small enough to understand.</p>
+<h3 id="pb-campaign">Campaign</h3>
+<ul><li><strong>Name:</strong> <code>2026_Q3_JJR_LEADS_LOCAL_EQUIPMENT</code></li><li><strong>Objective:</strong> Leads</li><li><strong>Primary result:</strong> successful quote request</li><li><strong>Secondary results:</strong> qualified call and scheduled lot visit</li><li><strong>Initial test:</strong> 90 days</li></ul>
+<p>Use the website conversion location when tracking is verified. A Meta instant form may be tested separately if website volume or form completion is poor. Do not combine instant-form and website-lead results without labeling them.</p>
+<h3 id="pb-ad-set-1-core-local-market">Ad set 1: Core local market</h3>
+<ul><li><strong>Name:</strong> <code>CORE_NORTH_STEVENS</code></li><li>Colville</li><li>Kettle Falls</li><li>Chewelah</li><li>Northern Stevens County locations within a realistic buying/service radius</li><li>Start broad enough for delivery; do not narrow the audience with many interests unless there is enough volume</li><li>Creative is primarily designed for rural property owners ages 50–65+, but do not unnecessarily exclude qualified women or younger property owners</li></ul>
+<p>Allocate 100% of the starting budget here.</p>
+<h3 id="pb-why-there-is-no-competitor-area-ad-set-v1-1-change">Why there is no &quot;competitor area&quot; ad set (v1.1 change)</h3>
+<p>Version 1.0 proposed a second ad set targeting radii around Adams Tractor and Hartill's. It was removed because the geometry doesn't work:</p>
+<ul><li>Adams Tractor is ~2 miles from JJ Riggs; Meta's minimum radius (~1 mile, larger for credit-classified ads) around it targets the same Colville population as the core ad set.</li><li>Hartill's is in Chewelah — which the core audience already includes.</li><li>Two ad sets over the same people bid against each other in Meta's auction and split an already-small budget below what the learning phase needs.</li></ul>
+<p>If competitor targeting matters to Andrew, it happens via property polygons on a true-geofencing platform (Section 14), not via Meta. Two rules from the removed ad set still apply everywhere: never use competitor names in ad copy, and never write copy implying JJ Riggs knows where a person has been.</p>
+<h3 id="pb-retargeting-ad-set">Retargeting ad set</h3>
+<p>Create only after the audience is large enough to deliver.</p>
+<p>Potential sources:</p>
+<ul><li>30-, 60-, or 90-day website visitors</li><li>Product-page visitors</li><li>Facebook and Instagram engagers</li><li>Meaningful video viewers</li><li>Lead-form opens without submission, where available</li></ul>
+<p>Exclude recent successful leads when the data is reliable and appropriate.</p>
+<h3 id="pb-placements">Placements</h3>
+<p>Begin with Meta's recommended automatic placement system, while supplying correct 4:5 and 9:16 creative. Review actual placement quality weekly. Remove a placement only when the data or creative failure justifies it.</p>
+<h2 id="pb-11-simple-ads-manager-launch-procedure">11. Simple Ads Manager launch procedure</h2>
+<p>Meta changes labels and menus regularly. Treat these as operational steps, not permanent screenshots.</p>
+<ol><li>Open the JJ Riggs ad account in Meta Ads Manager.</li><li>Click <strong>Create</strong>.</li><li>Choose the <strong>Leads</strong> objective.</li><li>Name the campaign using the naming convention above.</li><li>Turn off unnecessary tests or automated additions for the first controlled launch.</li><li>At the ad-set level, choose the website as the conversion location if the pixel and Lead event are verified.</li><li>Select the correct dataset/pixel and Lead conversion event.</li><li>Set a daily budget of $25–$35 on the single core ad set.</li><li>Build <code>CORE_NORTH_STEVENS</code> with the approved service-area locations.</li><li>Review the estimated audience and remove unnecessary demographic or interest restrictions.</li><li>Use automatic placements and upload both 4:5 and 9:16 assets.</li><li>Add three approved ads to the ad set.</li><li>Add the precise landing URL and UTMs.</li><li>Verify the phone number, offer, stock status, expiration date, and fine print.</li><li>Preview every Facebook and Instagram placement.</li><li>Submit the ads for review.</li><li>After approval, click through each live ad and submit one test lead.</li><li>Confirm the test appears in Meta, GA4, the lead email, and the sales log.</li></ol>
+<p>Do not declare the campaign live until step 18 passes.</p>
+<h2 id="pb-12-creative-playbook">12. Creative playbook</h2>
+<h3 id="pb-audience">Audience</h3>
+<p>The primary creative audience is a 50–65+ rural northeast Washington property owner who values practical guidance, service after the sale, and equipment that fits the job. The ad should feel local and useful, not like a national manufacturer campaign.</p>
+<h3 id="pb-visual-rules">Visual rules</h3>
+<ul><li>One person and one machine whenever possible</li><li>Real northeast Washington lot, lawn, field, snow, gravel, or property context</li><li>Real JJ Riggs inventory</li><li>Correct model photo—never substitute another model</li><li>Large readable type for a phone screen</li><li>Strong contrast</li><li>No cluttered grid of equipment</li><li>No fake veteran-owned or veteran-operated claim</li><li>No invented price, spec, rebate, financing term, or deadline</li><li>4:5 for feed and 9:16 for Stories/Reels</li><li>Make the phone number and next step obvious</li></ul>
+<h3 id="pb-ad-angle-1-local-guidance-and-service">Ad angle 1: Local guidance and service</h3>
+<p><strong>Purpose:</strong> Differentiate JJ Riggs from a large dealership experience.</p>
+<p>Possible message structure:</p>
+<ul><li>Hook: <code>BUY THE RIGHT TRACTOR.</code></li><li>Support: Local help choosing the tractor and implements that fit the work.</li><li>Proof: Family business in Colville, service after the sale, delivery</li><li>CTA: Call Andrew or request a quote</li></ul>
+<h3 id="pb-ad-angle-2-specific-in-stock-equipment">Ad angle 2: Specific in-stock equipment</h3>
+<p><strong>Purpose:</strong> Capture active shoppers.</p>
+<p>Possible message structure:</p>
+<ul><li>Hook: <code>ON THE LOT IN COLVILLE.</code></li><li>Product: Exact brand and model</li><li>Facts: No more than three verified facts</li><li>CTA: See it, call, or request a quote</li></ul>
+<h3 id="pb-ad-angle-3-approved-offer">Ad angle 3: Approved offer</h3>
+<p><strong>Purpose:</strong> Give a buyer a reason to act now.</p>
+<p>Possible message structure:</p>
+<ul><li>Hook: <code>0% FINANCING OR CASH REBATES</code></li><li>Product/category: Approved eligible equipment only</li><li>Deadline and fine print: Supplied by Andrew or the lender</li><li>CTA: Ask Andrew which option applies</li></ul>
+<p>Before launching financing copy, review Meta's current classification and special-category requirements. If Meta treats the promotion as credit-related advertising, available targeting controls may change.</p>
+<h3 id="pb-ad-angle-4-buyer-reassurance">Ad angle 4: Buyer reassurance</h3>
+<p>Use customer evidence already visible on the website:</p>
+<ul><li>Andrew explains equipment and helps after purchase</li><li>Honest and straightforward assistance</li><li>Support choosing and using the correct tractor</li><li>Service and implements in one local relationship</li></ul>
+<p>Use only review text the business has permission to reuse. Do not alter the meaning of a testimonial.</p>
+<h2 id="pb-13-how-the-quick-ad-builder-should-support-paid-campaigns">13. How the Quick Ad Builder should support paid campaigns</h2>
+<p><code>QUICK-AD-BUILDER-PLAN.md</code> already defines inventory-driven, locked ad templates. Add a <strong>Paid Campaign Package</strong> output rather than turning the builder into Ads Manager.</p>
+<p>For every approved creative job, the builder should save or export:</p>
+<ul><li><code>campaign_id</code></li><li>Brand and model snapshot</li><li>Stock status at approval</li><li>Promotion name</li><li>Promotion end date</li><li>Approved financing disclaimer</li><li>Hook</li><li>Primary ad text</li><li>Headline</li><li>CTA</li><li>Landing URL</li><li>Audience label</li><li>UTM string</li><li>4:5 asset</li><li>9:16 asset</li><li>Optional 16:9 asset</li><li>Approval person and timestamp</li><li>Version number</li></ul>
+<p>Recommended campaign job states:</p>
+<p><code>Draft → Needs Facts → Needs Media → Ready for Review → Approved → Uploaded → Live → Paused → Archived</code></p>
+<p>Do not automatically publish paid ads from an inventory checkbox. Paid ads need a budget, audience, landing URL, tracking, offer verification, and human approval.</p>
+<p>Organic <code>post_fb</code> automation and paid-ad publishing must remain separate.</p>
+<h2 id="pb-14-true-geofencing-setup">14. True geofencing setup</h2>
+<p>Use this only if Andrew confirms that property-level competitor or event targeting is required.</p>
+<h3 id="pb-suggested-pilot">Suggested pilot</h3>
+<ul><li><strong>Duration:</strong> 6–8 weeks</li><li><strong>Initial media:</strong> approximately $1,500, subject to platform requirements</li><li><strong>Conversion location:</strong> JJ Riggs Equipment</li><li><strong>Target candidates:</strong> Adams Tractor Colville, Hartill's, and separately approved agricultural events or retail locations</li><li><strong>Creative:</strong> local dealer, equipment, offer, and service—not competitor confrontation</li><li><strong>Reporting:</strong> impressions, clicks, website visits, qualified leads, and measured store visits where the platform supports a defensible methodology</li></ul>
+<h3 id="pb-setup-steps">Setup steps</h3>
+<ol><li>Confirm the previous geofencing vendor and recover the old reports.</li><li>Select a platform and document its minimums, contracts, data source, privacy terms, attribution window, and store-visit methodology.</li><li>Create exact property maps for approved competitor locations.</li><li>Create the JJ Riggs location as the conversion property.</li><li>Check that polygons do not include unrelated homes, roads, or businesses.</li><li>Choose whether to target recent visitors, serve ads near the property, or measure visits—these are different products.</li><li>Upload approved display, mobile, or social creative in the platform's required sizes.</li><li>Add UTMs to every click-through URL.</li><li>Set frequency limits to avoid overwhelming a small rural audience.</li><li>Launch one controlled test rather than many small fences.</li><li>Confirm website visits and leads independently of the vendor's dashboard.</li><li>Compare the result with the Meta local campaign.</li></ol>
+<p>Do not describe modeled or attributed store visits as a list of identifiable people. Do not imply perfect accuracy.</p>
+<h2 id="pb-15-lead-handling">15. Lead handling</h2>
+<p>Create a shared lead register with these columns:</p>
+<div class="codewrap"><pre><code>lead_date,lead_name,phone,email,equipment_interest,source,campaign,audience,creative,call_or_form,qualified,quote_amount,lot_visit,sold,revenue,gross_profit,follow_up_owner,notes</code></pre></div>
+<h3 id="pb-qualification-definition">Qualification definition</h3>
+<p>A lead is qualified when the person:</p>
+<ul><li>Is reachable</li><li>Has a plausible equipment or service need</li><li>Is located within the serviceable market, or has a reasonable delivery plan</li><li>Has a purchase timeframe or meaningful research intent</li><li>Wants a quote, conversation, demonstration, financing information, or visit</li></ul>
+<p>Spam, wrong numbers, vendors, and unrelated requests are not qualified leads.</p>
+<h3 id="pb-follow-up-standard">Follow-up standard</h3>
+<ol><li>Respond within one business hour.</li><li>Ask about property, work, acreage, terrain, attachments, timing, delivery, and budget/financing needs.</li><li>Recommend the next step, not merely a model.</li><li>Record the result.</li><li>Follow up again when a useful answer, machine, or promotion becomes available.</li></ol>
+<h2 id="pb-16-reporting-and-decision-rules">16. Reporting and decision rules</h2>
+<h3 id="pb-weekly-report">Weekly report</h3>
+<p>Report:</p>
+<ul><li>Spend</li><li>Reach and frequency</li><li>Landing-page views</li><li>Calls</li><li>Quote forms</li><li>Qualified leads</li><li>Cost per qualified lead</li><li>Scheduled visits</li><li>Quotes issued</li><li>Sales and known gross profit</li><li>Best audience</li><li>Best creative</li><li>Tracking or follow-up problems</li><li>One change planned for the next week</li></ul>
+<h3 id="pb-do-not-optimize-around-vanity-metrics">Do not optimize around vanity metrics</h3>
+<p>Low-cost clicks are not success when visitors never call or request a quote. The campaign is judged by qualified leads, quotes, visits, and sales.</p>
+<h3 id="pb-determine-the-maximum-qualified-lead-cost">Determine the maximum qualified-lead cost</h3>
+<p>Use:</p>
+<div class="codewrap"><pre><code>Maximum qualified-lead cost
+= average gross profit per sale
+× qualified-lead close rate
+× acceptable marketing share of gross profit</code></pre></div>
+<p>Example only:</p>
+<div class="codewrap"><pre><code>$3,000 average gross profit
+× 10% lead close rate
+× 25% marketing share
+= $75 maximum qualified-lead cost</code></pre></div>
+<p>Andrew must provide real gross-profit and close-rate assumptions before this becomes a campaign rule.</p>
+<h3 id="pb-optimization-rules">Optimization rules</h3>
+<ul><li>First check tracking and lead follow-up before blaming the ads.</li><li>Do not make several major changes at the same time.</li><li>Compare audience tests using the same creative when possible.</li><li>Pause incorrect, expired, or out-of-stock ads immediately.</li><li>Move budget toward ads producing qualified leads, not merely clicks.</li><li>Refresh creative when frequency rises and response deteriorates.</li><li>Increase a winning budget gradually rather than doubling it overnight.</li><li>Record every important campaign change with date and reason.</li></ul>
+<h2 id="pb-17-the-90-day-operating-plan">17. The 90-day operating plan</h2>
+<h3 id="pb-days-1-10-foundation">Days 1–10: Foundation</h3>
+<ul><li>Recover old campaign/vendor information</li><li>Approve the new paid-media scope and budget</li><li>Confirm Meta asset ownership and access</li><li>Name the lead owner</li><li>Install and test measurement</li><li>Verify competitor locations</li><li>Choose three priority equipment offers</li><li>Build the first creative set</li><li>Establish the lead register</li></ul>
+<h3 id="pb-days-11-30-controlled-launch">Days 11–30: Controlled launch</h3>
+<ul><li>Launch the single core local ad set</li><li>Test every lead route</li><li>Review delivery and errors daily</li><li>Review lead quality with Andrew weekly</li><li>Establish the baseline cost per qualified lead</li><li>Correct weak landing pages, broken tracking, or unclear offers</li></ul>
+<h3 id="pb-days-31-60-improve">Days 31–60: Improve</h3>
+<ul><li>Move budget toward the stronger location/audience</li><li>Replace weak creative</li><li>Add inventory-specific ads</li><li>Add retargeting if the audience can deliver</li><li>Compare calls, forms, visits, quotes, and sales</li><li>Decide whether a true-geofencing pilot is justified</li></ul>
+<h3 id="pb-days-61-90-prove-and-decide">Days 61–90: Prove and decide</h3>
+<ul><li>Scale the best combinations carefully</li><li>Refresh stale creative</li><li>Calculate the full lead-to-sale result</li><li>Compare Meta local targeting with any geofencing pilot</li><li>Decide what continues, stops, or changes for the next quarter</li><li>Produce a one-page 90-day findings report</li></ul>
+<h2 id="pb-18-andrew-s-simple-weekly-workflow">18. Andrew's simple weekly workflow</h2>
+<h3 id="pb-monday">Monday</h3>
+<p>Andrew identifies:</p>
+<ul><li>Up to three machines or categories to emphasize</li><li>Current stock status</li><li>Promotion and deadline</li><li>Approved fine print</li></ul>
+<h3 id="pb-tuesday">Tuesday</h3>
+<p>Aaron generates or updates the ads and verifies the landing pages and UTMs.</p>
+<h3 id="pb-wednesday">Wednesday</h3>
+<p>Andrew approves the exact ad. Aaron publishes or updates the campaign.</p>
+<h3 id="pb-daily">Daily</h3>
+<p>The assigned sales owner responds to leads and updates the register.</p>
+<h3 id="pb-friday">Friday</h3>
+<p>Aaron sends a short report:</p>
+<ul><li>What spent</li><li>What produced qualified interest</li><li>What did not</li><li>What changes next week</li><li>What Andrew needs to approve or supply</li></ul>
+<h2 id="pb-19-repo-structure-v1-1-follows-this-repo-s-conventions">19. Repo structure (v1.1: follows this repo's conventions)</h2>
+<p>This repo keeps all documentation at the root (<code>FACEBOOK-POSTING.md</code>, <code>QUICK-AD-BUILDER-PLAN.md</code>, etc.), so the marketing docs do too:</p>
+<div class="codewrap"><pre><code>FACEBOOK-GEOFENCING-PLAYBOOK.md   # this file
+ADS-FUNDAMENTALS.md               # how the machinery works (companion)
+
+js/
+  meta-ads.js                     # Meta pixel + UTM capture (Phase A/B)
+
+functions/
+  api/
+    lead.js                 # extend with attribution; later CAPI if approved</code></pre></div>
+<p><strong>Registers stay OUT of the repo.</strong> The lead register and campaign register contain PII (names, phone numbers, quote amounts, gross profit). They live in the shared Google Sheet workflow Andrew already uses for inventory — never in GitHub. The same applies to the targeting worksheet (Section 5) and weekly reports. Only <em>schemas and templates</em> may be documented here.</p>
+<p><code>USER-GUIDE.md</code> should link to this playbook, but not duplicate it.</p>
+<h3 id="pb-campaign-register-fields-schema-for-the-google-sheet">Campaign register fields (schema for the Google Sheet)</h3>
+<div class="codewrap"><pre><code>campaign_id,platform,objective,start_date,end_date,status,daily_budget,audience,offer,landing_url,utm_campaign,lead_owner,creative_version,last_change,last_change_reason</code></pre></div>
+<h3 id="pb-change-log-rule">Change log rule</h3>
+<p>Every major paid-media change records:</p>
+<ul><li>Date</li><li>Person</li><li>Campaign/ad set/ad</li><li>What changed</li><li>Why</li><li>Expected result</li><li>Actual result when known</li></ul>
+<p>This prevents the campaign from becoming a series of forgotten guesses.</p>
+<h2 id="pb-20-preflight-checklist">20. Preflight checklist</h2>
+<p>The campaign may launch only when every required box is complete.</p>
+<h3 id="pb-business">Business</h3>
+<ul class="checklist"><li class=""><span class="box" aria-hidden="true"></span>Andrew approved the 90-day scope and media budget</li><li class=""><span class="box" aria-hidden="true"></span>JJ Riggs owns the ad account and payment method</li><li class=""><span class="box" aria-hidden="true"></span>A lead follow-up owner is named</li><li class=""><span class="box" aria-hidden="true"></span>Priority inventory and offers are approved</li></ul>
+<h3 id="pb-research">Research</h3>
+<ul class="checklist"><li class=""><span class="box" aria-hidden="true"></span>Target addresses were rechecked</li><li class=""><span class="box" aria-hidden="true"></span>Competitor brands and promotions were reviewed</li><li class=""><span class="box" aria-hidden="true"></span>Targeting does not imply knowledge of personal location history</li><li class=""><span class="box" aria-hidden="true"></span>Andrew approved the targeting list</li></ul>
+<h3 id="pb-tracking">Tracking</h3>
+<ul class="checklist"><li class=""><span class="box" aria-hidden="true"></span>Real GA4 measurement ID is set in <code>js/analytics.js</code> (not the <code>G-XXXXXXXXXX</code> placeholder)</li><li class=""><span class="box" aria-hidden="true"></span><code>js/analytics.js</code> loads on every public page — especially <code>index.html</code>, <code>contact.html</code>, <code>product.html</code>, <code>financing.html</code>, <code>services.html</code>, and all <code>implements/*</code> pages</li><li class=""><span class="box" aria-hidden="true"></span>Pixel/dataset is installed</li><li class=""><span class="box" aria-hidden="true"></span><code>PageView</code> works</li><li class=""><span class="box" aria-hidden="true"></span><code>ViewContent</code> works</li><li class=""><span class="box" aria-hidden="true"></span><code>Lead</code> fires only after successful submission</li><li class=""><span class="box" aria-hidden="true"></span>GA4 receives the corresponding events</li><li class=""><span class="box" aria-hidden="true"></span>UTMs appear in the lead record</li><li class=""><span class="box" aria-hidden="true"></span>Tracking phone number forwards correctly</li><li class=""><span class="box" aria-hidden="true"></span>Test lead reached the sales owner</li></ul>
+<h3 id="pb-creative">Creative</h3>
+<ul class="checklist"><li class=""><span class="box" aria-hidden="true"></span>Correct machine and model</li><li class=""><span class="box" aria-hidden="true"></span>Current stock status</li><li class=""><span class="box" aria-hidden="true"></span>Accurate offer and expiration</li><li class=""><span class="box" aria-hidden="true"></span>Approved fine print</li><li class=""><span class="box" aria-hidden="true"></span>Phone number is <code>509-738-2985</code> or the approved tracking number</li><li class=""><span class="box" aria-hidden="true"></span>4:5 and 9:16 versions reviewed</li><li class=""><span class="box" aria-hidden="true"></span>Landing page works on a phone</li><li class=""><span class="box" aria-hidden="true"></span>No unsupported ownership, veteran, price, rebate, or financing claim</li></ul>
+<h3 id="pb-campaign-2">Campaign</h3>
+<ul class="checklist"><li class=""><span class="box" aria-hidden="true"></span>Correct Page and Instagram identity</li><li class=""><span class="box" aria-hidden="true"></span>Correct objective and conversion event</li><li class=""><span class="box" aria-hidden="true"></span>Correct geography</li><li class=""><span class="box" aria-hidden="true"></span>Correct budget and schedule</li><li class=""><span class="box" aria-hidden="true"></span>UTMs applied</li><li class=""><span class="box" aria-hidden="true"></span>All placements previewed</li><li class=""><span class="box" aria-hidden="true"></span>Live click-through and test lead completed</li></ul>
+<h2 id="pb-21-first-seven-actions">21. First seven actions</h2>
+<ol><li>Ask Andrew what platform or vendor ran the previous geofencing campaign.</li><li>Gather the old reports, invoices, target list, creative, and account access.</li><li>Approve a separate 90-day campaign-management scope while completing any Facebook creative still owed under the original project.</li><li>Hold a one-hour Meta access session with Andrew.</li><li>Add the marketing documentation structure to <code>jjriggs-new</code>.</li><li>Fix GA4 (real measurement ID + full page coverage), then implement Meta/UTM lead tracking and pass a complete test lead.</li><li>Launch one small core-local campaign with three approved ads.</li></ol>
+<h2 id="pb-22-geographic-expansion-beyond-the-core-market">22. Geographic expansion beyond the core market</h2>
+<p>Wider targeting (Spokane, western Washington, Idaho, Oregon) is a <strong>business- model decision, not a targeting decision</strong>. A tractor purchase includes delivery, warranty service, and an ongoing dealer relationship — and that value decays with driving distance. Meta will happily sell impressions anywhere; the question is why a distant buyer would choose JJ Riggs over the dealer 20 minutes from their house. Expansion works exactly to the extent that question has an answer (stock, price, or delivery).</p>
+<h3 id="pb-think-in-drive-time-rings-not-state-lines">Think in drive-time rings, not state lines</h3>
+<div class="tablewrap"><table><thead><tr><th>Ring</th><th>Distance</th><th>What works</th><th>What to know</th></tr></thead><tbody><tr><td><strong>Ring 1 — core</strong></td><td>0–45 min (current playbook scope)</td><td>Full value proposition: service, visits, relationship</td><td>Highest lead quality; this is the workhorse</td></tr><tr><td><strong>Ring 2 — regional</strong></td><td>~1–2 hr: Spokane metro, Deer Park, Newport, Republic, Idaho panhandle</td><td>Viable if delivery is offered and priced; lead with something local dealers can't match</td><td>Note: North Idaho is ~40 miles away; the Oregon border is ~280+. &quot;Wider&quot; naturally means Idaho and Spokane, not Oregon</td></tr><tr><td><strong>Ring 3 — long distance</strong></td><td>3+ hr: western WA, Oregon</td><td>Only price or scarcity: a hard-to-find model in stock, a demo deal, a package</td><td>Not a &quot;local dealer&quot; campaign — inventory-specific ads with freight terms in the copy, quote/phone as the destination</td></tr></tbody></table></div>
+<h3 id="pb-rules-for-any-expansion">Rules for any expansion</h3>
+<ol><li><strong>Check the dealer agreements first.</strong> TYM and Bad Boy assign dealer territories (AORs). Some agreements restrict advertising or selling outside the assigned area. Andrew must confirm what his agreements allow before a single out-of-area impression runs — this one item can kill the idea outright.</li><li><strong>Have a real freight/delivery answer</strong> before targeting Ring 2 or 3. Distant leads with no delivery answer become dead ends that pollute the lead log and the close-rate math.</li><li><strong>Separate campaigns, never a stretched audience.</strong> Do not widen the core ad set's geography — that scatters a $25–35/day budget so thin Meta learns nothing, and it contaminates the local campaign's baseline. Ring 2 gets its own campaign with its own budget, launched only after the core campaign has a stable cost per qualified lead to compare against.</li><li><strong>Ring 3 runs as inventory-sniper ads:</strong> one specific machine, a real verified offer, delivery terms in the ad. Run it when a unit worth traveling for exists; pause it when it sells. This is where the Quick Ad Builder's Paid Campaign Package output earns its keep.</li><li><strong>Geofencing does not expand.</strong> Fencing competitor lots in markets where JJ Riggs has no service story gets more expensive and less sensible with distance. Geofencing stays local; plain Meta targeting handles reach.</li></ol>
+<h2 id="pb-23-source-notes">23. Source notes</h2>
+<ul><li>Existing JJ Riggs repo documentation reviewed: <code>USER-GUIDE.md</code>, <code>FACEBOOK-POSTING.md</code>, <code>QUICK-AD-BUILDER-PLAN.md</code>, <code>LIVE-INVENTORY-AND-DEALER-KIT-PLAN.md</code>, <code>js/analytics.js</code>, <code>contact.html</code>, and <code>functions/api/lead.js</code>.</li><li>Adams Tractor's official site listed Adams Tractor Colville at 635 Hwy 395 S, Colville, and described Kubota, tractor/equipment, lawn/garden, parts, and service offerings.</li><li>Hartill's official site listed 101 W Robert Ave, Chewelah, and described KIOTI tractors, implements, outdoor power equipment, parts, and service.</li><li>JJ Riggs's site listed 685 Elm Tree Dr, Colville; TYM tractors, Bad Boy mowers, implements, repair, financing, delivery, and phone 509-738-2985.</li><li>Addresses, ad-platform controls, financing classification, privacy rules, and platform requirements must be rechecked at launch because they change.</li></ul>
+<h2 id="pb-24-version-change-log">24. Version change log</h2>
+<h3 id="pb-v1-1-july-2026-repo-verified-amendments">v1.1 — July 2026 (repo-verified amendments)</h3>
+<ul><li><strong>Corrected the GA4 status.</strong> v1.0 implied GA4 tracking was live. Verified reality: <code>js/analytics.js</code> still carries the placeholder measurement ID and loads on only 12 of 28 root pages (missing from <code>index.html</code>, <code>contact.html</code>, <code>product.html</code>, <code>financing.html</code>, <code>services.html</code>). Added Phase 0 to Section 8 and two preflight items.</li><li><strong>Named the pixel injection mechanism.</strong> There is no &quot;shared site structure&quot; — pages carry their own script tags. Section 8 now requires a deliberate choice: inject via <code>header.js</code> or edit every page.</li><li><strong>Removed the Meta competitor-area ad set.</strong> Meta's ~1-mile minimum radius makes &quot;competitor areas&quot; around Adams (2 miles away) and Hartill's (inside the core area) identical to the core audience — two ad sets would only bid against each other. Competitor targeting now lives exclusively in the true-geofencing pilot (Section 14). Full budget goes to the core ad set.</li><li><strong>Moved all registers out of the repo.</strong> Lead/campaign/targeting data contains PII and belongs in the shared Google Sheet, not GitHub. Docs moved to repo root to match existing conventions.</li><li><strong>Added Section 22: geographic expansion</strong> — drive-time rings, the dealer- territory (AOR) check, the separate-campaign rule, and inventory-sniper ads for long-distance buyers.</li><li><strong>Added <code>ADS-FUNDAMENTALS.md</code></strong> as the companion explainer for the mechanics behind these rules.</li></ul>
+<h3 id="pb-v1-0-july-2026">v1.0 — July 2026</h3>
+<p>Initial draft (ChatGPT), based on repo document review and competitor website verification.</p>
+
+      <div class="divider" id="fundamentals"><span>Part II</span></div>
+
+      <div class="doc-head">
+        <div class="eyebrow">Part II · How the Machinery Works</div>
+        <h2 class="display">Ads Fundamentals</h2>
+        <div class="meta">Companion explainer · repo file <code>ADS-FUNDAMENTALS.md</code></div>
+      </div>
+      <p>July 2026 · companion to <code>FACEBOOK-GEOFENCING-PLAYBOOK.md</code>. The playbook says <em>what to do</em>; this document explains <em>why</em>, so campaign decisions can be made from understanding instead of superstition. Written for whoever manages JJ Riggs' paid media (currently Aaron). No prior ads knowledge assumed.</p>
+<p>Everything here is about mechanics that change slowly (auctions, attribution, data supply chains). Meta's menus, labels, and policy details change constantly — always verify the current UI and rules at launch.</p>
+<h2 id="fd-1-you-don-t-buy-ads-you-bid-in-an-auction">1. You don't buy ads. You bid in an auction.</h2>
+<p>Every time someone opens Facebook or Instagram, an auction runs in milliseconds for each ad slot on their screen. Every advertiser who targeted that person is a bidder. The winner is not simply whoever pays most. Meta ranks bidders by <strong>total value</strong>, roughly:</p>
+<div class="codewrap"><pre><code>total value = your bid × estimated action rate + user value</code></pre></div>
+<ul><li><strong>Your bid</strong> — with the playbook's setup, Meta bids automatically to get the most lead conversions from your daily budget.</li><li><strong>Estimated action rate</strong> — Meta's prediction of how likely <em>this person</em> is to do the thing you're optimizing for (submit a quote form) if shown <em>this ad</em>.</li><li><strong>User value</strong> — Meta's estimate of whether the ad is a good experience: relevance, quality, expected feedback (hides, reports).</li></ul>
+<p><strong>The consequence that matters:</strong> a relevant, well-made ad literally costs less per result, because Meta's model predicts more action from it, so it wins auctions at lower prices. This is why the playbook obsesses over creative rules (real machines, one clear message, readable on a phone) — good creative isn't just persuasion, it's a <strong>discount</strong>.</p>
+<p>The flip side: a boring or misleading ad doesn't just convert worse, it pays more per impression. Bad creative is taxed twice.</p>
+<h3 id="fd-cpm-the-price-of-attention">CPM — the price of attention</h3>
+<p>Cost is usually quoted as <strong>CPM</strong> (cost per 1,000 impressions). Rural northeast Washington CPMs are generally cheap compared to cities because fewer advertisers compete for those eyeballs. But cheap impressions are worthless by themselves — the funnel math in Section 8 is what turns CPM into a business number.</p>
+<h2 id="fd-2-the-learning-phase-why-the-playbook-says-one-ad-set">2. The learning phase — why the playbook says ONE ad set</h2>
+<p>When an ad set launches, Meta's delivery system starts guessing who will convert, watches what happens, and updates. This is the <strong>learning phase</strong>. The system stabilizes after roughly <strong>50 optimization events (leads) per ad set per week</strong>. Below that, it never stops guessing — delivery stays erratic and costs stay high.</p>
+<p>Now the arithmetic that killed the v1.0 competitor ad set:</p>
+<ul><li>Budget: ~$30/day ≈ $210/week.</li><li>A realistic early cost per lead might be $15–40.</li><li>That's maybe <strong>5–15 leads per week total</strong> — already well under 50.</li><li>Split across two ad sets: each gets a handful. Neither ever learns.</li></ul>
+<p>Rules that fall directly out of this:</p>
+<ol><li><strong>Concentrate.</strong> One ad set with $210/week beats two with $105 each, even before considering that two ad sets over the same rural population also <strong>bid against each other</strong> in the auction (you literally compete with yourself for the same people).</li><li><strong>Don't fiddle.</strong> Every significant edit (budget jump &gt;~20%, new audience, swapped optimization event) resets learning. This is why the playbook says one change per week, and increase winning budgets gradually.</li><li><strong>Optimize for the deepest event you have volume for.</strong> Optimizing for &quot;link clicks&quot; gets you people who click things (there is a population of chronic clickers, and Meta will happily find them all). Optimizing for <em>leads</em> gets people who fill out forms. If lead volume is too thin for the system to learn, the fallback is optimizing for landing-page views — shallower but higher-volume — not clicks.</li></ol>
+<p>Small-market reality: JJ Riggs may never hit 50 leads/week, and that's fine. The campaign still works below the threshold; it's just noisier. The rules above are about not making the noise worse.</p>
+<h2 id="fd-3-the-pixel-and-attribution-how-meta-knows-an-ad-worked">3. The pixel and attribution — how Meta &quot;knows&quot; an ad worked</h2>
+<h3 id="fd-the-pixel">The pixel</h3>
+<p>The <strong>Meta Pixel</strong> is a small script on the website (the playbook's <code>js/meta-ads.js</code>). It sends events to Meta: <em>someone viewed this page</em> (<code>PageView</code>), <em>someone viewed a product</em> (<code>ViewContent</code>), <em>someone became a lead</em> (<code>Lead</code>). Meta matches those events back to Facebook/Instagram users — by the <code>fbclid</code> click ID on the URL, by cookies, and by whatever else it can.</p>
+<p>Two jobs at once:</p>
+<ol><li><strong>Reporting</strong> — &quot;this ad produced 4 leads.&quot;</li><li><strong>Feeding the optimizer</strong> — every <code>Lead</code> event teaches the delivery system what a converting person looks like, so it finds more of them. This is why firing <code>Lead</code> only after <code>/api/lead</code> succeeds is non-negotiable: if the event fires when someone merely <em>opens</em> the form, Meta optimizes for form-openers and delivers you tire-kickers at scale. <strong>You get exactly what you train it on.</strong></li></ol>
+<h3 id="fd-attribution-windows">Attribution windows</h3>
+<p>Meta counts a conversion as ad-caused if it happens within (typically) <strong>7 days of a click</strong> or <strong>1 day of a view</strong>. Both defaults are arguable — tractor purchases have long consideration cycles, so some real influence falls outside the window, while &quot;viewed the ad yesterday, googled you today&quot; view-through credit can be generous. The point: attribution is an <em>accounting convention</em>, not a fact of nature.</p>
+<h3 id="fd-why-meta-s-numbers-never-match-your-inbox">Why Meta's numbers never match your inbox</h3>
+<p>Expect Meta's lead count, GA4's count, and the actual lead emails to disagree. Reasons:</p>
+<ul><li><strong>iOS privacy (App Tracking Transparency):</strong> many iPhone users are invisible to the pixel, so Meta <em>statistically models</em> some conversions — educated guesses, reported as if real.</li><li>Different attribution windows and deduplication rules per platform.</li><li>Ad blockers, cookie clearing, cross-device journeys (saw ad on phone, quoted from desktop).</li></ul>
+<p><strong>Resolution rule:</strong> the dealership lead log is the ground truth. Meta and GA4 are directional instruments for comparing ads against each other — never the source of record for &quot;how many leads did we get.&quot; This is the entire reason the playbook builds UTM capture into the lead email: it creates attribution <em>you own</em>, independent of any platform's math.</p>
+<h3 id="fd-the-conversions-api-capi-the-playbook-s-phase-c">The Conversions API (CAPI) — the playbook's Phase C</h3>
+<p>Browser tracking keeps degrading (privacy features, blockers). CAPI sends the same <code>Lead</code> event <strong>server-side</strong> from <code>functions/api/lead.js</code> straight to Meta, with a shared event ID so browser + server duplicates merge. It's the industry's answer to pixel decay. Worth doing once the basics work — not before.</p>
+<h2 id="fd-4-audiences-why-broad-beats-clever-in-a-small-market">4. Audiences — why &quot;broad&quot; beats clever in a small market</h2>
+<p>Meta offers several targeting flavors:</p>
+<ul><li><strong>Broad:</strong> just geography (+ maybe age). Meta's delivery system finds the buyers using everything it knows.</li><li><strong>Interest targeting:</strong> people Meta tags with interests (&quot;tractors,&quot; &quot;farming&quot;). Feels precise; is mostly noise — tags come from likes and engagement, and interest-tagged audiences routinely underperform broad because they <em>constrain</em> the optimizer.</li><li><strong>Lookalikes:</strong> &quot;find people similar to this list.&quot; Needs a source list of hundreds+ — irrelevant at JJ Riggs' scale for now.</li><li><strong>Custom/retargeting:</strong> people who already visited the site or engaged with the Page. High intent, tiny size. Becomes usable once traffic accumulates (the playbook's Phase 2).</li></ul>
+<p><strong>The modern reality:</strong> targeting has migrated from settings into <em>creative</em>. Meta's optimizer is better at finding tractor buyers than any interest checkbox — <em>if</em> the ad itself screams &quot;this is for rural property owners near Colville.&quot; A photo of a TYM with a loader on a gravel Stevens County lot IS the targeting. This is why the playbook says start broad and put the effort into the three ad angles.</p>
+<h3 id="fd-frequency-and-creative-fatigue">Frequency and creative fatigue</h3>
+<p>Northern Stevens County holds maybe 20–40k adults. A $30/day campaign will reach most reachable ones within weeks, then start showing the same people the same ads repeatedly. <strong>Frequency</strong> (average impressions per person) is the gauge: as it climbs past ~3–4 per week and results decay, the audience isn't exhausted — the <em>creative</em> is. Refresh the ads (new machine, new angle, new photo), not the targeting. In a small market, creative rotation is the main ongoing work of the campaign.</p>
+<h2 id="fd-5-geo-targeting-what-meta-actually-knows-about-location">5. Geo-targeting — what Meta actually knows about location</h2>
+<p>Meta locates people using profile home city, IP addresses, and (where permitted) device GPS. Targeting options are &quot;people living in,&quot; &quot;recently in,&quot; or &quot;traveling in&quot; an area. Precision:</p>
+<ul><li><strong>Minimum radius around a pin: ~1 mile.</strong> There is no polygon, no property-level option, no &quot;people at this address.&quot;</li><li><strong>Special ad categories:</strong> if Meta classifies an ad as credit-related (financing offers can trigger this), age/gender targeting is removed and geography gets <em>coarser</em> (historically a 15-mile minimum radius). This is why the playbook flags the 0%-financing ad angle for review before launch.</li></ul>
+<h3 id="fd-the-small-town-geometry-problem-why-competitor-geofencing-on">The small-town geometry problem (why competitor &quot;geofencing&quot; on Meta is an illusion here)</h3>
+<p>Draw the smallest circle Meta allows (1 mi) around Adams Tractor on Hwy 395. It contains: Adams' staff, passing highway traffic, and a slice of Colville — i.e., <strong>the same people as the core audience</strong>, minus none, plus nobody. In a metro, a 1-mile circle around a competitor is at least a distinct neighborhood. In Colville, it's just... Colville. Every dollar in that ad set is a dollar competing against your own core ad set for identical users.</p>
+<p>That's the whole argument, and it's geometric, not strategic — no amount of budget or cleverness fixes it. Competitor-<em>lot</em> targeting requires property-level polygons, which only true geofencing platforms offer.</p>
+<h2 id="fd-6-true-geofencing-the-data-supply-chain-honestly-explained">6. True geofencing — the data supply chain, honestly explained</h2>
+<p>Platforms like GroundTruth or Simpli.fi do something structurally different from Meta:</p>
+<ol><li><strong>Data source:</strong> millions of phones run apps that share location (weather apps, games — anything with location permission and an embedded SDK), and ad requests themselves leak approximate location (the &quot;bid stream&quot;). Vendors aggregate this into device-location histories.</li><li><strong>The fence:</strong> the vendor draws an actual polygon around a property — Adams' lot, a fairground. Devices observed inside get added to an audience (usually targetable for ~30 days after the visit).</li><li><strong>Delivery:</strong> those devices then see banner/display/mobile ads across ordinary apps and websites (not Facebook) via programmatic ad exchanges.</li><li><strong>Visit attribution:</strong> the same mechanism in reverse — did a device that saw the ad later appear inside the JJ Riggs polygon?</li></ol>
+<h3 id="fd-the-honest-caveats">The honest caveats</h3>
+<ul><li><strong>Small rural volumes.</strong> A dealer lot might see dozens of unique devices a week, and only a fraction are in the vendor's data feed. The audience is tiny — precise, high-intent, but never a firehose. Expect slow spend and weeks before numbers mean anything.</li><li><strong>GPS drift and polygon quality.</strong> A sloppy polygon on a highway-side lot (Adams is right on Hwy 395) captures passing traffic, not shoppers. Demand to see the actual polygons before launch — playbook Section 14, step 5.</li><li><strong>Visit counts are modeled estimates</strong>, extrapolated from the fraction of devices the vendor can see. Treat &quot;23 store visits&quot; as directional, never as 23 identifiable people. A vendor who implies otherwise is overselling.</li><li><strong>Display CTRs are tiny</strong> (~0.1% is normal) — the product's value is the audience and the visit measurement, not clicks.</li><li><strong>Minimums and contracts.</strong> Typical platform minimums run ~$1–2k/month. This is why the playbook demands recovering the previous vendor's invoices and reports first: the question &quot;what did a measured visit cost last time?&quot; may already have an answer.</li></ul>
+<h3 id="fd-when-it-s-worth-it-here">When it's worth it here</h3>
+<p>Geofencing buys <em>precision on a tiny high-intent audience</em> (people physically shopping at competing dealers). It complements — never replaces — Meta, which buys <em>reach across the whole trade area</em>. Run the Meta campaign first, establish a cost per qualified lead, then judge a geofencing pilot against that number.</p>
+<h2 id="fd-7-organic-vs-boost-vs-ads-manager">7. Organic vs. Boost vs. Ads Manager</h2>
+<p>Three ways content reaches Facebook users, often confused:</p>
+<ul><li><strong>Organic Page posts</strong> (the existing <code>post_fb</code> system): free, reach a small fraction of Page followers. Keeps the Page alive and credible — a buyer who clicks from an ad to a dead Page bounces. Not a growth engine.</li><li><strong>The &quot;Boost&quot; button:</strong> a simplified wrapper that promotes a post for engagement. Fine for visibility on a specific post; it generally optimizes for likes, not leads, and hides most controls. Not how the campaign runs.</li><li><strong>Ads Manager campaigns</strong> (this playbook): full control over objective, optimization event, geography, budget, and tracking. The only version that can optimize for <em>quote requests</em>.</li></ul>
+<p>The systems compound: strong organic posts become ad creative (&quot;use existing post&quot; preserves the likes/comments as social proof), and the ads drive people who then check the organic Page.</p>
+<h2 id="fd-8-the-money-math-the-funnel-that-decides-everything">8. The money math — the funnel that decides everything</h2>
+<p>Every campaign is this chain. Know it cold:</p>
+<div class="codewrap"><pre><code>budget → impressions (CPM)
+       → clicks (CTR)
+       → landing-page views (load/patience loss)
+       → leads (page conversion rate)
+       → QUALIFIED leads (spam/fit filter)
+       → quotes → sales (the dealership's work)</code></pre></div>
+<p>Worked example with plausible rural numbers ($900/month at $30/day):</p>
+<div class="codewrap"><pre><code>$900 ÷ $12 CPM               = 75,000 impressions
+75,000 × 1.5% CTR            = 1,125 clicks
+1,125 × 80% land successfully =  900 landing views
+900 × 3% form conversion      =   27 leads
+27 × 60% qualified            =   16 qualified leads
+→ $900 ÷ 16                   ≈ $56 per qualified lead
+16 × 10% close                ≈ 1–2 sales</code></pre></div>
+<p>Every number above is an assumption to be replaced with real data — that's what the 90-day test <em>is</em>. But the structure teaches you where to look when results disappoint:</p>
+<ul><li>Lots of impressions, no clicks → <strong>creative</strong> problem.</li><li>Clicks but no leads → <strong>landing page or offer</strong> problem.</li><li>Leads but not qualified → <strong>targeting or message</strong> problem (or spam — check Turnstile).</li><li>Qualified leads but no sales → <strong>follow-up or inventory</strong> problem. Not an ads problem at all — and the most common failure in dealer campaigns.</li></ul>
+<h3 id="fd-the-one-number-that-governs-the-campaign">The one number that governs the campaign</h3>
+<div class="codewrap"><pre><code>max cost per qualified lead = avg gross profit per sale
+                            × close rate on qualified leads
+                            × acceptable marketing share of profit</code></pre></div>
+<p>With the playbook's illustrative numbers ($3,000 × 10% × 25%) that's <strong>$75</strong>. Above it, shrink or fix; below it, the campaign is literally printing margin — scale gradually. Andrew must supply the two business inputs; without them everyone is guessing with adjectives (&quot;seems expensive&quot;) instead of arithmetic.</p>
+<h3 id="fd-why-vanity-metrics-lie">Why vanity metrics lie</h3>
+<p>Clicks, reach, likes, and even raw &quot;leads&quot; can all rise while the business gets nothing — chronic clickers, bots, out-of-area dreamers. The only self-defending metric is <strong>cost per qualified lead trending toward closed sales</strong>, which is why the weekly report (playbook Section 16) is built around it and why the lead register must record outcomes, not just arrivals.</p>
+<h2 id="fd-9-operating-principles-the-expert-habits">9. Operating principles — the expert habits</h2>
+<ol><li><strong>Change one thing at a time, weekly.</strong> Two simultaneous changes = zero attributable lessons. Also, edits reset the learning phase (Section 2).</li><li><strong>Judge nothing in under a week.</strong> Daily numbers on a small budget are coin flips. Meta also front-loads delivery erratically after any change.</li><li><strong>When results tank, check the plumbing before the strategy.</strong> A broken pixel, a dead form, or an unanswered phone looks identical to &quot;the ads stopped working&quot; in every dashboard.</li><li><strong>Respect seasonality.</strong> Equipment demand moves with the calendar: spring (mowing/property work), fall (firewood, cleanup), first snowfall (blades, blowers — spike instantly). A &quot;failing&quot; January ad may just be January. Compare year-over-year once there's a year of data, and pre-build the snow-equipment campaign in October, not during the first storm.</li><li><strong>The follow-up hour is the highest-ROI setting in the account.</strong> Contact rates on leads collapse within hours. A $56 qualified lead that waits two days is a $56 donation. No targeting tweak competes with answering the phone — this is why the playbook refuses to launch without a named lead owner.</li><li><strong>Own your data.</strong> Platforms mark their own homework. UTMs → lead email → lead register is the attribution chain JJ Riggs controls, and it's the record that decides budget, not Meta's dashboard.</li></ol>
+<h2 id="fd-10-glossary">10. Glossary</h2>
+<div class="tablewrap"><table><thead><tr><th>Term</th><th>Meaning</th></tr></thead><tbody><tr><td><strong>Ad set</strong></td><td>The Meta layer holding audience, budget, and optimization settings; ads live inside it</td></tr><tr><td><strong>ATT</strong></td><td>App Tracking Transparency — iOS prompt that lets users block tracking, blinding the pixel</td></tr><tr><td><strong>Attribution window</strong></td><td>How long after a click/view a conversion still counts as ad-caused</td></tr><tr><td><strong>Bid stream</strong></td><td>Location/device data leaked through programmatic ad auctions; a geofencing data source</td></tr><tr><td><strong>CAPI</strong></td><td>Conversions API — server-side event sending that bypasses browser tracking loss</td></tr><tr><td><strong>CPM</strong></td><td>Cost per 1,000 impressions — the price of attention</td></tr><tr><td><strong>CTR</strong></td><td>Click-through rate — clicks ÷ impressions</td></tr><tr><td><strong>DSP</strong></td><td>Demand-side platform — software that buys programmatic ads (geofencing vendors are/resell DSPs)</td></tr><tr><td><strong>fbclid</strong></td><td>Click ID Meta appends to ad URLs; lets the pixel tie a site visit to the ad click</td></tr><tr><td><strong>Frequency</strong></td><td>Average times one person has seen the ad; fatigue gauge</td></tr><tr><td><strong>Learning phase</strong></td><td>Meta's calibration period; wants ~50 conversions/ad set/week; resets on big edits</td></tr><tr><td><strong>Lookalike</strong></td><td>Audience of people statistically similar to a source list</td></tr><tr><td><strong>Pixel / dataset</strong></td><td>The on-site script + Meta's container for the events it sends</td></tr><tr><td><strong>Special ad category</strong></td><td>Restricted class (credit, housing, employment) with reduced targeting; financing ads risk it</td></tr><tr><td><strong>UTM</strong></td><td>URL tags (<code>utm_source=facebook…</code>) that let <em>your</em> analytics attribute a visit; platform-independent</td></tr></tbody></table></div>
+    </article>
+  </main>
+</div>
+
+<footer class="colophon">
+  <div class="inner">
+    <span>Source of truth: <code>aphelps099/jjriggs-new</code> · branch <code>claude/facebook-geofencing-playbook-ou30ie</code></span>
+    <span>Questions → Aaron · Dealership → 509-738-2985</span>
+  </div>
+</footer>
+
+</body>
+</html>
