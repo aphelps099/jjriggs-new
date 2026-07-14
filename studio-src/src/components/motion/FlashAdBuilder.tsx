@@ -4,10 +4,12 @@
    JJ Riggs Flash Ads — the "Simple mode" ad builder.
    Type 3–6 short sales lines; each becomes a hard-cut
    statement card in alternating inverse brand colors,
-   closing on the logo + phone end card. Pure typography —
-   no product data, media uploads, or timeline. The same
-   deterministic engine as the studio renders preview and
-   MP4 export, so what plays is what downloads.
+   closing on the logo + phone end card. Optional photo
+   backgrounds pull from the website's own image library
+   (or an upload), and an optional music bed mixes into
+   the export. The same deterministic engine as the
+   studio renders preview and MP4, so what plays is what
+   downloads.
 
    Phase A+ of QUICK-AD-BUILDER-PLAN.md. Brand constants
    here mirror RiggsMotionStudio.tsx — if the schemes or
@@ -16,17 +18,20 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  MotionDoc, Scene, CustomScheme, AspectId, TextAnimId, AssetMap,
+  MotionDoc, Scene, CustomScheme, AspectId, TextAnimId, AssetMap, AudioAsset, ImageAsset,
   makeScene, getAspect, docDuration, defaultDoc,
 } from '@/lib/motion/types';
 import { renderFrame } from '@/lib/motion/render';
 import {
   exportMp4, exportWebm, downloadBlob, supportsMp4Export, ExportProgress,
 } from '@/lib/motion/export';
+import { loadAudioAsset, renderMixdown, musicGainAt } from '@/lib/motion/audio';
 import { ensureFontsReady } from '@/lib/motion/fonts';
 import './flash-ads.css';
 
 const ASSET_BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+// The site root above the studio — where /js/*.data.js and /img/ live
+const SITE_BASE = ASSET_BASE.replace(/\/studio\/?$/, '');
 
 // ── Brand color pairs (site style guide — warm darks, one Bad Boy Red) ──
 const RED_ON_WHITE: CustomScheme = { bg: '#fbfbf9', fg: '#cf1f2a', accent: '#14171a' };
@@ -80,6 +85,18 @@ const AD_ASPECTS: { id: AspectId; label: string; hint: string }[] = [
   { id: '1:1',  label: 'Square', hint: '1080×1080' },
 ];
 
+const PHOTO_PLACEMENTS = [
+  { id: 'hook', label: 'First card' },
+  { id: 'alt',  label: 'Every other' },
+  { id: 'all',  label: 'All cards' },
+] as const;
+type PhotoPlacement = (typeof PHOTO_PLACEMENTS)[number]['id'];
+
+// Bundled, commercially-licensed tracks (drop the files in
+// studio-src/public/music/, list them here, `npm run deploy`).
+// Empty until real licensed tracks are chosen — see public/music/README.txt.
+const BUNDLED_TRACKS: { file: string; label: string }[] = [];
+
 const MAX_CARDS = 6;
 const MAX_WORDS = 5;
 
@@ -98,6 +115,9 @@ const FINE_PRINT =
 // never invented for the user (site rule: never invent offers/prices).
 const DEFAULT_LINES = 'TYM TRACTORS\nBAD BOY MOWERS\nFAMILY OWNED IN COLVILLE\nCALL ANDREW TODAY';
 
+const FLASH_PHOTO_ID = '__flash-photo';
+const FLASH_MUSIC_ID = '__flash-music';
+
 function splitLines(raw: string): string[] {
   return raw.split('\n').map((l) => l.trim()).filter(Boolean).slice(0, MAX_CARDS);
 }
@@ -114,8 +134,24 @@ function buildFlashDoc(opts: {
   anim: TextAnimId;
   aspect: AspectId;
   finePrint: boolean;
+  photoOn: boolean;
+  hasPhoto: boolean;
+  photoPlacement: PhotoPlacement;
+  audioOn: boolean;
+  hasMusic: boolean;
 }): MotionDoc {
-  const { lines, rotation, paceMs, anim, aspect, finePrint } = opts;
+  const {
+    lines, rotation, paceMs, anim, aspect, finePrint,
+    photoOn, hasPhoto, photoPlacement, audioOn, hasMusic,
+  } = opts;
+
+  const photoActive = photoOn && hasPhoto;
+  const photoOnCard = (i: number) =>
+    photoActive && (
+      photoPlacement === 'all'
+      || (photoPlacement === 'hook' && i === 0)
+      || (photoPlacement === 'alt' && i % 2 === 0)
+    );
 
   const scenes: Scene[] = lines.map((line, i) =>
     makeScene('statement', {
@@ -127,6 +163,9 @@ function buildFlashDoc(opts: {
       customScheme: { ...rotation.cycle[i % rotation.cycle.length] },
       align: 'center',
       textScale: 1,
+      ...(photoOnCard(i)
+        ? { imageId: FLASH_PHOTO_ID, kenBurns: 'zoom-in' as const, overlay: 'scrim' as const, overlayOpacity: 0.55 }
+        : {}),
     }),
   );
 
@@ -166,6 +205,10 @@ function buildFlashDoc(opts: {
     accentSkewDeg: -13,
     showGrain: false,
     watermark: '',
+    audioId: audioOn && hasMusic ? FLASH_MUSIC_ID : null,
+    audioVolume: 0.7,
+    audioFadeIn: 300,
+    audioFadeOut: 900,
   };
 }
 
@@ -182,6 +225,90 @@ function fmtSecs(ms: number): string {
   return `${(ms / 1000).toFixed(1)}s`;
 }
 
+// ── The website image library (same data files the site renders from) ──
+
+interface LibraryModel {
+  label: string;
+  group: string;
+  urls: string[];
+}
+
+interface SiteModelRow { model?: string; image?: string; img?: string }
+
+declare global {
+  interface Window {
+    TYM_MODELS?: SiteModelRow[];
+    BADBOY_MODELS?: SiteModelRow[];
+    MOWER_MODELS?: SiteModelRow[];
+    TRACTOR_GALLERY?: Record<string, string[]>;
+  }
+}
+
+function loadSiteScript(src: string): Promise<void> {
+  return new Promise((resolve) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = () => resolve();
+    s.onerror = () => resolve(); // a missing file just shrinks the library
+    document.head.appendChild(s);
+  });
+}
+
+/** Read the site's data files and build {model → image urls}, grouped. */
+async function harvestLibrary(): Promise<LibraryModel[]> {
+  await Promise.all([
+    loadSiteScript(`${SITE_BASE}/js/tym-models.data.js`),
+    loadSiteScript(`${SITE_BASE}/js/badboy-models.data.js`),
+    loadSiteScript(`${SITE_BASE}/js/mower-models.data.js`),
+    loadSiteScript(`${SITE_BASE}/js/badboy-tractor-images.data.js`),
+  ]);
+  // Admin uploads override hand-maintained galleries — load order matters.
+  await loadSiteScript(`${SITE_BASE}/js/uploads-gallery.data.js`);
+
+  const byLabel = new Map<string, LibraryModel>();
+  const add = (label: string, group: string, url?: string | string[]) => {
+    const urls = (Array.isArray(url) ? url : [url]).filter((u): u is string => !!u && !!u.trim());
+    if (!urls.length) return;
+    const entry = byLabel.get(label) ?? { label, group, urls: [] };
+    for (const u of urls) if (!entry.urls.includes(u)) entry.urls.push(u);
+    byLabel.set(label, entry);
+  };
+
+  for (const m of window.TYM_MODELS ?? []) {
+    if (m.model) add(`TYM ${m.model}`, 'TYM tractors', m.image ?? m.img);
+  }
+  for (const m of window.BADBOY_MODELS ?? []) {
+    if (m.model) add(`Bad Boy ${m.model}`, 'Bad Boy tractors', m.image ?? m.img);
+  }
+  for (const m of window.MOWER_MODELS ?? []) {
+    if (m.model) add(`Bad Boy ${m.model}`, 'Bad Boy mowers', m.image ?? m.img);
+  }
+  for (const [key, urls] of Object.entries(window.TRACTOR_GALLERY ?? {})) {
+    const [brand, model] = key.split('|');
+    if (!model) continue;
+    const label = `${brand} ${model}`;
+    const group = brand === 'TYM' ? 'TYM tractors' : 'Bad Boy tractors';
+    add(label, group, urls);
+  }
+
+  return Array.from(byLabel.values()).sort(
+    (a, b) => a.group.localeCompare(b.group) || a.label.localeCompare(b.label),
+  );
+}
+
+/** A URL the browser can draw AND export from (same-origin or proxied blob). */
+function fetchableUrl(raw: string): string {
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      if (new URL(raw).host === window.location.host) return raw;
+    } catch { /* fall through to the proxy */ }
+    // Old data rows still hotlink jjriggsequipment.com / manufacturer hosts —
+    // the site's own allowlisted proxy keeps the canvas untainted.
+    return `${SITE_BASE}/api/fetch-image?url=${encodeURIComponent(raw)}`;
+  }
+  return `${SITE_BASE}/${raw.replace(/^\/+/, '')}`;
+}
+
 export default function FlashAdBuilder() {
   const [rawLines, setRawLines] = useState(DEFAULT_LINES);
   const [rotationId, setRotationId] = useState(ROTATIONS[0].id);
@@ -191,6 +318,21 @@ export default function FlashAdBuilder() {
   const [finePrint, setFinePrint] = useState(false);
   const finePrintTouched = useRef(false);
 
+  // Photo background
+  const [photoOn, setPhotoOn] = useState(false);
+  const [photoName, setPhotoName] = useState<string | null>(null);
+  const [photoPlacement, setPhotoPlacement] = useState<PhotoPlacement>('hook');
+  const [library, setLibrary] = useState<LibraryModel[] | null>(null);
+  const [libModel, setLibModel] = useState('');
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const photoFileRef = useRef<HTMLInputElement>(null);
+
+  // Music bed
+  const [audioOn, setAudioOn] = useState(false);
+  const [musicName, setMusicName] = useState<string | null>(null);
+  const [musicBusy, setMusicBusy] = useState(false);
+  const musicFileRef = useRef<HTMLInputElement>(null);
+
   const [playing, setPlaying] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -199,7 +341,11 @@ export default function FlashAdBuilder() {
   const lines = splitLines(rawLines);
   const rotation = ROTATIONS.find((r) => r.id === rotationId) ?? ROTATIONS[0];
   const paceMs = PACES.find((p) => p.id === paceId)?.ms ?? 900;
-  const doc = buildFlashDoc({ lines, rotation, paceMs, anim, aspect, finePrint });
+  const doc = buildFlashDoc({
+    lines, rotation, paceMs, anim, aspect, finePrint,
+    photoOn, hasPhoto: !!photoName, photoPlacement,
+    audioOn, hasMusic: !!musicName,
+  });
   const totalMs = docDuration(doc);
 
   // Financing-style copy legally needs its fine print — suggest it once,
@@ -217,6 +363,7 @@ export default function FlashAdBuilder() {
   const exportingRef = useRef(exporting);
   exportingRef.current = exporting;
   const assetsRef = useRef<AssetMap>({});
+  const musicRef = useRef<AudioAsset | null>(null);
   const playheadRef = useRef(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const timeElRef = useRef<HTMLSpanElement>(null);
@@ -253,6 +400,21 @@ export default function FlashAdBuilder() {
         playheadRef.current = 0;
       }
 
+      // Keep the preview music element on the playhead's clock
+      const music = musicRef.current;
+      if (music) {
+        const el = music.element;
+        const audible = !!d.audioId && playingRef.current && !exportingRef.current;
+        if (audible) {
+          el.volume = musicGainAt(d, playheadRef.current, total);
+          const want = (playheadRef.current / 1000) % Math.max(0.05, music.buffer.duration);
+          if (Math.abs(el.currentTime - want) > 0.35) el.currentTime = want;
+          if (el.paused) el.play().catch(() => { /* needs a user gesture first */ });
+        } else if (!el.paused) {
+          el.pause();
+        }
+      }
+
       const canvas = canvasRef.current;
       if (!canvas) return;
       const { w: W, h: H } = getAspect(d.aspect);
@@ -278,6 +440,118 @@ export default function FlashAdBuilder() {
     setPlaying(true);
   }, []);
 
+  // ── Photo background ──
+  const applyPhoto = useCallback(async (src: string, name: string) => {
+    setPhotoBusy(true);
+    setStatus(null);
+    try {
+      // fetch → blob keeps the canvas untainted, so export still works
+      const res = await fetch(src);
+      if (!res.ok) throw new Error(`Photo failed to load (${res.status})`);
+      const blob = await res.blob();
+      const old = assetsRef.current[FLASH_PHOTO_ID];
+      if (old && old.url.startsWith('blob:')) URL.revokeObjectURL(old.url);
+      const url = URL.createObjectURL(blob);
+      const img = await loadImage(url);
+      assetsRef.current[FLASH_PHOTO_ID] = { id: FLASH_PHOTO_ID, name, url, img } as ImageAsset;
+      setPhotoName(name);
+    } catch (e) {
+      setStatus({ ok: false, msg: e instanceof Error ? e.message : 'Photo failed to load.' });
+    } finally {
+      setPhotoBusy(false);
+    }
+  }, []);
+
+  const handlePhotoFile = useCallback(async (file: File) => {
+    setPhotoBusy(true);
+    setStatus(null);
+    try {
+      const old = assetsRef.current[FLASH_PHOTO_ID];
+      if (old && old.url.startsWith('blob:')) URL.revokeObjectURL(old.url);
+      const url = URL.createObjectURL(file);
+      const img = await loadImage(url);
+      assetsRef.current[FLASH_PHOTO_ID] = { id: FLASH_PHOTO_ID, name: file.name, url, img } as ImageAsset;
+      setPhotoName(file.name);
+    } catch {
+      setStatus({ ok: false, msg: `Couldn't read ${file.name}.` });
+    } finally {
+      setPhotoBusy(false);
+    }
+  }, []);
+
+  const clearPhoto = useCallback(() => {
+    const old = assetsRef.current[FLASH_PHOTO_ID];
+    if (old && old.url.startsWith('blob:')) URL.revokeObjectURL(old.url);
+    delete assetsRef.current[FLASH_PHOTO_ID];
+    setPhotoName(null);
+  }, []);
+
+  // Load the site's image library the first time the photo toggle opens
+  useEffect(() => {
+    if (!photoOn || library !== null) return;
+    let alive = true;
+    harvestLibrary()
+      .then((lib) => { if (alive) setLibrary(lib); })
+      .catch(() => { if (alive) setLibrary([]); });
+    return () => { alive = false; };
+  }, [photoOn, library]);
+
+  const libGroups = library?.length
+    ? Array.from(new Set(library.map((l) => l.group)))
+    : [];
+  const libSelected = library?.find((l) => l.label === libModel) ?? null;
+
+  // ── Music bed ──
+  const setMusicAsset = useCallback((asset: AudioAsset, name: string) => {
+    const old = musicRef.current;
+    if (old) {
+      old.element.pause();
+      if (old.url.startsWith('blob:')) URL.revokeObjectURL(old.url);
+    }
+    // renderMixdown looks the doc's audioId up in this map
+    asset.id = FLASH_MUSIC_ID;
+    musicRef.current = asset;
+    setMusicName(name);
+  }, []);
+
+  const handleMusicFile = useCallback(async (file: File) => {
+    setMusicBusy(true);
+    setStatus(null);
+    try {
+      setMusicAsset(await loadAudioAsset(file), file.name);
+    } catch {
+      setStatus({ ok: false, msg: `Couldn't read ${file.name} — try an MP3 or M4A.` });
+    } finally {
+      setMusicBusy(false);
+    }
+  }, [setMusicAsset]);
+
+  const pickBundledTrack = useCallback(async (track: { file: string; label: string }) => {
+    setMusicBusy(true);
+    setStatus(null);
+    try {
+      const res = await fetch(`${ASSET_BASE}/music/${track.file}`);
+      if (!res.ok) throw new Error(`Track failed to load (${res.status})`);
+      const blob = await res.blob();
+      const file = new File([blob], track.file, { type: blob.type || 'audio/mpeg' });
+      setMusicAsset(await loadAudioAsset(file), track.label);
+    } catch (e) {
+      setStatus({ ok: false, msg: e instanceof Error ? e.message : 'Track failed to load.' });
+    } finally {
+      setMusicBusy(false);
+    }
+  }, [setMusicAsset]);
+
+  const clearMusic = useCallback(() => {
+    const old = musicRef.current;
+    if (old) {
+      old.element.pause();
+      if (old.url.startsWith('blob:')) URL.revokeObjectURL(old.url);
+    }
+    musicRef.current = null;
+    setMusicName(null);
+  }, []);
+
   // ── Export ──
   const handleExport = useCallback(async () => {
     if (exportingRef.current) return;
@@ -292,15 +566,19 @@ export default function FlashAdBuilder() {
     try {
       await ensureFontsReady(['Tactic Sans Bld', 'Questrial', 'Michroma']);
       const d = docRef.current;
+      const music = musicRef.current;
+      const audioBuffer = d.audioId && music
+        ? await renderMixdown(d, { [FLASH_MUSIC_ID]: music }, {})
+        : null;
       const stamp = `${d.aspect.replace(':', 'x')}`;
       if (supportsMp4Export()) {
-        const blob = await exportMp4(d, assetsRef.current, onP, undefined, { audioBuffer: null });
+        const blob = await exportMp4(d, assetsRef.current, onP, undefined, { audioBuffer });
         downloadBlob(blob, `jjriggs-flash-ad-${stamp}.mp4`);
         setStatus({ ok: true, msg: 'MP4 saved to your downloads.' });
       } else {
         const blob = await exportWebm(d, assetsRef.current, onP, undefined, {});
         downloadBlob(blob, `jjriggs-flash-ad-${stamp}.webm`);
-        setStatus({ ok: true, msg: 'Saved as WebM — use Chrome or Edge for MP4.' });
+        setStatus({ ok: true, msg: 'Saved as WebM (no sound) — use Chrome or Edge for MP4 with music.' });
       }
     } catch (e) {
       setStatus({ ok: false, msg: e instanceof Error ? e.message : 'Export failed — try again.' });
@@ -404,6 +682,160 @@ export default function FlashAdBuilder() {
               </button>
             ))}
           </div>
+        </section>
+
+        <section className="fa-block">
+          <label className="fa-check">
+            <input
+              type="checkbox"
+              checked={photoOn}
+              onChange={(e) => setPhotoOn(e.target.checked)}
+            />
+            Add photo background
+          </label>
+
+          {photoOn && (
+            <div className="fa-panel">
+              <div className="fa-row">
+                <button
+                  type="button"
+                  className="fa-mini-btn"
+                  onClick={() => photoFileRef.current?.click()}
+                  disabled={photoBusy}
+                >
+                  Upload photo
+                </button>
+                <input
+                  ref={photoFileRef}
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePhotoFile(f); e.target.value = ''; }}
+                />
+                {photoName && (
+                  <span className="fa-chip">
+                    {photoName}
+                    <button type="button" className="fa-chip-x" onClick={clearPhoto} aria-label="Remove photo">×</button>
+                  </span>
+                )}
+                {photoBusy && <span className="fa-sub">Loading…</span>}
+              </div>
+
+              {library === null && <p className="fa-hint">Loading the website&rsquo;s image library…</p>}
+              {library !== null && library.length === 0 && (
+                <p className="fa-hint">Website library isn&rsquo;t reachable here — upload a photo instead.</p>
+              )}
+              {library !== null && library.length > 0 && (
+                <>
+                  <select
+                    className="fa-select"
+                    value={libModel}
+                    onChange={(e) => setLibModel(e.target.value)}
+                  >
+                    <option value="">From the website: choose equipment…</option>
+                    {libGroups.map((g) => (
+                      <optgroup key={g} label={g}>
+                        {library.filter((l) => l.group === g).map((l) => (
+                          <option key={l.label} value={l.label}>{l.label}</option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                  {libSelected && (
+                    <div className="fa-thumbs">
+                      {libSelected.urls.slice(0, 12).map((u) => (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          key={u}
+                          src={fetchableUrl(u)}
+                          alt={libSelected.label}
+                          className="fa-thumb"
+                          loading="lazy"
+                          onClick={() => applyPhoto(fetchableUrl(u), libSelected.label)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+
+              <div className="fa-row">
+                <span className="fa-sub">Show it on</span>
+                <div className="fa-seg" role="group">
+                  {PHOTO_PLACEMENTS.map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      className={`fa-seg-btn fa-seg-sm${p.id === photoPlacement ? ' is-on' : ''}`}
+                      onClick={() => setPhotoPlacement(p.id)}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <p className="fa-hint">The photo sits behind the words with a dark wash so the text stays readable.</p>
+            </div>
+          )}
+        </section>
+
+        <section className="fa-block">
+          <label className="fa-check">
+            <input
+              type="checkbox"
+              checked={audioOn}
+              onChange={(e) => setAudioOn(e.target.checked)}
+            />
+            Add music
+          </label>
+
+          {audioOn && (
+            <div className="fa-panel">
+              <div className="fa-row">
+                <button
+                  type="button"
+                  className="fa-mini-btn"
+                  onClick={() => musicFileRef.current?.click()}
+                  disabled={musicBusy}
+                >
+                  Upload music
+                </button>
+                <input
+                  ref={musicFileRef}
+                  type="file"
+                  accept="audio/*,.mp3,.m4a,.wav"
+                  hidden
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleMusicFile(f); e.target.value = ''; }}
+                />
+                {musicName && (
+                  <span className="fa-chip">
+                    {musicName}
+                    <button type="button" className="fa-chip-x" onClick={clearMusic} aria-label="Remove music">×</button>
+                  </span>
+                )}
+                {musicBusy && <span className="fa-sub">Loading…</span>}
+              </div>
+              {BUNDLED_TRACKS.length > 0 && (
+                <div className="fa-row">
+                  {BUNDLED_TRACKS.map((t) => (
+                    <button
+                      key={t.file}
+                      type="button"
+                      className={`fa-seg-btn fa-seg-sm${musicName === t.label ? ' is-on' : ''}`}
+                      onClick={() => pickBundledTrack(t)}
+                      disabled={musicBusy}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <p className="fa-hint">
+                Use a track licensed for ads — uploads here aren&rsquo;t checked.
+                It loops under the whole ad and fades out at the end. Every ad still reads with the sound off.
+              </p>
+            </div>
+          )}
         </section>
 
         <section className="fa-block">
