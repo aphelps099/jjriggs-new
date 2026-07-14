@@ -8,7 +8,7 @@
 # as real pages on this site, then retire their redirects below.
 
 # --- ad review pages: pretty /review/{token} URLs serve review.html ---
-/review/*  /review.html  200
+/review/*  /review/  200
 
 # --- internal rename: schedule-visit -> contact ---
 /schedule-visit       /contact   301
