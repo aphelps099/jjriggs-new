@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import {
   MotionDoc, Scene, TemplateId, AssetMap, ImageAsset, VideoAsset, VideoMap, AudioAsset, AudioMap,
-  CustomScheme, TransitionId, TextCue, VoClip, makeVoClip,
+  CustomScheme, TransitionId, TextCue, TextAnimId, VoClip, makeVoClip,
   ASPECTS, TEMPLATES, TEXT_ANIMS, TRANSITIONS, KEN_BURNS, OVERLAYS, ALIGNMENTS,
   PIP_POSITIONS, TEXT_SCALES, CUE_STYLES, CUE_POSITIONS, KEN_BURNS_EASES, KEN_BURNS_SPEEDS,
   EMOJI_MOTIONS, EMOJI_AMOUNTS, EMOJI_SIZES,
@@ -13,6 +13,10 @@ import {
   harvestLibrary, fetchLibraryPhoto, fetchableUrl, LibraryModel,
   fetchMusicList, uploadMedia, absoluteMediaUrl, createReviewLink, CloudTrack,
 } from '@/lib/site-library';
+import {
+  ROTATIONS as FLASH_ROTATIONS, PACES as FLASH_PACES, FLASH_ANIMS,
+  MAX_CARDS as FLASH_MAX_CARDS, splitLines as splitFlashLines, buildFlashScenes,
+} from '@/lib/flash-template';
 import { renderFrame } from '@/lib/motion/render';
 import {
   exportMp4, exportWebm, exportPng, downloadBlob, supportsMp4Export,
@@ -1643,6 +1647,40 @@ export default function RiggsMotionStudio() {
     });
   };
 
+  // ── Flash Ads (the attention-opener generator, shared template) ──
+  const [flashLines, setFlashLines] = useState('');
+  const [flashRotationId, setFlashRotationId] = useState(FLASH_ROTATIONS[0].id);
+  const [flashPaceId, setFlashPaceId] = useState<(typeof FLASH_PACES)[number]['id']>('quick');
+  const [flashAnim, setFlashAnim] = useState<TextAnimId>('scale-in');
+  const [flashFinePrint, setFlashFinePrint] = useState(false);
+  const [flashMode, setFlashMode] = useState<'replace' | 'append'>('replace');
+  const [flashStatus, setFlashStatus] = useState<{ ok: boolean; msg: string } | null>(null);
+
+  const buildFlashSequence = () => {
+    const lines = splitFlashLines(flashLines);
+    if (!lines.length) {
+      setFlashStatus({ ok: false, msg: 'Type at least one line — one line per card.' });
+      return;
+    }
+    const rotation = FLASH_ROTATIONS.find((r) => r.id === flashRotationId) ?? FLASH_ROTATIONS[0];
+    const paceMs = FLASH_PACES.find((p) => p.id === flashPaceId)?.ms ?? 900;
+    const scenes = buildFlashScenes({
+      lines, rotation, paceMs, anim: flashAnim, finePrint: flashFinePrint,
+    });
+    setDoc((d) => ({
+      ...d,
+      scenes: flashMode === 'replace' ? scenes : [...d.scenes, ...scenes],
+    }));
+    setSelectedId(scenes[0].id);
+    playheadRef.current = flashMode === 'replace'
+      ? 0
+      : docDuration(docRef.current);
+    setFlashStatus({
+      ok: true,
+      msg: `${lines.length} flash card${lines.length === 1 ? '' : 's'} built — now dress them up: a photo per card, an emoji layer, a voiceover.`,
+    });
+  };
+
   // ── Inventory Builder ──
   // Price is optional by design — most units on the lot don't list one,
   // and the builder simply skips the price scenes when it's blank.
@@ -2871,6 +2909,67 @@ export default function RiggsMotionStudio() {
             third on the video and gets a counter scene; leave it blank (most units don&apos;t
             list one) and those are simply skipped. Then select the video scene and upload
             the walk-around clip.
+          </p>
+        </Section>
+
+        {/* — Flash Ads (attention opener) — */}
+        <Section title="Flash Ads" badge="Attention opener">
+          <Field label="Lines (one per card)">
+            <TextArea
+              value={flashLines}
+              onChange={setFlashLines}
+              rows={4}
+              placeholder={'0% FINANCING\nHUGE SUMMER SALE\nENDS AUGUST 31\nCALL ANDREW'}
+            />
+            <p className="ms-hint">Up to {FLASH_MAX_CARDS} cards, 5 words each — short sells.</p>
+          </Field>
+          <Field label="Colors">
+            <Seg
+              options={FLASH_ROTATIONS.map((r) => ({ id: r.id, label: r.label }))}
+              value={flashRotationId}
+              onChange={setFlashRotationId}
+              small
+            />
+          </Field>
+          <Field label="Pace">
+            <Seg
+              options={FLASH_PACES.map((p) => ({ id: p.id, label: `${p.label} · ${(p.ms / 1000).toFixed(1)}s` }))}
+              value={flashPaceId}
+              onChange={(v) => setFlashPaceId(v as (typeof FLASH_PACES)[number]['id'])}
+              small
+            />
+          </Field>
+          <Field label="Text motion">
+            <Seg options={FLASH_ANIMS} value={flashAnim} onChange={setFlashAnim} small />
+          </Field>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 12 }}>
+            <input
+              type="checkbox"
+              checked={flashFinePrint}
+              onChange={(e) => setFlashFinePrint(e.target.checked)}
+              style={{ accentColor: '#cf1f2a' }}
+            />
+            Add financing fine print
+          </label>
+          <Field label="Mode">
+            <Seg
+              options={[{ id: 'replace', label: 'Replace scenes' }, { id: 'append', label: 'Append' }] as const}
+              value={flashMode}
+              onChange={(v) => setFlashMode(v as 'replace' | 'append')}
+              small
+            />
+          </Field>
+          <button className="ms-btn is-primary" style={{ width: '100%' }} onClick={buildFlashSequence}>
+            ⚡ Build flash sequence
+          </button>
+          {flashStatus && (
+            <p className={`ms-status ${flashStatus.ok ? 'is-ok' : 'is-err'}`}>{flashStatus.msg}</p>
+          )}
+          <p className="ms-hint">
+            Hard-cut statement cards in alternating brand colors, closing on the end card —
+            the same generator as /studio/ads/, but here every card takes the full toolkit:
+            photo backgrounds with Position, emoji layers, a voiceover on the lane, music.
+            Rapid pace is the safe flashing limit for Facebook.
           </p>
         </Section>
 
