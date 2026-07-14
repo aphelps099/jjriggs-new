@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import {
   MotionDoc, Scene, TemplateId, AssetMap, ImageAsset, VideoAsset, VideoMap, AudioAsset, AudioMap,
-  CustomScheme, TransitionId, TextCue,
+  CustomScheme, TransitionId, TextCue, VoClip, makeVoClip,
   ASPECTS, TEMPLATES, TEXT_ANIMS, TRANSITIONS, KEN_BURNS, OVERLAYS, ALIGNMENTS,
   PIP_POSITIONS, TEXT_SCALES, CUE_STYLES, CUE_POSITIONS, KEN_BURNS_EASES, KEN_BURNS_SPEEDS,
   defaultDoc, makeScene, makeCue, getAspect, resolveScheme, docDuration, sceneAt,
@@ -13,7 +13,7 @@ import { renderFrame } from '@/lib/motion/render';
 import {
   exportMp4, exportWebm, exportPng, downloadBlob, supportsMp4Export,
 } from '@/lib/motion/export';
-import { loadAudioAsset, tryDecodeVideoAudio, musicGainAt, renderMixdown } from '@/lib/motion/audio';
+import { loadAudioAsset, tryDecodeVideoAudio, musicGainAt, renderMixdown, effectiveVoClips, voWindowsFor } from '@/lib/motion/audio';
 import { FontOption, builtinFonts, registerFontFile, ensureFontsReady } from '@/lib/motion/fonts';
 import { Field, TextInput, TextArea, Seg, Slider, Section } from './controls';
 import './motion-studio.css';
@@ -492,6 +492,7 @@ export default function RiggsMotionStudio() {
   const stageRef = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const playheadElRef = useRef<HTMLDivElement>(null);
+  const voPlayheadElRef = useRef<HTMLDivElement>(null);
   const timeElRef = useRef<HTMLSpanElement>(null);
   const [stageDims, setStageDims] = useState({ w: 640, h: 360 });
 
@@ -527,8 +528,8 @@ export default function RiggsMotionStudio() {
     const total = docDuration(d);
     const { index, local } = sceneAt(d, playheadRef.current);
     const active = d.scenes[index];
-    const voDurMs = d.voId && audioRef.current[d.voId]
-      ? audioRef.current[d.voId].buffer.duration * 1000 : 0;
+    const voWins = voWindowsFor(d, audioRef.current);
+    const voClips = effectiveVoClips(d, audioRef.current);
     // Media elements only free-run at normal forward speed; while
     // shuttling (J/L fast or reverse) they pause and chase by seeking.
     const smooth = playingRef.current && rateRef.current === 1;
@@ -559,10 +560,16 @@ export default function RiggsMotionStudio() {
     for (const id in audioRef.current) {
       const a = audioRef.current[id];
       const isBed = d.audioId === id && total > 0;
-      const isVo = !isBed && d.voId === id && total > 0;
+      // The VO lane: the clip speaking right now that plays from this take
+      const clip = !isBed && total > 0
+        ? voClips.find((c) =>
+            c.audioId === id
+            && playheadRef.current >= c.start
+            && playheadRef.current < c.start + c.duration)
+        : undefined;
       if (isBed) {
         a.element.loop = true;
-        a.element.volume = Math.max(0, Math.min(1, musicGainAt(d, playheadRef.current, total, voDurMs)));
+        a.element.volume = Math.max(0, Math.min(1, musicGainAt(d, playheadRef.current, total, voWins)));
         if (smooth) {
           if (a.element.paused) a.element.play().catch(() => {});
           const targetS = (playheadRef.current / 1000) % Math.max(0.01, a.buffer.duration);
@@ -570,10 +577,10 @@ export default function RiggsMotionStudio() {
         } else if (!a.element.paused) {
           a.element.pause();
         }
-      } else if (isVo) {
+      } else if (clip) {
         a.element.loop = false;
         a.element.volume = Math.max(0, Math.min(1, d.voVolume));
-        const relS = (playheadRef.current - d.voStart) / 1000;
+        const relS = (clip.offset + (playheadRef.current - clip.start)) / 1000;
         const within = relS >= 0 && relS < a.buffer.duration;
         if (smooth && within) {
           if (a.element.paused) a.element.play().catch(() => {});
@@ -646,6 +653,9 @@ export default function RiggsMotionStudio() {
       // Imperative UI updates (no React re-render at 60fps)
       if (playheadElRef.current && total > 0) {
         playheadElRef.current.style.left = `${(playheadRef.current / total) * 100}%`;
+        if (voPlayheadElRef.current) {
+          voPlayheadElRef.current.style.left = `${(playheadRef.current / total) * 100}%`;
+        }
       }
       if (timeElRef.current) {
         timeElRef.current.textContent = `${fmtTime(playheadRef.current)} / ${fmtTime(total)}`;
@@ -1299,6 +1309,146 @@ export default function RiggsMotionStudio() {
     }
   };
 
+  // ── VO lane: ElevenLabs script + editable clips on a second layer ──
+  const [voScript, setVoScript] = useState('');
+  const [voVoices, setVoVoices] = useState<{ id: string; name: string }[] | null>(null);
+  const [voVoiceId, setVoVoiceId] = useState('');
+  const [voGenBusy, setVoGenBusy] = useState(false);
+  const [selVoClipId, setSelVoClipId] = useState<string | null>(null);
+  const voLaneRef = useRef<HTMLDivElement>(null);
+  const voDragRef = useRef<{ id: string; startX: number; origStart: number; laneW: number } | null>(null);
+  const [voDragPos, setVoDragPos] = useState<{ id: string; start: number } | null>(null);
+
+  // Voice list — loaded once, silently; needs the admin session + server key
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const r = await fetch(`${SITE_BASE}/api/admin/voiceover`);
+        if (!r.ok) { if (alive) setVoVoices([]); return; }
+        const d = await r.json();
+        if (!alive) return;
+        setVoVoices(d.voices ?? []);
+        setVoVoiceId((cur) => cur || d.default_voice_id || d.voices?.[0]?.id || '');
+      } catch {
+        if (alive) setVoVoices([]);
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  /** Drop a take onto the lane at the playhead (nudged right past overlaps). */
+  const addVoClipForAsset = useCallback((asset: AudioAsset) => {
+    const d = docRef.current;
+    const dur = Math.round(asset.buffer.duration * 1000);
+    const clips = d.voClips ?? [];
+    let start = Math.max(0, playheadRef.current);
+    for (const c of [...clips].sort((a, b) => a.start - b.start)) {
+      if (start < c.start + c.duration && start + dur > c.start) start = c.start + c.duration;
+    }
+    const clip = makeVoClip({ audioId: asset.id, start, offset: 0, duration: dur });
+    patchDoc({ voClips: [...clips, clip], voId: null });
+    setSelVoClipId(clip.id);
+    return clip;
+  }, [patchDoc]);
+
+  const generateVo = useCallback(async () => {
+    const text = voScript.trim();
+    if (!text) { setVoStatus({ ok: false, msg: 'Write the script first.' }); return; }
+    setVoGenBusy(true);
+    setVoStatus(null);
+    try {
+      const res = await fetch(`${SITE_BASE}/api/admin/voiceover`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ text, ...(voVoiceId ? { voice_id: voVoiceId } : {}) }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        const msg = res.status === 401
+          ? 'Sign in first: open /admin in another tab, enter the passcode, then try again.'
+          : (data as { error?: string }).error ?? `Voice generation failed (${res.status}).`;
+        throw new Error(msg);
+      }
+      const blob = await res.blob();
+      const slug = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 32) || 'take';
+      const file = new File([blob], `vo-${slug}.mp3`, { type: 'audio/mpeg' });
+      const asset = await loadAudioAsset(file);
+      audioRef.current[asset.id] = asset;
+      setAudioTracks((list) => [...list, asset]);
+      addVoClipForAsset(asset);
+      setVoStatus({ ok: true, msg: `Generated ${fmtTime(asset.buffer.duration * 1000)} — dropped on the VO lane at the playhead. Drag to place, ✂ to split.` });
+    } catch (e) {
+      setVoStatus({ ok: false, msg: e instanceof Error ? e.message : 'Voice generation failed — try again.' });
+    } finally {
+      setVoGenBusy(false);
+    }
+  }, [voScript, voVoiceId, addVoClipForAsset]);
+
+  /** Split the clip under the playhead into two at the playhead. */
+  const splitVoClipAtPlayhead = useCallback(() => {
+    const d = docRef.current;
+    const t = playheadRef.current;
+    const clips = d.voClips ?? [];
+    const c = clips.find((x) => t > x.start + 80 && t < x.start + x.duration - 80);
+    if (!c) { setVoStatus({ ok: false, msg: 'Park the playhead inside a clip to split it.' }); return; }
+    const first: VoClip = { ...c, duration: t - c.start };
+    const second = makeVoClip({
+      audioId: c.audioId, start: t, offset: c.offset + (t - c.start), duration: c.duration - (t - c.start),
+    });
+    patchDoc({ voClips: clips.flatMap((x) => (x.id === c.id ? [first, second] : [x])) });
+    setSelVoClipId(second.id);
+    setVoStatus({ ok: true, msg: 'Split. Select a half and delete it, or drag it into place.' });
+  }, [patchDoc]);
+
+  const deleteVoClip = useCallback((id: string) => {
+    patchDoc({ voClips: (docRef.current.voClips ?? []).filter((c) => c.id !== id) });
+    setSelVoClipId((cur) => (cur === id ? null : cur));
+  }, [patchDoc]);
+
+  /** Keep a dragged clip inside the timeline and off its neighbors. */
+  const clampVoClipStart = (clips: VoClip[], self: VoClip, want: number, total: number) => {
+    let lo = 0;
+    let hi = Math.max(0, total - self.duration);
+    for (const o of clips) {
+      if (o.id === self.id) continue;
+      if (o.start + o.duration <= self.start + 1) lo = Math.max(lo, o.start + o.duration);
+      else hi = Math.min(hi, o.start - self.duration);
+    }
+    return Math.round(Math.max(lo, Math.min(hi, want)));
+  };
+
+  const onVoClipPointerDown = (e: React.PointerEvent, clip: VoClip) => {
+    e.stopPropagation();
+    setSelVoClipId(clip.id);
+    const lane = voLaneRef.current;
+    if (!lane) return;
+    voDragRef.current = { id: clip.id, startX: e.clientX, origStart: clip.start, laneW: lane.clientWidth };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const onVoClipPointerMove = (e: React.PointerEvent, clip: VoClip) => {
+    const drag = voDragRef.current;
+    if (!drag || drag.id !== clip.id) return;
+    const d = docRef.current;
+    const total = docDuration(d);
+    const want = drag.origStart + ((e.clientX - drag.startX) / Math.max(1, drag.laneW)) * total;
+    setVoDragPos({ id: clip.id, start: clampVoClipStart(d.voClips ?? [], clip, want, total) });
+  };
+
+  const onVoClipPointerUp = (clip: VoClip) => {
+    const drag = voDragRef.current;
+    voDragRef.current = null;
+    setVoDragPos((pos) => {
+      if (drag && pos && pos.id === clip.id && pos.start !== clip.start) {
+        patchDoc({
+          voClips: (docRef.current.voClips ?? []).map((c) => (c.id === clip.id ? { ...c, start: pos.start } : c)),
+        });
+      }
+      return null;
+    });
+  };
+
   // ── Inventory Builder ──
   // Price is optional by design — most units on the lot don't list one,
   // and the builder simply skips the price scenes when it's blank.
@@ -1774,6 +1924,33 @@ export default function RiggsMotionStudio() {
           ))}
           <div className="ms-playhead" ref={playheadElRef} style={{ left: 0 }} />
         </div>
+
+        {/* VO lane — narration clips on their own timeline layer */}
+        {(doc.voClips?.length ?? 0) > 0 && (
+          <div className="ms-volane" ref={voLaneRef}>
+            {doc.voClips.map((c) => {
+              const start = voDragPos?.id === c.id ? voDragPos.start : c.start;
+              const take = audioRef.current[c.audioId];
+              return (
+                <div
+                  key={c.id}
+                  className={`ms-vo-clip ${c.id === selVoClipId ? 'is-active' : ''}`}
+                  style={{
+                    left: `${(start / Math.max(1, totalMs)) * 100}%`,
+                    width: `${Math.min(100, (c.duration / Math.max(1, totalMs)) * 100)}%`,
+                  }}
+                  title={`${take?.name ?? 'take'} · ${fmtTime(c.duration)} — drag to move`}
+                  onPointerDown={(e) => onVoClipPointerDown(e, c)}
+                  onPointerMove={(e) => onVoClipPointerMove(e, c)}
+                  onPointerUp={() => onVoClipPointerUp(c)}
+                >
+                  <span className="ms-vo-clip-label">🎙 {take?.name?.replace(/^vo-/, '').replace(/\.mp3$/, '') ?? 'take'}</span>
+                </div>
+              );
+            })}
+            <div className="ms-volane-playhead" ref={voPlayheadElRef} style={{ left: 0 }} />
+          </div>
+        )}
       </div>
 
       {/* ══ Inspector ══ */}
@@ -2528,7 +2705,35 @@ export default function RiggsMotionStudio() {
         </Section>
 
         {/* — Voiceover — */}
-        <Section title="Voiceover" badge="Plays once">
+        <Section title="Voiceover" badge="Second layer">
+          <Field label="Script → voice">
+            <TextArea
+              value={voScript}
+              onChange={setVoScript}
+              rows={3}
+              placeholder="Write what Andrew says… the take lands on the VO lane at the playhead."
+            />
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
+              {!!voVoices?.length && (
+                <select
+                  className="ms-input"
+                  style={{ width: 'auto', flex: 1, minWidth: 90 }}
+                  value={voVoiceId}
+                  onChange={(e) => setVoVoiceId(e.target.value)}
+                >
+                  {voVoices.map((v) => (
+                    <option key={v.id} value={v.id}>{v.name}</option>
+                  ))}
+                </select>
+              )}
+              <button className="ms-btn is-primary" onClick={generateVo} disabled={voGenBusy}>
+                {voGenBusy ? 'Generating…' : '🎙 Generate'}
+              </button>
+            </div>
+            {voVoices !== null && voVoices.length === 0 && (
+              <p className="ms-hint">Voice list unavailable — sign in at /admin and set ELEVENLABS_API_KEY on the server to enable generation.</p>
+            )}
+          </Field>
           <Field label="Track">
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               <button className="ms-file-btn" onClick={() => voInputRef.current?.click()}>
@@ -2547,6 +2752,15 @@ export default function RiggsMotionStudio() {
                   ))}
                 </select>
               )}
+              {doc.voId && audioRef.current[doc.voId] && (
+                <button
+                  className="ms-btn"
+                  title="Drop this take onto the editable VO lane at the playhead"
+                  onClick={() => addVoClipForAsset(audioRef.current[doc.voId as string])}
+                >
+                  ↳ Add to lane
+                </button>
+              )}
             </div>
             <input
               ref={voInputRef}
@@ -2559,30 +2773,52 @@ export default function RiggsMotionStudio() {
               <p className={`ms-status ${voStatus.ok ? 'is-ok' : 'is-err'}`}>{voStatus.msg}</p>
             )}
           </Field>
-          {doc.voId && (
-            <>
-              <Field label="VO volume">
-                <Slider
-                  value={doc.voVolume}
-                  onChange={(v) => patchDoc({ voVolume: v })}
-                  min={0} max={1} step={0.05}
-                  format={(v) => `${Math.round(v * 100)}%`}
-                />
-              </Field>
-              <Field label="Starts at">
-                <Slider
-                  value={doc.voStart}
-                  onChange={(v) => patchDoc({ voStart: v })}
-                  min={0} max={Math.max(1000, totalMs)} step={250}
-                  format={(v) => fmtTime(v)}
-                />
-              </Field>
-            </>
+          {(doc.voClips?.length ?? 0) > 0 && (
+            <Field label="VO lane">
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                <button className="ms-btn" onClick={splitVoClipAtPlayhead} title="Split the clip under the playhead">
+                  ✂ Split at playhead
+                </button>
+                <button
+                  className="ms-btn"
+                  disabled={!selVoClipId}
+                  onClick={() => { if (selVoClipId) deleteVoClip(selVoClipId); }}
+                  title="Remove the selected clip"
+                >
+                  ✕ Remove clip
+                </button>
+              </div>
+              <p className="ms-hint">
+                Drag clips on the lane under the timeline to place them. Music auto-ducks
+                under every clip.
+              </p>
+            </Field>
+          )}
+          {(doc.voId || (doc.voClips?.length ?? 0) > 0) && (
+            <Field label="VO volume">
+              <Slider
+                value={doc.voVolume}
+                onChange={(v) => patchDoc({ voVolume: v })}
+                min={0} max={1} step={0.05}
+                format={(v) => `${Math.round(v * 100)}%`}
+              />
+            </Field>
+          )}
+          {doc.voId && (doc.voClips?.length ?? 0) === 0 && (
+            <Field label="Starts at">
+              <Slider
+                value={doc.voStart}
+                onChange={(v) => patchDoc({ voStart: v })}
+                min={0} max={Math.max(1000, totalMs)} step={250}
+                format={(v) => fmtTime(v)}
+              />
+            </Field>
           )}
           <p className="ms-hint">
-            Recorded narration (or an ElevenLabs render) mixed over the music. For someone
-            talking on camera, use the presenter cam on a scene instead — its audio mixes in
-            automatically.
+            Write a script and generate it in Andrew&rsquo;s ElevenLabs voice, or upload a
+            recording. Takes on the VO lane are editable clips — the simple track select
+            still works for a single unedited take. For someone talking on camera, use the
+            presenter cam on a scene instead.
           </p>
         </Section>
 

@@ -235,6 +235,33 @@ export function makeCue(overrides: Partial<TextCue> = {}): TextCue {
   };
 }
 
+// ── Voiceover clips (the VO lane — a second timeline layer) ──
+export interface VoClip {
+  id: string;
+  /** Audio asset carrying this narration take. */
+  audioId: string;
+  /** Timeline position where the clip begins (ms). */
+  start: number;
+  /** Offset into the source take where playback begins (ms). */
+  offset: number;
+  /** Length on the timeline (ms). */
+  duration: number;
+}
+
+let voClipCounter = 0;
+
+export function makeVoClip(overrides: Partial<VoClip> = {}): VoClip {
+  voClipCounter += 1;
+  return {
+    id: `vo-${Date.now().toString(36)}-${voClipCounter}`,
+    audioId: '',
+    start: 0,
+    offset: 0,
+    duration: 1000,
+    ...overrides,
+  };
+}
+
 // ── Scene ──
 export interface Scene {
   id: string;
@@ -342,12 +369,16 @@ export interface MotionDoc {
   /** Music fade-out length before the end (ms). */
   audioFadeOut: number;
 
-  // Voiceover (plays once from voStart, mixed over the music bed)
+  // Voiceover (plays once from voStart, mixed over the music bed).
+  // Legacy single-take fields — when `voClips` has entries, the clip
+  // lane wins and these are ignored.
   voId: string | null;
-  /** 0–1 voiceover gain. */
+  /** 0–1 voiceover gain (applies to the whole VO lane). */
   voVolume: number;
   /** Timeline position where the voiceover begins (ms). */
   voStart: number;
+  /** The VO lane: editable narration clips on their own timeline layer. */
+  voClips: VoClip[];
   /** Auto-duck the music while the voiceover plays. */
   audioDuckOn: boolean;
   /** Music gain multiplier while ducked (0–1). */
@@ -532,6 +563,7 @@ export function defaultDoc(): MotionDoc {
     voId: null,
     voVolume: 1,
     voStart: 0,
+    voClips: [],
     audioDuckOn: true,
     audioDuckLevel: 0.3,
   };

@@ -623,3 +623,57 @@
   background: #000;
   margin: 6px 0 4px;
 }
+
+/* ── VO lane (narration clips on a second timeline layer) ── */
+.ms-volane {
+  position: relative;
+  height: 30px;
+  margin-top: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--ms-line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ms-vo-clip {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  background: color-mix(in srgb, var(--ms-royal) 30%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ms-royal) 65%, transparent);
+  border-radius: 3px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  min-width: 14px;
+}
+
+.ms-vo-clip:active { cursor: grabbing; }
+
+.ms-vo-clip.is-active {
+  background: color-mix(in srgb, var(--ms-royal) 50%, transparent);
+  border-color: var(--ms-royal);
+}
+
+.ms-vo-clip-label {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--ms-ink, #dfe7ee);
+  pointer-events: none;
+}
+
+.ms-volane-playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--ms-royal);
+  opacity: 0.75;
+  pointer-events: none;
+}
