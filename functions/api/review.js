@@ -1,0 +1,95 @@
+// /api/review — the no-login review API behind /review/{token} pages.
+//
+//   GET  ?t={token}                     → the review record
+//   POST { t, action, note?, by? }      → action: "approve" | "changes" | "note"
+//
+// The token IS the credential (Google-Docs "anyone with the link" model —
+// 120 bits of randomness, unguessable). Deliberately low-stakes: approving
+// never auto-posts anything; it just records the decision and emails the
+// builder. Notes are capped in count and length.
+
+const MAX_NOTES = 20;
+const MAX_NOTE_LEN = 600;
+const TOKEN_RE = /^[a-f0-9]{24,40}$/;
+
+async function loadRecord(env, t) {
+  if (!TOKEN_RE.test(t)) return null;
+  const obj = await env.MEDIA.get(`reviews/${t}.json`);
+  if (!obj) return null;
+  try {
+    return JSON.parse(await obj.text());
+  } catch {
+    return null;
+  }
+}
+
+export async function onRequestGet({ request, env }) {
+  if (!env.MEDIA) return err("Review links aren't set up yet", 501);
+  const t = new URL(request.url).searchParams.get("t") || "";
+  const record = await loadRecord(env, t);
+  if (!record) return err("Review not found — check the link", 404);
+  return json(record);
+}
+
+export async function onRequestPost({ request, env }) {
+  if (!env.MEDIA) return err("Review links aren't set up yet", 501);
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return err("Invalid JSON", 400);
+  }
+  const t = String(body.t || "");
+  const action = String(body.action || "");
+  const note = String(body.note || "").trim().slice(0, MAX_NOTE_LEN);
+  const by = String(body.by || "").trim().slice(0, 60);
+  if (!["approve", "changes", "note"].includes(action)) return err("Unknown action", 400);
+  if ((action === "changes" || action === "note") && !note) return err("Write a quick note first", 400);
+
+  const record = await loadRecord(env, t);
+  if (!record) return err("Review not found — check the link", 404);
+  if (record.notes.length >= MAX_NOTES) return err("This review has enough notes — call instead 🙂", 429);
+
+  const when = new Date().toISOString();
+  if (note) record.notes.push({ note, by: by || "Reviewer", when });
+  if (action === "approve") {
+    record.status = "approved";
+    record.decided = when;
+  } else if (action === "changes") {
+    record.status = "changes-requested";
+    record.decided = when;
+  }
+  await env.MEDIA.put(`reviews/${t}.json`, JSON.stringify(record), {
+    httpMetadata: { contentType: "application/json" },
+  });
+
+  // Tell the builder — notes land in the inbox, not in some dashboard
+  // nobody checks. Silent no-op when Resend isn't configured.
+  notify(env, record, action, note, by).catch(() => {});
+
+  return json({ ok: true, status: record.status, notes: record.notes });
+}
+
+async function notify(env, record, action, note, by) {
+  if (!env.RESEND_API_KEY) return;
+  const to = env.REVIEW_NOTIFY_TO || "aaronphelps.c@gmail.com";
+  const from = env.LEAD_FROM || "JJ Riggs Website <onboarding@resend.dev>";
+  const verdict = action === "approve" ? "✅ APPROVED" : action === "changes" ? "✏️ CHANGES REQUESTED" : "💬 New note";
+  const origin = "https://jjriggsequipment.com";
+  await fetch(env.RESEND_API_URL || "https://api.resend.com/emails", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.RESEND_API_KEY}` },
+    body: JSON.stringify({
+      from,
+      to: to.split(",").map((s) => s.trim()).filter(Boolean),
+      subject: `Ad review — ${verdict}: ${record.name}`,
+      text:
+        `${verdict}${by ? ` (from ${by})` : ""}\n\nAd: ${record.name}\n`
+        + (note ? `\nNote:\n${note}\n` : "")
+        + `\nReview page: ${origin}/review/${record.token}\nVideo: ${origin}${record.mediaUrl}\n`,
+    }),
+  });
+}
+
+const json = (o) => new Response(JSON.stringify(o), { headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+const err = (m, s) => new Response(JSON.stringify({ error: m }), { status: s, headers: { "Content-Type": "application/json" } });

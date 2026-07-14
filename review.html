@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Ad Review — JJ Riggs Equipment</title>
+<style>
+  @font-face {
+    font-family: 'Tactic Sans Bld';
+    src: url('/fonts/tactic-sans-bld.woff2') format('woff2'), url('/fonts/tactic-sans-bld.woff') format('woff');
+    font-weight: 400 800; font-style: normal; font-display: swap;
+  }
+  :root {
+    --ink: #14171a; --ink-2: #1b2025; --ink-3: #0f1215;
+    --bone: #f3f1ea; --white: #fbfbf9; --steel: #8b939c; --steel-2: #c3c8ce;
+    --red: #cf1f2a; --red-deep: #a5151f; --green: #1d7a3c;
+    --line: rgba(255,255,255,.12);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ink); color: var(--white);
+    font-family: 'Questrial', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 17px; line-height: 1.5; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 1.2rem 1.1rem 3rem; }
+  .brand { display: flex; align-items: center; gap: 10px; padding: .4rem 0 1.1rem; }
+  .slash { width: 8px; height: 18px; background: var(--red); transform: skewX(-13deg); }
+  .brand b {
+    font-family: 'Tactic Sans Bld', 'Bebas Neue', sans-serif; font-weight: 400;
+    letter-spacing: .02em; text-transform: uppercase; font-size: 15px;
+  }
+  .brand b span { color: var(--red); }
+  h1 {
+    font-family: 'Tactic Sans Bld', sans-serif; font-weight: 400; text-transform: uppercase;
+    font-size: clamp(1.3rem, 5.5vw, 1.7rem); line-height: 1.1; margin: 0 0 .35rem;
+  }
+  .meta { color: var(--steel); font-size: .85rem; margin: 0 0 1rem; }
+  .badge {
+    display: inline-block; padding: .3em .9em; border-radius: 4px; font-size: .8rem;
+    letter-spacing: .06em; text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .badge.pending { background: var(--ink-2); border: 1px solid var(--line); color: var(--steel-2); }
+  .badge.approved { background: var(--green); color: var(--white); }
+  .badge.changes-requested { background: var(--red); color: var(--white); }
+  video {
+    width: 100%; max-height: 68vh; background: #000; border-radius: 6px;
+    border: 1px solid var(--line); display: block; margin-bottom: 1.1rem;
+  }
+  .btn {
+    display: block; width: 100%; padding: 1rem 1.2rem; border: none; border-radius: 6px;
+    font-family: inherit; font-weight: 700; font-size: 1.05rem; cursor: pointer; margin-bottom: .7rem;
+  }
+  .btn-approve { background: var(--green); color: var(--white); }
+  .btn-approve:active { filter: brightness(.9); }
+  .btn-changes { background: var(--ink-2); color: var(--white); border: 1.5px solid var(--line); }
+  textarea {
+    width: 100%; min-height: 90px; background: var(--ink-2); color: var(--white);
+    border: 1.5px solid var(--line); border-radius: 6px; padding: .8rem; font-family: inherit;
+    font-size: 1rem; margin-bottom: .7rem;
+  }
+  .note-hint { color: var(--steel); font-size: .85rem; margin: -0.2rem 0 .8rem; }
+  .notes { border-top: 1px solid var(--line); margin-top: 1.6rem; padding-top: 1rem; }
+  .notes h2 { font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: var(--steel); margin: 0 0 .6rem; }
+  .note { background: var(--ink-2); border: 1px solid var(--line); border-radius: 6px; padding: .7rem .9rem; margin-bottom: .6rem; }
+  .note small { color: var(--steel); display: block; margin-top: .3rem; font-size: .78rem; }
+  .done {
+    background: var(--ink-2); border: 1px solid var(--line); border-left: 6px solid var(--green);
+    border-radius: 6px; padding: 1rem 1.1rem; margin-bottom: 1rem; font-size: 1.02rem;
+  }
+  .done.changes { border-left-color: var(--red); }
+  .err { color: #e8555f; }
+  .hidden { display: none; }
+  .foot { color: var(--steel); font-size: .8rem; margin-top: 2rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><span class="slash"></span><b>JJ Riggs <span>Ad Review</span></b></div>
+  <div id="app"><p class="meta">Loading…</p></div>
+  <p class="foot">This page is for reviewing an ad before it posts. Approving here doesn’t publish anything — it just tells the builder you’re good with it.</p>
+</div>
+<script>
+(function () {
+  var app = document.getElementById('app');
+  var m = location.pathname.match(/\/review\/([a-f0-9]{24,40})/);
+  var token = (m && m[1]) || new URLSearchParams(location.search).get('t') || '';
+  if (!token) { app.innerHTML = '<p class="err">This link is missing its review code — ask for a fresh link.</p>'; return; }
+
+  var record = null;
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function render() {
+    var r = record;
+    var when = new Date(r.created).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+    var html = '';
+    html += '<h1>' + esc(r.name) + '</h1>';
+    html += '<p class="meta">Sent for review ' + esc(when) + '</p>';
+    html += '<span class="badge ' + esc(r.status) + '">' + (r.status === 'pending' ? 'Waiting for review' : r.status === 'approved' ? '✓ Approved' : 'Changes requested') + '</span>';
+    html += '<video controls playsinline preload="metadata" src="' + esc(r.mediaUrl) + '"></video>';
+
+    if (r.status === 'approved') {
+      html += '<div class="done">✅ Approved — nothing else to do. If you change your mind, add a note below or just call.</div>';
+    } else if (r.status === 'changes-requested') {
+      html += '<div class="done changes">✏️ Changes requested — a new version will get its own link.</div>';
+    } else {
+      html += '<button class="btn btn-approve" id="approve">✅ Approve — good to post</button>';
+    }
+    html += '<textarea id="note" placeholder="Anything to change? Type it here…"></textarea>';
+    html += '<p class="note-hint">Notes go straight to the builder’s inbox.</p>';
+    html += '<button class="btn btn-changes" id="send">Send note' + (r.status === 'pending' ? ' &amp; request changes' : '') + '</button>';
+    html += '<p class="err hidden" id="perr"></p>';
+
+    if (r.notes && r.notes.length) {
+      html += '<div class="notes"><h2>Notes</h2>';
+      r.notes.forEach(function (n) {
+        html += '<div class="note">' + esc(n.note) + '<small>' + esc(n.by || 'Reviewer') + ' · ' + esc(new Date(n.when).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + '</small></div>';
+      });
+      html += '</div>';
+    }
+    app.innerHTML = html;
+
+    var approve = document.getElementById('approve');
+    if (approve) approve.onclick = function () { act('approve'); };
+    document.getElementById('send').onclick = function () {
+      act(record.status === 'pending' ? 'changes' : 'note');
+    };
+  }
+
+  function act(action) {
+    var note = (document.getElementById('note') || { value: '' }).value.trim();
+    if ((action === 'changes' || action === 'note') && !note) {
+      showErr('Type the note first.');
+      return;
+    }
+    fetch('/api/review', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ t: token, action: action, note: note }),
+    }).then(function (res) { return res.json().then(function (d) { return { ok: res.ok, d: d }; }); })
+      .then(function (out) {
+        if (!out.ok) { showErr(out.d.error || 'That didn’t go through — try again.'); return; }
+        record.status = out.d.status;
+        record.notes = out.d.notes;
+        render();
+        window.scrollTo(0, 0);
+      })
+      .catch(function () { showErr('No connection — try again.'); });
+  }
+
+  function showErr(msg) {
+    var el = document.getElementById('perr');
+    if (el) { el.textContent = msg; el.classList.remove('hidden'); }
+  }
+
+  fetch('/api/review?t=' + token)
+    .then(function (res) { return res.json().then(function (d) { return { ok: res.ok, d: d }; }); })
+    .then(function (out) {
+      if (!out.ok) { app.innerHTML = '<p class="err">' + esc(out.d.error || 'Review not found.') + '</p>'; return; }
+      record = out.d;
+      render();
+    })
+    .catch(function () { app.innerHTML = '<p class="err">Couldn’t load the review — check your connection.</p>'; });
+})();
+</script>
+</body>
+</html>

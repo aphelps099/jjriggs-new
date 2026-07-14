@@ -11,7 +11,7 @@ import {
 } from '@/lib/motion/types';
 import {
   harvestLibrary, fetchLibraryPhoto, fetchableUrl, LibraryModel,
-  fetchMusicList, uploadMedia, absoluteMediaUrl, CloudTrack,
+  fetchMusicList, uploadMedia, absoluteMediaUrl, createReviewLink, CloudTrack,
 } from '@/lib/site-library';
 import { renderFrame } from '@/lib/motion/render';
 import {
@@ -3333,10 +3333,18 @@ export default function RiggsMotionStudio() {
               onClick={async () => {
                 setCloudBusy(true);
                 try {
-                  const url = await uploadMedia('renders', lastRender.name, lastRender.blob);
-                  const link = absoluteMediaUrl(url);
+                  const { key, url } = await uploadMedia('renders', lastRender.name, lastRender.blob);
+                  // A review page beats a raw file link — Approve / notes,
+                  // and it feeds the future Ad Queue. Fall back gracefully.
+                  let link: string;
+                  try {
+                    const adName = modTitle ? `${modTitle} ad` : lastRender.name.replace(/\.(mp4|webm)$/, '');
+                    link = absoluteMediaUrl(await createReviewLink(adName, key));
+                  } catch {
+                    link = absoluteMediaUrl(url);
+                  }
                   await navigator.clipboard.writeText(link).catch(() => {});
-                  setExportStatus({ ok: true, msg: `Saved to cloud — link copied: ${link}` });
+                  setExportStatus({ ok: true, msg: `Review link copied — text it to Andrew: ${link}` });
                 } catch (e) {
                   setExportStatus({ ok: false, msg: e instanceof Error ? e.message : 'Cloud save failed.' });
                 } finally {
@@ -3344,7 +3352,7 @@ export default function RiggsMotionStudio() {
                 }
               }}
             >
-              {cloudBusy ? 'Uploading…' : '☁ Save to cloud & copy link'}
+              {cloudBusy ? 'Uploading…' : '☁ Save & create review link'}
             </button>
           )}
           {exportStatus && (

@@ -119,14 +119,14 @@ export async function fetchMusicList(): Promise<CloudTrack[]> {
 
 /**
  * Upload a file to the media bucket (needs the admin session).
- * Returns the public /media/... URL. Throws with a readable message on
- * 401 (signed out) / 501 (bucket not wired).
+ * Returns { key, url } — url is the public /media/... path. Throws with
+ * a readable message on 401 (signed out) / 501 (bucket not wired).
  */
 export async function uploadMedia(
   kind: 'renders' | 'vo' | 'music' | 'uploads',
   name: string,
   blob: Blob,
-): Promise<string> {
+): Promise<{ key: string; url: string }> {
   const res = await fetch(
     `${SITE_BASE}/api/admin/media?kind=${kind}&name=${encodeURIComponent(name)}`,
     { method: 'POST', headers: { 'content-type': blob.type || 'application/octet-stream' }, body: blob },
@@ -138,6 +138,22 @@ export async function uploadMedia(
       : (data as { error?: string }).error ?? `Upload failed (${res.status}).`;
     throw new Error(msg);
   }
+  return data as { key: string; url: string };
+}
+
+/**
+ * Create a no-login review page for an uploaded render — the link Andrew
+ * taps to watch the ad and Approve / Request changes. Returns the
+ * /review/{token} path.
+ */
+export async function createReviewLink(name: string, mediaKey: string): Promise<string> {
+  const res = await fetch(`${SITE_BASE}/api/admin/review`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ name, mediaKey }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error((data as { error?: string }).error ?? `Review link failed (${res.status}).`);
   return (data as { url: string }).url;
 }
 

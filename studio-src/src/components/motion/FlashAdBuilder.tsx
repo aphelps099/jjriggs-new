@@ -29,7 +29,7 @@ import { loadAudioAsset, renderMixdown, musicGainAt } from '@/lib/motion/audio';
 import { ensureFontsReady } from '@/lib/motion/fonts';
 import {
   harvestLibrary, fetchableUrl, SITE_BASE, LibraryModel,
-  fetchMusicList, uploadMedia, absoluteMediaUrl, CloudTrack,
+  fetchMusicList, uploadMedia, absoluteMediaUrl, createReviewLink, CloudTrack,
 } from '@/lib/site-library';
 import './flash-ads.css';
 
@@ -639,16 +639,22 @@ export default function FlashAdBuilder() {
     if (!lastRender) return;
     setCloudBusy(true);
     try {
-      const url = await uploadMedia('renders', lastRender.name, lastRender.blob);
-      const link = absoluteMediaUrl(url);
+      const { key, url } = await uploadMedia('renders', lastRender.name, lastRender.blob);
+      let link: string;
+      try {
+        const firstLine = splitLines(rawLines)[0] ?? 'Flash ad';
+        link = absoluteMediaUrl(await createReviewLink(`${firstLine} — flash ad`, key));
+      } catch {
+        link = absoluteMediaUrl(url);
+      }
       await navigator.clipboard.writeText(link).catch(() => {});
-      setStatus({ ok: true, msg: `Saved to cloud — link copied: ${link}` });
+      setStatus({ ok: true, msg: `Review link copied — text it to Andrew: ${link}` });
     } catch (e) {
       setStatus({ ok: false, msg: e instanceof Error ? e.message : 'Cloud save failed.' });
     } finally {
       setCloudBusy(false);
     }
-  }, [lastRender]);
+  }, [lastRender, rawLines]);
 
   const pickCloudTrack = useCallback(async (track: CloudTrack) => {
     setMusicBusy(true);
@@ -1001,7 +1007,7 @@ export default function FlashAdBuilder() {
             </button>
             {lastRender && (
               <button type="button" className="fa-mini-btn" onClick={saveToCloud} disabled={cloudBusy}>
-                {cloudBusy ? 'Uploading…' : '☁ Save to cloud & copy link'}
+                {cloudBusy ? 'Uploading…' : '☁ Save & create review link'}
               </button>
             )}
           </div>
