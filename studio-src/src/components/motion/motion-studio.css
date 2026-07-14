@@ -677,3 +677,20 @@
   opacity: 0.75;
   pointer-events: none;
 }
+
+/* ── Collapsible inspector sections ── */
+.ms-section-head.is-toggle {
+  cursor: pointer;
+  user-select: none;
+}
+
+.ms-section-head.is-toggle:hover .ms-section-title {
+  opacity: 0.85;
+}
+
+.ms-section-chev {
+  display: inline-block;
+  width: 14px;
+  font-size: 10px;
+  opacity: 0.7;
+}

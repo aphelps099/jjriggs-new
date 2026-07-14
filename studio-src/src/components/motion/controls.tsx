@@ -2,7 +2,7 @@
 
 /* Small shared form controls for Motion Studio */
 
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 
 export function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -101,14 +101,29 @@ export function Slider({
   );
 }
 
-export function Section({ title, children, badge }: { title: string; children: ReactNode; badge?: string }) {
+export function Section({ title, children, badge, defaultOpen = false }: {
+  title: string; children: ReactNode; badge?: string;
+  /** Start expanded (the scene and export sections do; the rest fold away). */
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <section className="ms-section">
-      <div className="ms-section-head">
-        <h3 className="ms-section-title">{title}</h3>
+      <div
+        className="ms-section-head is-toggle"
+        onClick={() => setOpen((o) => !o)}
+        role="button"
+        tabIndex={0}
+        aria-expanded={open}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen((o) => !o); } }}
+      >
+        <h3 className="ms-section-title">
+          <span className="ms-section-chev" aria-hidden>{open ? '▾' : '▸'}</span>
+          {title}
+        </h3>
         {badge && <span className="ms-section-badge">{badge}</span>}
       </div>
-      {children}
+      {open && children}
     </section>
   );
 }
