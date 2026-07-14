@@ -412,10 +412,20 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
       new FormData(form).forEach(function(v,k){payload[k]=v;});
       if(product)payload.product=product;
       if(tsToken)payload.turnstile=tsToken;
+      // Campaign attribution — utm_*/fbclid captured by js/meta-ads.js on landing.
+      if(window.jjAttribution){
+        var attr=window.jjAttribution();
+        if(attr)Object.keys(attr).forEach(function(k){if(payload[k]===undefined)payload[k]=attr[k];});
+      }
       fetch('/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
         .then(function(r){return r.json().catch(function(){return {ok:r.ok};});})
         .then(function(d){
-          if(d&&d.ok){document.querySelector('.qcard').innerHTML=DONE;}
+          if(d&&d.ok){
+            // Conversion events fire ONLY on confirmed success — never on open/click.
+            if(window.jjTrack)window.jjTrack('generate_lead',{lead_type:type});
+            if(window.jjMetaLead)window.jjMetaLead(type);
+            document.querySelector('.qcard').innerHTML=DONE;
+          }
           else{throw new Error((d&&d.error)||'fail');}
         })
         .catch(function(err){
@@ -429,5 +439,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
   wire('quoteForm','quote');wire('visitForm','visit');wire('serviceForm','service');
 })();
 </script>
+<script src="js/analytics.js"></script>
+<script src="js/meta-ads.js"></script>
 </body>
 </html>

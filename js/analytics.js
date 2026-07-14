@@ -22,7 +22,7 @@
 
   // ====== GA4 SETUP ======
   // Replace G-XXXXXXXXXX with the real Measurement ID from GA4 admin.
-  var GA_ID = 'G-XXXXXXXXXX';
+  var GA_ID = 'G-8C8JJF9BVM'; // GA4 property "JJ RIGGS" — stream 7797119450, jjriggsequipment.com
 
   if (GA_ID && GA_ID.indexOf('XXXX') === -1) {
     var s = document.createElement('script');
