@@ -348,6 +348,87 @@ function drawImageCover(
   ctx.drawImage(img, dx - panX, dy, dw, dh);
 }
 
+// ── Emoji layer (particles over media, under text) ────
+// Deterministic — every particle's path is a pure function of its index
+// and t, so the preview and the exporter draw identical frames.
+
+/** Cheap seeded hash → stable pseudo-random in [0,1) per particle. */
+function hash01(n: number): number {
+  const x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+  return x - Math.floor(x);
+}
+
+let emojiSegmenter: Intl.Segmenter | null | undefined;
+
+/** Split an emoji string into visual glyphs (keeps ZWJ sequences whole). */
+function emojiGlyphs(raw: string): string[] {
+  const s = raw.replace(/\s+/g, '');
+  if (!s) return [];
+  if (emojiSegmenter === undefined) {
+    emojiSegmenter = typeof Intl !== 'undefined' && 'Segmenter' in Intl
+      ? new Intl.Segmenter('en', { granularity: 'grapheme' })
+      : null;
+  }
+  if (emojiSegmenter) return Array.from(emojiSegmenter.segment(s), (x) => x.segment);
+  return Array.from(s);
+}
+
+function drawEmojiLayer(ctx: CanvasRenderingContext2D, sc: SceneCtx, scene: Scene, t: number) {
+  const glyphs = emojiGlyphs(scene.emoji ?? '');
+  if (!glyphs.length) return;
+  const { W, H, u } = sc;
+  const motion = scene.emojiMotion ?? 'rain';
+  const sizeMul = Math.max(0.3, Math.min(3, scene.emojiSize ?? 1));
+  const base = 64 * u * sizeMul;
+
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  if (motion === 'bounce') {
+    // One big burst: rushes toward the viewer with an overshoot, settles
+    // with a bounce, then breathes gently for the rest of the scene.
+    const px = base * 2.4;
+    const inP = clamp01(t / 700);
+    const c1 = 1.70158, c3 = c1 + 1;
+    let s = 1 + c3 * Math.pow(inP - 1, 3) + c1 * Math.pow(inP - 1, 2); // ease-out-back
+    if (inP >= 1) s = 1 + 0.05 * Math.sin((t - 700) / 260);
+    ctx.save();
+    ctx.translate(W / 2, H * 0.24);
+    ctx.scale(Math.max(0.01, s), Math.max(0.01, s));
+    ctx.font = `${px}px sans-serif`;
+    ctx.fillText(glyphs.join(' '), 0, 0);
+    ctx.restore();
+  } else {
+    const amount = Math.max(0.25, Math.min(3, scene.emojiAmount ?? 1));
+    const count = Math.round(14 * amount * (W > H ? 1.25 : 1));
+    for (let i = 0; i < count; i++) {
+      const r1 = hash01(i + 1);
+      const r2 = hash01((i + 1) * 7.31);
+      const r3 = hash01((i + 1) * 13.7);
+      const r4 = hash01((i + 1) * 3.13);
+      const px = base * (0.55 + r3 * 0.9);
+      const wobble = Math.sin(t / 900 + r4 * 6.283) * 26 * u;
+      let x: number;
+      let y: number;
+      if (motion === 'sweep') {
+        const lane = W + px * 2;
+        x = ((t * (W / (3000 - r2 * 1400))) + r4 * lane) % lane - px;
+        y = r1 * H + Math.sin(t / 800 + r4 * 6.283) * 36 * u;
+      } else {
+        const lane = H + px * 2;
+        const fall = ((t * (H / (2800 - r2 * 1400))) + r4 * lane) % lane;
+        y = motion === 'rain' ? fall - px : lane - fall - px;
+        x = r1 * W + wobble;
+      }
+      ctx.font = `${px}px sans-serif`;
+      ctx.globalAlpha = 0.92;
+      ctx.fillText(glyphs[i % glyphs.length], x, y);
+    }
+  }
+  ctx.restore();
+}
+
 /**
  * Cover-fit the current frame of an uploaded clip. The caller (preview
  * sync loop or the exporter's frame-exact seeker) is responsible for the
@@ -859,6 +940,9 @@ function drawScene(
   } else {
     drawBackdrop(ctx, sc, scene, scheme, t);
   }
+
+  // Emoji layer — over the media/backdrop, under the text
+  if ((scene.emoji ?? '').trim()) drawEmojiLayer(ctx, sc, scene, t);
 
   // Foreground (text) — wrapped in exit fade
   const xp = exitP(scene, t, exitEnabled);

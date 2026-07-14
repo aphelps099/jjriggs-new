@@ -158,6 +158,28 @@ export const TEXT_SCALES = [
   { id: '3',   label: '300%' },
 ] as const;
 
+// ── Emoji layer motions (particles behind the text) ──
+export const EMOJI_MOTIONS = [
+  { id: 'rain',   label: 'Rain ↓' },
+  { id: 'float',  label: 'Float ↑' },
+  { id: 'sweep',  label: 'Sweep →' },
+  { id: 'bounce', label: 'Bounce' },
+] as const;
+
+export type EmojiMotionId = typeof EMOJI_MOTIONS[number]['id'];
+
+export const EMOJI_AMOUNTS = [
+  { id: '0.5', label: 'Few' },
+  { id: '1',   label: 'Some' },
+  { id: '2',   label: 'Lots' },
+] as const;
+
+export const EMOJI_SIZES = [
+  { id: '0.7', label: 'Small' },
+  { id: '1',   label: 'Medium' },
+  { id: '1.6', label: 'Big' },
+] as const;
+
 // ── Ken Burns time ramp (easing of the motion over the scene) ──
 export const KEN_BURNS_EASES = [
   { id: 'in-out', label: 'Smooth' },
@@ -289,6 +311,15 @@ export interface Scene {
   textEnd: number;
   /** Timed text cues layered over the scene on their own clocks. */
   cues: TextCue[];
+
+  // Emoji layer — celebratory particles drawn over the media/backdrop
+  // but under the text ("" = off). Deterministic, so preview == export.
+  emoji: string;
+  emojiMotion: EmojiMotionId;
+  /** Particle count multiplier (0.5 few · 1 · 2 lots). */
+  emojiAmount: number;
+  /** Particle size multiplier (0.7 · 1 · 1.6). */
+  emojiSize: number;
 
   // Text content (used per-template)
   kicker: string;
@@ -445,6 +476,10 @@ export function makeScene(template: TemplateId, overrides: Partial<Scene> = {}):
     textStart: 0,
     textEnd: 0,
     cues: [],
+    emoji: '',
+    emojiMotion: 'rain',
+    emojiAmount: 1,
+    emojiSize: 1,
     kicker: '',
     title: '',
     subtitle: '',

@@ -6,6 +6,7 @@ import {
   CustomScheme, TransitionId, TextCue, VoClip, makeVoClip,
   ASPECTS, TEMPLATES, TEXT_ANIMS, TRANSITIONS, KEN_BURNS, OVERLAYS, ALIGNMENTS,
   PIP_POSITIONS, TEXT_SCALES, CUE_STYLES, CUE_POSITIONS, KEN_BURNS_EASES, KEN_BURNS_SPEEDS,
+  EMOJI_MOTIONS, EMOJI_AMOUNTS, EMOJI_SIZES,
   defaultDoc, makeScene, makeCue, getAspect, resolveScheme, docDuration, sceneAt,
 } from '@/lib/motion/types';
 import { harvestLibrary, fetchLibraryPhoto, fetchableUrl, LibraryModel } from '@/lib/site-library';
@@ -89,6 +90,19 @@ function nearestSpeedId(speed?: number): typeof KEN_BURNS_SPEEDS[number]['id'] {
   const v = speed ?? 1;
   return v < 0.75 ? '0.5' : v < 1.5 ? '1' : '2';
 }
+
+function nearestEmojiAmountId(v?: number): typeof EMOJI_AMOUNTS[number]['id'] {
+  const a = v ?? 1;
+  return a < 0.75 ? '0.5' : a < 1.5 ? '1' : '2';
+}
+
+function nearestEmojiSizeId(v?: number): typeof EMOJI_SIZES[number]['id'] {
+  const s = v ?? 1;
+  return s < 0.85 ? '0.7' : s < 1.3 ? '1' : '1.6';
+}
+
+// One-tap emoji for the layer input — dealer-ad staples.
+const EMOJI_QUICK = ['🔥', '☀️', '❄️', '💰', '🎉', '⭐'];
 
 /** 3×3 focal-point picker — which part of the photo the cover crop keeps. */
 function FocalGrid({ fx, fy, onPick }: {
@@ -1961,6 +1975,7 @@ export default function RiggsMotionStudio() {
           <Section
             title={`Scene ${selectedIndex + 1} — ${TEMPLATES.find((t) => t.id === selected.template)?.label}`}
             badge={TEMPLATES.find((t) => t.id === selected.template)?.hint}
+            defaultOpen
           >
             {/* Hidden pickers — reachable from every template's controls */}
             <input
@@ -2493,6 +2508,61 @@ export default function RiggsMotionStudio() {
               />
             </Field>
 
+            <Field label="Emoji layer">
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+                <div style={{ flex: 1, minWidth: 110 }}>
+                  <TextInput
+                    value={selected.emoji ?? ''}
+                    onChange={(v) => patchScene(selected.id, { emoji: v.slice(0, 16) })}
+                    placeholder="🔥 ☀️ 💰 — type or tap"
+                  />
+                </div>
+                {EMOJI_QUICK.map((em) => (
+                  <button
+                    key={em}
+                    className="ms-btn"
+                    style={{ padding: '4px 8px' }}
+                    title={(selected.emoji ?? '').includes(em) ? 'Remove' : 'Add'}
+                    onClick={() => {
+                      const cur = selected.emoji ?? '';
+                      patchScene(selected.id, {
+                        emoji: cur.includes(em) ? cur.split(em).join('') : (cur + em).slice(0, 16),
+                      });
+                    }}
+                  >
+                    {em}
+                  </button>
+                ))}
+              </div>
+              {(selected.emoji ?? '').trim() && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 6 }}>
+                  <Seg
+                    options={EMOJI_MOTIONS}
+                    value={selected.emojiMotion ?? 'rain'}
+                    onChange={(v) => patchScene(selected.id, { emojiMotion: v })}
+                    small
+                  />
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {selected.emojiMotion !== 'bounce' && (
+                      <Seg
+                        options={EMOJI_AMOUNTS}
+                        value={nearestEmojiAmountId(selected.emojiAmount)}
+                        onChange={(v) => patchScene(selected.id, { emojiAmount: Number(v) })}
+                        small
+                      />
+                    )}
+                    <Seg
+                      options={EMOJI_SIZES}
+                      value={nearestEmojiSizeId(selected.emojiSize)}
+                      onChange={(v) => patchScene(selected.id, { emojiSize: Number(v) })}
+                      small
+                    />
+                  </div>
+                  <p className="ms-hint">Drawn behind the words. Bounce rushes at the viewer once, then settles.</p>
+                </div>
+              )}
+            </Field>
+
             <Field label="Duration">
               <Slider
                 value={selected.duration}
@@ -3011,7 +3081,7 @@ export default function RiggsMotionStudio() {
         </Section>
 
         {/* — Export — */}
-        <Section title="Export" badge={`${aspect.w}×${aspect.h} · ${doc.fps}fps`}>
+        <Section title="Export" badge={`${aspect.w}×${aspect.h} · ${doc.fps}fps`} defaultOpen>
           {exporting && exporting !== 'png' ? (
             <>
               <div className="ms-progress">
