@@ -154,6 +154,7 @@ Full runbook in **`FACEBOOK-POSTING.md`**. Status: **working test harness, not y
 - **Test it today:** `node tools/fb-post-test.mjs` — prints every would-be post and writes `fb-post-preview.html`, a Facebook-look mockup to review with Andrew before anything goes live.
 - **The platform reality:** automation can only post to the **business Page** (`facebook.com/JJRIGGSEQUIPMENT`) — Meta removed personal-profile posting in 2018. That's the better setup anyway: Page posts build an asset the business owns, and Andrew can share them to his personal feed in one tap.
 - **Capturing the lot-photo stream:** the backlog comes from Facebook's own "Download your information" export (run it for both the Page and Andrew's personal profile — legit, no scraping). Going forward: the Page can be harvested automatically via the API; the personal-account habit is fixed at the source with phone auto-backup to a shared album. Put the model number in post captions ("T474H on the lot today") and photos can auto-file into per-model folders.
+- **Paid ads are a separate system.** Organic posting (above) costs nothing and is automated; paid Meta campaigns and geofencing are a deliberate, human-approved media buy. Strategy + operating manual: **`FACEBOOK-GEOFENCING-PLAYBOOK.md`**; the mechanics behind it (auctions, pixels, attribution, geofencing data): **`ADS-FUNDAMENTALS.md`**.
 
 ---
 
@@ -242,6 +243,8 @@ T5068/T5074 (no data exists — stay off), T5075/T224/T115/T130 keep-or-pull, tr
 | `INVENTORY-PIPELINE-PLAN.md` | Original sheet-pipeline spec (workbook schema, validation, product-page P1 list) |
 | `STOCK-BADGES.md` | Live badge system: setup, rules, Andrew's cheat sheet |
 | `FACEBOOK-POSTING.md` | FB pipeline test harness + go-live runbook |
+| `FACEBOOK-GEOFENCING-PLAYBOOK.md` | Paid Meta ads + geofencing strategy, campaign setup, tracking work, 90-day plan |
+| `ADS-FUNDAMENTALS.md` | How paid ads actually work: auction, learning phase, attribution, geofencing data — read before running campaigns |
 | `ADMIN-ACCESS-SETUP.md` | Admin passcode + env var setup, security model |
 | `DEPLOY.md` | Cloudflare Pages settings, domain, contact-form email setup |
 | `JJRiggs-Live-Inventory-Proposal.md` / `JJRiggs-Sheet-and-Facebook-Proposal.md` | Client-facing proposals (pricing patterns for future dealers) |
