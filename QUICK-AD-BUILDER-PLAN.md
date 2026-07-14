@@ -304,6 +304,16 @@ Each phase is shippable and reviewed on a test deploy before the next.
 - **Phase B — durable media (1–2 days).** R2 bucket + upload endpoint;
   `js/ad-media.data.js` manifest with roles/focal points; video upload from
   the wizard; readiness rules; URL-loaded media in the engine.
+  **PARTIALLY SHIPPED (July 2026):** the R2 backbone is live —
+  `functions/media/[[path]].js` (public serving w/ range support),
+  `functions/api/admin/media.js` (gated uploads: renders/vo/music/uploads),
+  `functions/api/music.js` (public ad-music list). Both editors save
+  renders to the cloud with a copyable approval link, generated/re-voiced
+  VO takes auto-upload and auto-relink on project load, and the music
+  library serves one-tap tracks from the bucket (drop licensed MP3s into
+  `music/`). Setup: DEPLOY.md §3b (bucket `jjriggs-media`, binding `MEDIA`).
+  Still open from Phase B: the `js/ad-media.data.js` manifest, product
+  video uploads, and readiness rules.
 - **Phase C — Ad Queue (1–2 days).** KV jobs + statuses + dashboard;
   campaign snapshots; dedup; Open-in-Studio handoff.
 - **Phase D — Facebook (1 day + the token hour with Andrew).** Approve →

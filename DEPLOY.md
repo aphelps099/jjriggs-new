@@ -56,6 +56,27 @@ The `functions/` folder is picked up automatically, so `POST /api/lead` works on
 want working on branch-preview URLs must be added to **Preview** too — and env changes only
 apply to deployments created *after* the change, so push (or retry a deploy) afterwards.
 
+## 3b. Media storage (R2) — cloud renders, voiceover takes, ad music
+
+The studio and Flash Ads save rendered MP4s ("Save to cloud & copy link" for
+approval), generated voiceover takes (so saved projects relink after reload),
+and the one-tap ad-music library to an R2 bucket. One-time setup:
+
+1. Cloudflare dashboard → **R2** → Create bucket → name it **`jjriggs-media`**.
+2. Pages project → Settings → **Bindings** → Add → R2 bucket →
+   variable name **`MEDIA`** → bucket `jjriggs-media`. Add it for
+   **Production and Preview**, then redeploy.
+3. Optional: seed the music library by uploading commercially-licensed MP3s
+   with the studio signed in: `POST /api/admin/media?kind=music&name=<file>.mp3`
+   (or drop files into the bucket's `music/` folder in the dashboard).
+   They appear as one-tap "♪" tracks in both music pickers within minutes.
+
+Until the binding exists, every cloud feature degrades gracefully (uploads
+report "not configured"; the music list is just empty). Bucket layout:
+`renders/` (timestamped MP4s), `vo/` (voiceover takes, exact filenames so
+projects relink), `music/` (the ad library), `uploads/` (misc). Everything
+under `/media/*` is publicly readable by design — don't put secrets in it.
+
 **Email routing:** quote requests → `LEAD_TO_QUOTE` (sales@), visit + service requests → `LEAD_TO_SERVICE` (service@); every dealer notification is BCC'd to `LEAD_BCC`. `LEAD_TO`, if set, overrides all of that with a single address.
 
 **Test-to-inbox recipe (before domain verification):** set `RESEND_API_KEY`, `LEAD_TO` = your Resend account email, `LEAD_BCC` = `""`, `SEND_CONFIRMATIONS` = `off`. Every form then lands in that one inbox. To go live: verify the domain (§4), set `LEAD_FROM` to a verified address, then **remove** `LEAD_TO` and restore `LEAD_BCC` so real sales@/service@ routing takes over.

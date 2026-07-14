@@ -100,3 +100,48 @@ export async function fetchLibraryPhoto(rawUrl: string, label: string): Promise<
   const base = rawUrl.split('/').pop()?.replace(/\.[a-z]+(\?.*)?$/i, '') ?? label;
   return new File([blob], `${base}.${ext}`, { type: blob.type || 'image/jpeg' });
 }
+
+// ── Cloud media (the jjriggs-media R2 bucket, via the site's functions) ──
+
+export interface CloudTrack { name: string; url: string; size: number }
+
+/** The ad-music library (public, read-only). [] when the bucket isn't wired. */
+export async function fetchMusicList(): Promise<CloudTrack[]> {
+  try {
+    const res = await fetch(`${SITE_BASE}/api/music`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data.tracks) ? data.tracks : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Upload a file to the media bucket (needs the admin session).
+ * Returns the public /media/... URL. Throws with a readable message on
+ * 401 (signed out) / 501 (bucket not wired).
+ */
+export async function uploadMedia(
+  kind: 'renders' | 'vo' | 'music' | 'uploads',
+  name: string,
+  blob: Blob,
+): Promise<string> {
+  const res = await fetch(
+    `${SITE_BASE}/api/admin/media?kind=${kind}&name=${encodeURIComponent(name)}`,
+    { method: 'POST', headers: { 'content-type': blob.type || 'application/octet-stream' }, body: blob },
+  );
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const msg = res.status === 401
+      ? 'Sign in first: open /admin in another tab, enter the passcode, then try again.'
+      : (data as { error?: string }).error ?? `Upload failed (${res.status}).`;
+    throw new Error(msg);
+  }
+  return (data as { url: string }).url;
+}
+
+/** Absolute URL for a /media/... path (for share links). */
+export function absoluteMediaUrl(path: string): string {
+  return new URL(path, window.location.origin).toString();
+}
