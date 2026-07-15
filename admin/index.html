@@ -147,6 +147,23 @@ details{margin:.4rem 0}summary{cursor:pointer;font-weight:600}
     </div>
   </section>
 
+  <!-- SITE APPEARANCE — independent of the 5-step inventory flow -->
+  <div class="card" id="appearanceCard">
+    <h2>Site appearance</h2>
+    <p class="muted">Header style across the whole site. <b>Dark</b> is the current look — see-through over the homepage photo, dark once you scroll. <b>White</b> is like the old site — white bar, black text, from the top and while scrolling. Applies to every page in about a minute.</p>
+    <div class="grid2" style="margin:.9rem 0 0;align-items:end">
+      <div><label>Header style</label>
+        <select id="headerTheme">
+          <option value="dark">Dark (see-through over photo, dark on scroll)</option>
+          <option value="white">White (white bar, black text — like the old site)</option>
+        </select>
+      </div>
+      <div><button class="btn" id="appearanceApply" onclick="applyAppearance()">Apply to the live site ›</button></div>
+    </div>
+    <div class="muted" id="appearanceState" style="margin-top:.6rem">Loading current setting…</div>
+    <div class="log" id="appearanceLog" style="margin-top:.8rem;display:none"></div>
+  </div>
+
 </div>
 
 <dialog id="settings" style="border:1px solid #d9d5c8;padding:1.4rem;max-width:560px;width:92vw">
@@ -475,6 +492,43 @@ async function publish(){
       if(fp)await JJ.waitLive(fp,files[fp],say);
     }
   }catch(e){say('ERROR: '+JJ.explain(e));}
+}
+/* ---------- site appearance (header theme) ---------- */
+const THEME_LABEL={dark:'Dark (current default)',white:'White — like the old site'};
+function settingsFileText(theme){
+  return '// Site-wide appearance settings, editable from /admin (Site appearance card)\n'
+    +'// and published live through the same allowlisted pipeline as inventory data.\n'
+    +'// Loaded on every page BEFORE header.js so the header renders in the right\n'
+    +'// theme on first paint (no flash).\n'
+    +'//   headerTheme: "dark"  = current look (transparent over hero, dark on scroll)\n'
+    +'//                "white" = white bg + black text from the top, like the old\n'
+    +'//                          jjriggsequipment.com header (sticky stays white too)\n'
+    +'window.JJ_SITE_SETTINGS='+JSON.stringify({headerTheme:theme})+';\n';
+}
+(async function loadAppearance(){
+  const el=document.getElementById('appearanceState');
+  try{
+    const t=await (await fetch('/js/site-settings.data.js?v='+Date.now(),{cache:'no-store'})).text();
+    const m=t.match(/window\.JJ_SITE_SETTINGS\s*=\s*(\{[\s\S]*?\})\s*;/);
+    const cur=(m&&JSON.parse(m[1]).headerTheme)==='white'?'white':'dark';
+    document.getElementById('headerTheme').value=cur;
+    el.innerHTML='Currently live: <b>'+esc(THEME_LABEL[cur])+'</b>';
+  }catch(e){el.innerHTML='<span class="pill warn">Could not read the current setting — picking + Apply still works.</span>';}
+})();
+async function applyAppearance(){
+  const theme=document.getElementById('headerTheme').value==='white'?'white':'dark';
+  const btn=document.getElementById('appearanceApply');
+  const log=document.getElementById('appearanceLog');log.style.display='block';log.textContent='';
+  const say=s=>{log.textContent+=s+'\n';log.scrollTop=1e9;};
+  btn.disabled=true;
+  try{
+    const text=settingsFileText(theme);
+    await JJ.publish({target:'live',message:'Header style → '+theme+' via admin',files:{'js/site-settings.data.js':text}},say);
+    say('\n✓ Published. Every page picks it up as soon as the site rebuilds.');
+    await JJ.waitLive('js/site-settings.data.js',text,say);
+    document.getElementById('appearanceState').innerHTML='Currently live: <b>'+esc(THEME_LABEL[theme])+'</b>';
+  }catch(e){say('ERROR: '+JJ.explain(e));}
+  btn.disabled=false;
 }
 const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 fillPhotoTargets();renderFiles();

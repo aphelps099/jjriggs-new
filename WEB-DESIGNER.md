@@ -82,9 +82,10 @@ Where the red goes: `.btn-red`, the hero H1 underline bar (`.hero h1::after`), t
 
 ### 1.6 The header (shared, JS-injected)
 
-Every page includes `header.css` + `header.js` and mounts `<div id="jjHeader" data-variant="..." data-active="...">`.
+Every page includes `header.css` + `header.js` and mounts `<div id="jjHeader" data-variant="..." data-active="...">`. Every page also includes `/js/site-settings.data.js` **before** `header.js` — it carries the admin-selectable header theme, and loading it first means the header paints in the right theme with no flash. New pages must include all three.
 
 - `data-variant="overlay"` — transparent header over a hero (homepage, services). `"solid"` (default) — dark sticky bar (everything else).
+- **Header theme** (`window.JJ_SITE_SETTINGS.headerTheme` in `js/site-settings.data.js`): `"dark"` = the looks above; `"white"` = white bar, black text, red hover accents, from the top *and* while scrolled/sticky (like the old jjriggsequipment.com header) — it overrides both variants, uses `img/jj-riggs-logo-dark.png` (red/black logo), and turns the dropdown icons grey-at-rest/red-on-hover via a CSS `invert()` on the white art. Toggled from the **Site appearance** card on `/admin` (publishes live through the allowlisted `js/*.data.js` pipeline — the editor is the reviewer, same as inventory). The dark topbar stays dark in both themes.
 - `data-active="equipment|service|financing"` — sets the `.current` nav highlight.
 - Topbar: phone / address / hours + socials. Sticky nav shrinks on scroll past 70px (`.scrolled`).
 - "Equipment" opens a full-width **mega-menu** (Tractors / Mowers / Implements cards with white→red icon hover swaps); "Sheds" is a small dropdown linking out to colvillesheds.com.
