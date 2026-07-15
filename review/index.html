@@ -68,7 +68,6 @@
   .btn-fb { background: #1877f2; }
   .btn-ig { background: linear-gradient(45deg, #f09433, #dc2743 55%, #bc1888); }
   .btn-social:active { filter: brightness(.9); }
-  .btn-social.locked { opacity: .35; cursor: not-allowed; filter: grayscale(.4); }
   .btn-social.posted { background: var(--ink-3); border: 1.5px solid var(--green); color: var(--white); }
   .share .lockhint { color: var(--steel); font-size: .82rem; margin: .6rem 0 0; }
   .share textarea { min-height: 64px; margin: 0 0 .7rem; }
@@ -125,18 +124,19 @@
     html += '<p class="meta">Sent for review ' + esc(when) + '</p>';
     html += '<span class="badge ' + esc(r.status) + '">' + (r.status === 'pending' ? 'Waiting for review' : r.status === 'approved' ? '✓ Approved' : 'Changes requested') + '</span>';
 
-    // Share panel — buttons stay locked until the ad is approved.
-    var unlocked = r.status === 'approved';
+    // Share panel — always usable; approval only advises (the confirm dialog
+    // flags an unapproved share, it never blocks one).
     var social = r.social || {};
     html += '<div class="share"><h2>Share it</h2>';
-    if (unlocked && (!(social.facebook && social.facebook.id) || !(social.instagram && social.instagram.id))) {
+    if (!(social.facebook && social.facebook.id) || !(social.instagram && social.instagram.id)) {
       html += '<p class="cap-label">Caption (edit if you like, then pick where it goes):</p>';
       html += '<textarea id="caption">' + esc(r.name + '\n\nJJ Riggs Equipment · Colville, WA · 509-738-2985') + '</textarea>';
     }
-    html += '<div class="row">' + shareBtn('facebook', '📘 Facebook Page', social, unlocked) + shareBtn('instagram', '📸 Instagram', social, unlocked) + '</div>';
-    if (!unlocked) {
-      html += '<p class="lockhint">🔒 Sharing unlocks when the ad is approved.</p>';
-    } else if (r.socialReady && (!r.socialReady.facebook || !r.socialReady.instagram)) {
+    html += '<div class="row">' + shareBtn('facebook', '📘 Facebook Page', social) + shareBtn('instagram', '📸 Instagram', social) + '</div>';
+    if (r.status !== 'approved') {
+      html += '<p class="lockhint">💡 This ad hasn’t been approved yet — you can still share it, we’ll just double-check first.</p>';
+    }
+    if (r.socialReady && (!r.socialReady.facebook || !r.socialReady.instagram)) {
       var missing = [!r.socialReady.facebook && 'Facebook', !r.socialReady.instagram && 'Instagram'].filter(Boolean).join(' & ');
       html += '<p class="lockhint">⚠️ ' + esc(missing) + ' isn’t connected yet — connect it under Social publishing on the admin page.</p>';
     }
@@ -150,7 +150,7 @@
     } else if (r.status === 'changes-requested') {
       html += '<div class="done changes">✏️ Changes requested — a new version will get its own link.</div>';
     } else {
-      html += '<button class="btn btn-approve" id="approve">✅ Approve &amp; share — good to post</button>';
+      html += '<button class="btn btn-approve" id="approve">✅ Approve — good to post</button>';
     }
     html += '<textarea id="note" placeholder="Anything to change? Type it here…"></textarea>';
     html += '<p class="note-hint">Notes go straight to the builder’s inbox.</p>';
@@ -173,24 +173,27 @@
     };
     ['facebook', 'instagram'].forEach(function (p) {
       var b = document.getElementById('share-' + p);
-      if (b && b.tagName === 'BUTTON' && !b.classList.contains('locked')) {
+      if (b && b.tagName === 'BUTTON') {
         b.onclick = function () { publish(p, b); };
       }
     });
   }
 
-  function shareBtn(platform, label, social, unlocked) {
+  function shareBtn(platform, label, social) {
     var posted = social[platform] && social[platform].id;
     if (posted) {
       return '<a class="btn-social posted" href="' + esc(social[platform].url) + '" target="_blank" rel="noopener">✓ Posted — view</a>';
     }
     var cls = platform === 'facebook' ? 'btn-fb' : 'btn-ig';
-    return '<button class="btn-social ' + cls + (unlocked ? '' : ' locked') + '" id="share-' + platform + '"' + (unlocked ? '' : ' disabled') + '>' + label + '</button>';
+    return '<button class="btn-social ' + cls + '" id="share-' + platform + '">' + label + '</button>';
   }
 
   function publish(platform, btn) {
     var nice = platform === 'facebook' ? 'Facebook' : 'Instagram';
-    if (!confirm('Post this ad to the JJ Riggs ' + nice + ' account now?')) return;
+    var ask = record.status === 'approved'
+      ? 'Post this ad to the JJ Riggs ' + nice + ' account now?'
+      : 'Heads up — this ad hasn’t been approved yet.\n\nPost it to the JJ Riggs ' + nice + ' account anyway?';
+    if (!confirm(ask)) return;
     var caption = (document.getElementById('caption') || { value: '' }).value.trim();
     btn.disabled = true;
     var was = btn.textContent;
