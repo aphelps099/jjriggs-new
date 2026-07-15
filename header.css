@@ -105,3 +105,36 @@
 .mobile-menu a{display:block;padding:1rem var(--gut);font-weight:500;color:var(--steel-2);border-top:1px solid var(--line-2);letter-spacing:.02em;text-decoration:none}
 .mobile-menu a:hover{color:#fff}
 .skip{position:absolute;left:-999px;top:0;background:var(--red);color:#fff;padding:.7rem 1rem;z-index:200}.skip:focus{left:0}
+
+/* ---- White header theme (admin-selectable via js/site-settings.data.js) ----
+   header.js adds .theme-white when JJ_SITE_SETTINGS.headerTheme==="white".
+   White bg + black text from the very top AND while scrolled/sticky, like the
+   old jjriggsequipment.com header. The dark topbar above stays as-is so the
+   phone number keeps its contrast. Dropdown icons: grey at rest (CSS-inverted
+   white art), red on hover (the existing -red art). */
+.site-head.theme-white{position:sticky;top:0;background:#fff;border-bottom:1px solid rgba(20,23,26,.14)}
+.site-head.theme-white::before{display:none}
+.site-head.theme-white.scrolled{position:sticky;top:0;background:#fff;border-bottom:1px solid rgba(20,23,26,.14);box-shadow:0 10px 28px -18px rgba(10,12,15,.35)}
+.site-head.theme-white.nav-open{background:#fff;border-bottom-color:rgba(20,23,26,.14)}
+.site-head.theme-white .primary-nav .nav-top{color:var(--ink)}
+.site-head.theme-white .primary-nav .nav-top:hover,.site-head.theme-white .has-menu:hover .nav-top,.site-head.theme-white .nav-top[aria-expanded="true"],.site-head.theme-white .primary-nav .nav-top.current{color:var(--ink);border-color:var(--red)}
+.site-head.theme-white .head-actions .ph{color:var(--ink)}
+.site-head.theme-white .head-actions .ph:hover{color:var(--red)}
+.site-head.theme-white .burger span{background:var(--ink)}
+/* dropdown + mega panels go light */
+.site-head.theme-white .has-menu .submenu{background:rgba(255,255,255,.99);border:1px solid rgba(20,23,26,.14);box-shadow:0 28px 70px -24px rgba(10,12,15,.35)}
+.site-head.theme-white #equip-menu{background:#fff;border-top:1px solid rgba(20,23,26,.12);border-bottom:1px solid rgba(20,23,26,.14);box-shadow:0 34px 70px -34px rgba(10,12,15,.4)}
+.site-head.theme-white .mm-eyebrow,.site-head.theme-white .mm-title{color:var(--ink)}
+.site-head.theme-white .mm-introtxt,.site-head.theme-white .mm-desc{color:#5a6067}
+/* icon art is white-on-transparent — invert it to a quiet grey at rest; the
+   red hover art needs no help on a white panel */
+.site-head.theme-white .mm-ico-base{filter:invert(.62)}
+.site-head.theme-white .mm-feature{background:rgba(20,23,26,.035)}
+.site-head.theme-white .mm-feature:hover{background:rgba(20,23,26,.07)}
+.site-head.theme-white .mm-feature-body::before{background:rgba(20,23,26,.18)}
+.site-head.theme-white .mm-link{color:var(--ink)}
+.site-head.theme-white .mm-feature:hover .mm-link{color:var(--red)}
+/* mobile menu matches */
+.site-head.theme-white .mobile-menu{background:#fff;border-bottom:1px solid rgba(20,23,26,.14)}
+.site-head.theme-white .mobile-menu a{color:var(--ink);border-top:1px solid rgba(20,23,26,.1)}
+.site-head.theme-white .mobile-menu a:hover{color:var(--red)}
