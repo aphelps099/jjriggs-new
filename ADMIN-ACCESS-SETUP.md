@@ -24,6 +24,25 @@ so builder-branch previews work too), each as **Secret / encrypted**:
 Then **redeploy** (Deployments → three-dot menu on the latest → Retry
 deployment) so the functions pick up the vars.
 
+### Optional: social publishing (Facebook / Instagram share buttons)
+
+The ad review pages (`/review/{token}`) grow one-tap **post to Facebook /
+Instagram** buttons once Meta is connected. Easiest path: paste the values
+into **/admin → Social publishing** (stored server-side in the private R2
+config, never in a browser, never publicly served). Alternatively set env
+vars, which override the admin-saved values:
+
+| Variable | Value |
+|---|---|
+| `META_PAGE_ID` | The JJ Riggs Facebook business Page ID (Page → About → Page transparency). |
+| `META_PAGE_TOKEN` | A long-lived Page access token from a Business-type Meta developer app, scopes `pages_manage_posts` (+ `instagram_content_publish` for IG). App can stay in dev mode — only app-role users post. |
+| `META_IG_USER_ID` | Optional — the Instagram Business/Creator account (linked to the Page) user ID, for the Instagram button. |
+
+Reminders: automations can only post to a business **Page** (Meta removed
+personal-profile posting in 2018), and the Instagram account must be a
+professional account linked to that Page. `FACEBOOK-POSTING.md` walks the
+token generation in detail.
+
 ### Copying the keys you already have
 
 They're saved in your browser on whichever site you used the admin tools with

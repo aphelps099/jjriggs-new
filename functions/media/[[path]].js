@@ -14,6 +14,10 @@ export async function onRequestGet({ request, params, env }) {
   }
   const key = (params.path || []).join("/");
   if (!key) return new Response("Not found", { status: 404 });
+  // Only the real media prefixes are public. The bucket also holds
+  // reviews/*.json (unguessable but private-ish) and config/*.json
+  // (secrets — the Meta token) which must never be served.
+  if (!/^(renders|vo|music|uploads)\//.test(key)) return new Response("Not found", { status: 404 });
 
   // Basic range support so <video> can seek cloud renders
   const range = parseRange(request.headers.get("Range"));
