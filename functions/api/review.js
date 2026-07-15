@@ -3,16 +3,16 @@
 //   GET  ?t={token}                     → the review record (+ socialReady)
 //   POST { t, action, note?, by? }      → action: "approve" | "changes" | "note"
 //   POST { t, action:"publish", platform:"facebook"|"instagram", caption? }
-//        → posts the APPROVED video to the connected business account and
-//          records the live post under record.social[platform].
+//        → posts the video to the connected business account and records
+//          the live post under record.social[platform].
 //
 // The token IS the credential (Google-Docs "anyone with the link" model —
 // 120 bits of randomness, unguessable). Approve/notes are deliberately
-// low-stakes. Publish is held to more: the record must already be approved,
-// the platform must be connected (see /api/admin/social), publishing is
-// idempotent per platform, and the only thing it can ever post is this
-// record's own video — so the link-holder (the approver) can share what
-// they just approved, and nothing else.
+// low-stakes. Publish: approval is ADVISORY, not a gate — the page warns
+// before an unapproved share, but the reviewer decides. The rules that do
+// hold: the platform must be connected (see /api/admin/social), publishing
+// is idempotent per platform, and the only thing it can ever post is this
+// record's own video.
 
 import { getSocialConfig, socialStatus, publishToFacebook, publishToInstagram } from "../_social.js";
 
@@ -83,12 +83,13 @@ export async function onRequestPost({ request, env }) {
   return json({ ok: true, status: record.status, notes: record.notes });
 }
 
-// Share an APPROVED ad to the connected business Facebook Page / Instagram.
-// Never posts anything but this record's own video; once per platform.
+// Share the ad to the connected business Facebook Page / Instagram.
+// Approval is advisory, not a gate — the page confirms an unapproved share
+// with the person tapping; the server doesn't block it. Hard rules that DO
+// hold: only this record's own video, once per platform.
 async function publish({ request, env, t, record, body }) {
   const platform = String(body.platform || "");
   if (!["facebook", "instagram"].includes(platform)) return err("platform must be facebook or instagram", 400);
-  if (record.status !== "approved") return err("Approve the ad first — sharing unlocks after approval", 409);
 
   record.social = record.social || {};
   const done = record.social[platform];
