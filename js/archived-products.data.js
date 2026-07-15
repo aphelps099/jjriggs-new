@@ -2,4 +2,4 @@
 // Entries are the exact item objects moved out of the live data files, plus
 // archivedAt/archivedIndex (and archivedGallery for tractors) so Restore can
 // put everything back exactly as it was.
-window.JJ_ARCHIVED={"tym":[],"badboy":[],"mowers":[],"implements":[]};
+window.JJ_ARCHIVED={"tym":[],"badboy":[],"mowers":[],"implements":[{"id":"BR-002","brand":"Braber","group":"Dirt work & grading","category":"Box Blades","duty":"","name":"60\" Standard Box Blade","sub":"Box Blades","familyId":"braber-standard-box-blade","sku":"BE-BBR5N","attach":"3-Point Hitch","width":5,"widthIn":60,"weight":440,"hitch":"Cat 1","c1":true,"c2":false,"c3":false,"hpMin":null,"hpMax":50,"hpRaw":"50 max","fitNote":"","blurb":"Braber 60 in. Standard Box Blade for 3-Point Cat 1. 17 in. moldboard height; replaceable/reversible cutting edges.","img":"https://d163axztg8am2h.cloudfront.net/static/img/d2/92/9ba6e02943409a02eb7bbe7fea5c.webp","page":"https://www.brabereq.com/5ft-box-blade-be-bbr5n","slug":"braber-be-bbr5n","archivedAt":"2026-07-15","archivedIndex":81}]};
