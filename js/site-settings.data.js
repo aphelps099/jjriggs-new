@@ -5,4 +5,4 @@
 //   headerTheme: "dark"  = current look (transparent over hero, dark on scroll)
 //                "white" = white bg + black text from the top, like the old
 //                          jjriggsequipment.com header (sticky stays white too)
-window.JJ_SITE_SETTINGS={"headerTheme":"dark"};
+window.JJ_SITE_SETTINGS={"headerTheme":"white"};
