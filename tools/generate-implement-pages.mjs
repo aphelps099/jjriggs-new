@@ -367,6 +367,7 @@ ${[...styles.entries()].map(([st, rows]) => styleCard(cat, st, rows)).join("\n")
   </div>
 </footer>
 
+<script src="/js/site-settings.data.js"></script>
 <script src="../../header.js"></script>
 <script src="../../js/analytics.js"></script>
 <script src="../../implements-data.js"></script>
