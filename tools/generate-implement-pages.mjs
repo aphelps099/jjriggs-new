@@ -186,8 +186,8 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
    it tucks under the header when the page scrolls. Real crawlable anchors live
    inside the panel regardless of open state, grouped by job. */
 .ch-nav{position:relative;flex:0 0 auto;align-self:flex-start;margin-top:.2rem}
-.catnav-trigger{display:inline-flex;align-items:center;justify-content:space-between;gap:.7rem;width:clamp(220px,24vw,280px);min-height:44px;padding:.5rem .95rem;background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:6px;font-family:inherit;font-size:.95rem;font-weight:600;letter-spacing:.005em;cursor:pointer;transition:background .18s,border-color .18s}
-.catnav-trigger:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.55)}
+.catnav-trigger{display:inline-flex;align-items:center;justify-content:space-between;gap:.7rem;width:clamp(220px,24vw,280px);min-height:44px;padding:.5rem .95rem;background:rgba(15,18,21,.92);color:#fff;border:1px solid rgba(255,255,255,.38);border-radius:6px;font-family:inherit;font-size:.95rem;font-weight:600;letter-spacing:.005em;cursor:pointer;transition:background .18s,border-color .18s}
+.catnav-trigger:hover{background:#0f1215;border-color:rgba(255,255,255,.65)}
 .catnav-trigger:focus-visible{outline:2px solid var(--red);outline-offset:2px}
 .catnav-trigger .cn-chev{flex:none;width:.5rem;height:.5rem;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .2s;margin-top:-.18rem}
 .catnav-trigger[aria-expanded="true"] .cn-chev{transform:rotate(-135deg);margin-top:.1rem}
