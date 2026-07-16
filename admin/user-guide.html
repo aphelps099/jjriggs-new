@@ -153,7 +153,7 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 clamp(1.2rem,4vw,3rem) 3rem
   <h3>Edit or reorder product photos</h3>
   <p>Open <code>/admin/photos/</code>. Add, remove, reorder, or star photos on any product (uploads are auto-resized in the browser). This is also where you <strong>remove a product from the site</strong> (archived, never deleted — one click restores it). The live site's little edit-pencil icons deep-link straight into this tool.</p>
   <h3>Bulk inventory changes from a spreadsheet</h3>
-  <p>Open <code>/admin/</code> (the Inventory Builder). Import CSVs or fetch a published Google Sheet URL, review the validation diff against what's live, optionally AI-enrich missing fields, publish.</p>
+  <p>Open <code>/admin/</code> (Ground Control) and open the <b>Inventory sheet import</b> section. Import CSVs or fetch a published Google Sheet URL, review the validation diff against what's live, optionally AI-enrich missing fields, publish.</p>
   <h3>Change page copy, layout, or design</h3>
   <p>That's a code change: edit the HTML, preview locally (§5), push to a branch, deploy a test build, <strong>walk Andrew through it, then promote</strong>. Nothing ships to the live domain without Andrew seeing it — that's the house rule. (Inventory data and photos through the admin tools are the deliberate exception: there, the editor <em>is</em> the reviewer.)</p>
 </section>
@@ -163,7 +163,7 @@ footer{max-width:var(--maxw);margin:0 auto;padding:0 clamp(1.2rem,4vw,3rem) 3rem
   <p>Three tools, one passcode. Full setup in <code>ADMIN-ACCESS-SETUP.md</code>.</p>
   <ul>
     <li><strong>Access:</strong> <code>jjriggsequipment.com/admin/</code> → enter the shared passcode once → signed in on that device for 30 days. Changing the <code>ADMIN_PASSCODE</code> environment variable in Cloudflare signs everyone out instantly.</li>
-    <li><strong>The tools:</strong> <code>/admin/</code> Inventory Builder (sheet/CSV → site) · <code>/admin/new/</code> New Product wizard (AI extract) · <code>/admin/photos/</code> Product Editor (photos, remove/restore).</li>
+    <li><strong>The tools:</strong> <code>/admin/</code> Ground Control (dashboard: sheet/CSV import, featured carousel, header style, social) · <code>/admin/new/</code> New Product wizard (AI extract) · <code>/admin/photos/</code> Product Editor (photos, remove/restore, photo trash).</li>
     <li><strong>How publishing works:</strong> every publish is a <strong>git commit to the repo</strong> made by the server. History is the undo button.</li>
     <li><strong>Why it's safe:</strong> the publish endpoint has a hard path allowlist — it can only ever write the inventory data files (<code>js/*.data.js</code>, <code>implements-data.js</code>) and photos under <code>img/uploads/</code>. It <strong>cannot touch the site's code</strong>, even with a valid login. The AI extraction endpoint only reads from allowlisted manufacturer sites (TYM, Bad Boy, IronCraft, Braber, CID) and is prompt-bound to never invent a spec.</li>
     <li><strong>Requirements (Cloudflare env vars):</strong> <code>ADMIN_PASSCODE</code>, <code>ANTHROPIC_API_KEY</code>, <code>GH_PUBLISH_TOKEN</code> (fine-grained GitHub token, Contents read/write on this repo only — note its expiry date and renew).</li>
