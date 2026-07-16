@@ -29,9 +29,26 @@ jobs:
           node tools/generate-implement-pages.mjs
           node tools/generate-sitemap.mjs
       - name: Commit results
+        # Admin publishes land as several commits a second apart (data file,
+        # then archive/gallery files), so main often moves between our checkout
+        # and our push. A plain `git push` then fails non-fast-forward and the
+        # run dies silently — which is exactly how a product removal once never
+        # made it onto the static pages. Rebase and retry instead of giving up.
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add implements/ sitemap.xml
-          git diff --cached --quiet || git commit -m "Regenerate category pages + sitemap from data change"
-          git push
+          for i in 1 2 3 4 5 6; do
+            git add implements/ sitemap.xml
+            git diff --cached --quiet && exit 0   # branch already has current pages
+            git commit -m "Regenerate category pages + sitemap from data change"
+            git push && exit 0
+            echo "push rejected (branch moved) — refreshing and retrying ($i/6)"
+            git fetch origin "${GITHUB_REF_NAME}"
+            git reset --hard "origin/${GITHUB_REF_NAME}"
+            # regenerate from the fresh tip so we never push stale pages
+            node tools/generate-implement-pages.mjs
+            node tools/generate-sitemap.mjs
+            sleep 3
+          done
+          echo "could not push after 6 attempts" >&2
+          exit 1
