@@ -44,38 +44,38 @@
 .primary-nav .caret{font-size:.66em;transition:transform .2s}
 .has-menu:hover .caret,.nav-top[aria-expanded="true"] .caret{transform:rotate(180deg)}
 .has-menu{position:relative}
-.has-menu .submenu{position:absolute;top:100%;left:-1.1rem;background:rgba(13,16,20,.98);backdrop-filter:blur(14px);border:1px solid var(--line);padding:.7rem;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease,visibility .2s ease;z-index:90;box-shadow:0 28px 70px -24px rgba(0,0,0,.7)}
+.has-menu .submenu{position:absolute;top:100%;left:-1.1rem;background:rgba(255,255,255,.99);backdrop-filter:blur(14px);border:1px solid rgba(20,23,26,.14);padding:.7rem;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease,visibility .2s ease;z-index:90;box-shadow:0 28px 70px -24px rgba(10,12,15,.4)}
 .has-menu:hover .submenu,.has-menu .submenu.open{opacity:1;visibility:visible;transform:none}
-#equip-menu{position:fixed;left:0;right:0;width:100%;top:154px;padding:0;overflow:hidden;background:#0d1014;border-top:1px solid var(--line);border-bottom:1px solid var(--line);box-shadow:0 34px 70px -34px rgba(0,0,0,.75)}
+#equip-menu{position:fixed;left:0;right:0;width:100%;top:154px;padding:0;overflow:hidden;background:#fff;border-top:1px solid rgba(20,23,26,.12);border-bottom:1px solid rgba(20,23,26,.14);box-shadow:0 34px 70px -34px rgba(10,12,15,.4)}
 #equip-menu .mm-wrap{position:relative;z-index:2;max-width:var(--maxw);margin:0 auto;padding:1.7rem var(--gut);display:grid;grid-template-columns:220px repeat(3,1fr);gap:0;align-items:stretch}
 .mm-intro{display:flex;flex-direction:column;justify-content:center;padding-right:1.6rem}
-.mm-eyebrow{font-family:"Tactic Sans Bld","Helvetica Neue",sans-serif;text-transform:uppercase;letter-spacing:.05em;font-size:1.5rem;color:#fff;line-height:1}
-.mm-introtxt{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;color:var(--steel-2);font-size:.88rem;line-height:1.45;margin-top:.7rem}
+.mm-eyebrow{font-family:"Tactic Sans Bld","Helvetica Neue",sans-serif;text-transform:uppercase;letter-spacing:.05em;font-size:1.5rem;color:var(--ink);line-height:1}
+.mm-introtxt{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;color:#5a6067;font-size:.88rem;line-height:1.45;margin-top:.7rem}
 @media(max-width:1080px){#equip-menu .mm-wrap{grid-template-columns:repeat(3,1fr)}.mm-intro{display:none}}
 .mm-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:.2rem;padding:.5rem 1.7rem;transition:transform .25s}
 .mm-card + .mm-card::before{content:"";position:absolute;left:0;top:6%;bottom:6%;width:3px;background:var(--red);transform:skewX(-13deg)}
 .mm-ico{position:relative;display:inline-block;height:132px;margin:-.6rem 0 -.7rem -.5rem}
 .mm-ico img{height:132px;width:auto;display:block;transition:transform .25s ease}
-.mm-ico-base{transition:opacity .2s ease,transform .25s ease}
+.mm-ico-base{transition:opacity .2s ease,transform .25s ease;filter:invert(.62)}
 .mm-ico-hot{position:absolute;inset:0;opacity:0;transition:opacity .2s ease}
 .mm-card:hover .mm-ico-base{opacity:0}
 .mm-card:hover .mm-ico-hot{opacity:1}
 .mm-card:hover .mm-ico img{transform:translateY(-5px) scale(1.05)}
-.mm-title{display:block;font-family:"Tactic Sans Bld","Helvetica Neue",sans-serif;text-transform:uppercase;letter-spacing:.03em;font-size:1.34rem;color:#fff;line-height:1}
-.mm-desc{display:block;font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:.92rem;color:var(--steel-2);line-height:1.35;max-width:22ch}
+.mm-title{display:block;font-family:"Tactic Sans Bld","Helvetica Neue",sans-serif;text-transform:uppercase;letter-spacing:.03em;font-size:1.34rem;color:var(--ink);line-height:1}
+.mm-desc{display:block;font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:.92rem;color:#5a6067;line-height:1.35;max-width:22ch}
 #sheds-menu{width:440px}
-.mm-feature{display:grid;grid-template-columns:222px 1fr;overflow:hidden;background:rgba(255,255,255,.03);transition:background .2s}
-.mm-feature:hover{background:rgba(255,255,255,.06)}
+.mm-feature{display:grid;grid-template-columns:222px 1fr;overflow:hidden;background:rgba(20,23,26,.035);transition:background .2s}
+.mm-feature:hover{background:rgba(20,23,26,.07)}
 .mm-feature-ico{display:flex;align-items:center;justify-content:center;padding:.7rem;min-height:196px}
 .mm-feature-ico .mm-ico{margin:0;width:100%;height:auto}
 .mm-feature-ico .mm-ico img{width:100%;height:auto}
 .mm-feature:hover .mm-ico-hot{opacity:1}
 .mm-feature:hover .mm-ico img{transform:translateY(-4px) scale(1.04)}
 .mm-feature-body{position:relative;padding:1.1rem 1.2rem 1.1rem 1.5rem;display:flex;flex-direction:column;justify-content:center}
-.mm-feature-body::before{content:"";position:absolute;left:0;top:12%;bottom:12%;width:2px;background:rgba(255,255,255,.16);transform:skewX(-13deg)}
+.mm-feature-body::before{content:"";position:absolute;left:0;top:12%;bottom:12%;width:2px;background:rgba(20,23,26,.18);transform:skewX(-13deg)}
 .mm-feature-body .mm-title{font-size:1.12rem}
 .mm-feature-body .mm-desc{margin:.45rem 0 .9rem}
-.mm-link{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:700;font-size:.74rem;letter-spacing:.05em;text-transform:uppercase;color:#fff;transition:color .15s}
+.mm-link{font-family:"Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:700;font-size:.74rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);transition:color .15s}
 .mm-feature:hover .mm-link{color:var(--red)}
 .head-actions{display:flex;align-items:center;gap:1.6rem;flex:none}
 .head-actions .ph{font-family:"Tactic Sans Bld","Questrial","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:.98rem;font-weight:400;letter-spacing:.02em;color:#fff}
@@ -121,19 +121,6 @@
 .site-head.theme-white .head-actions .ph{color:var(--ink)}
 .site-head.theme-white .head-actions .ph:hover{color:var(--red)}
 .site-head.theme-white .burger span{background:var(--ink)}
-/* dropdown + mega panels go light */
-.site-head.theme-white .has-menu .submenu{background:rgba(255,255,255,.99);border:1px solid rgba(20,23,26,.14);box-shadow:0 28px 70px -24px rgba(10,12,15,.35)}
-.site-head.theme-white #equip-menu{background:#fff;border-top:1px solid rgba(20,23,26,.12);border-bottom:1px solid rgba(20,23,26,.14);box-shadow:0 34px 70px -34px rgba(10,12,15,.4)}
-.site-head.theme-white .mm-eyebrow,.site-head.theme-white .mm-title{color:var(--ink)}
-.site-head.theme-white .mm-introtxt,.site-head.theme-white .mm-desc{color:#5a6067}
-/* icon art is white-on-transparent — invert it to a quiet grey at rest; the
-   red hover art needs no help on a white panel */
-.site-head.theme-white .mm-ico-base{filter:invert(.62)}
-.site-head.theme-white .mm-feature{background:rgba(20,23,26,.035)}
-.site-head.theme-white .mm-feature:hover{background:rgba(20,23,26,.07)}
-.site-head.theme-white .mm-feature-body::before{background:rgba(20,23,26,.18)}
-.site-head.theme-white .mm-link{color:var(--ink)}
-.site-head.theme-white .mm-feature:hover .mm-link{color:var(--red)}
 /* mobile menu matches */
 .site-head.theme-white .mobile-menu{background:#fff;border-bottom:1px solid rgba(20,23,26,.14)}
 .site-head.theme-white .mobile-menu a{color:var(--ink);border-top:1px solid rgba(20,23,26,.1)}

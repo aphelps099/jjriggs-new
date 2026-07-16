@@ -51,18 +51,14 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .fgroup{display:flex;flex-direction:column;gap:.6rem;min-width:0}
 .fgroup-jump{margin-left:auto}
 .flabel{font-size:.8rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#5a6066}
-.bfilter{display:flex;align-items:stretch;gap:.55rem;flex-wrap:wrap}
 .jfilter{display:flex;gap:.55rem;flex-wrap:wrap}
 .jtog{display:inline-flex;align-items:center;min-height:44px;font-family:inherit;border:1.5px solid #b9b4a5;background:#fff;color:var(--ink);padding:.55rem 1.15rem;border-radius:999px;font-weight:500;font-size:1rem;cursor:pointer;transition:.15s}
 .jtog:hover{border-color:var(--ink)}
 .jtog.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.btog{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-width:92px;min-height:44px;height:48px;padding:0 1rem;background:#fff;border:1.5px solid #b9b4a5;cursor:pointer;font-family:inherit;transition:.15s}
-.btog:hover{border-color:var(--ink)}
-.btog.on{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
-.btog img{height:20px;width:auto;object-fit:contain;pointer-events:none}
-.btog img[alt="Bad Boy"]{height:16px}
-.btog .all{font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;text-transform:uppercase;letter-spacing:.04em;font-size:1rem;color:var(--ink)}
-.btog.on .all{color:var(--red)}
+/* brand logos are a plain "we carry these" strip — informational, not filters */
+.bstrip{display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;min-height:48px}
+.bstrip img{height:22px;width:auto;object-fit:contain}
+.bstrip img[alt="Bad Boy"]{height:17px}
 .catjump{font-family:inherit;font-size:1rem;min-height:48px;padding:.55rem 2.4rem .55rem 1rem;border:1.5px solid #b9b4a5;background:#fff;color:var(--ink);cursor:pointer;max-width:100%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2314171a' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;-webkit-appearance:none;appearance:none}
 .catjump:hover{border-color:var(--ink)}
 .noresult{color:#5a6066;font-size:1.05rem;padding:1.2rem 0}
@@ -136,7 +132,12 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     <div class="wrap">
       <div class="filterbar">
         <div class="fgroup"><span class="flabel">Filter by job</span><div class="jfilter" id="jfilter"></div></div>
-        <div class="fgroup"><span class="flabel">Brand</span><div class="bfilter" id="bfilter"></div></div>
+        <div class="fgroup"><span class="flabel">Brands we carry</span><div class="bstrip">
+          <img src="img/bb_logo_horizontal_orange.svg" alt="Bad Boy" loading="lazy">
+          <img src="https://jjriggsequipment.com/wp-content/uploads/2024/10/IronCraft-Attachments-Logo-1.svg" alt="IronCraft" loading="lazy">
+          <img src="https://jjriggsequipment.com/wp-content/uploads/2024/10/braber-equipment-logo-png.png" alt="Braber" loading="lazy">
+          <img src="img/cid-logo-black.svg" alt="CID" loading="lazy">
+        </div></div>
         <div class="fgroup fgroup-jump"><label class="flabel" for="catJump">Jump to category</label><select class="catjump" id="catJump"><option value="">Choose a category…</option></select></div>
       </div>
       <div id="groups"></div>
@@ -226,33 +227,16 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
       '<span class="go">See sizes &amp; specs &rarr;</span></span></a>';
   }
 
-  var active="All",activeJob="All";
+  var activeJob="All";
   function render(){
     var html='';
     ORDER.forEach(function(g){
       if(activeJob!=="All"&&g!==activeJob) return;
-      var cs=CATS.filter(function(c){
-        if(c.group!==g) return false;
-        return active==="All"||brandsFor(c.category).indexOf(active)>-1;
-      });
+      var cs=CATS.filter(function(c){return c.group===g;});
       if(!cs.length) return;
       html+='<section class="group"><div class="gh"><h2>'+g+'</h2></div><div class="grid-clip"><div class="grid">'+cs.map(card).join('')+'</div></div></section>';
     });
     document.getElementById('groups').innerHTML=html||'<p class="noresult">No categories match that filter. Call <a href="tel:+15097382985">509-738-2985</a> and we’ll help you find it.</p>';
-  }
-
-  var BRANDS=[{k:"All"},{k:"Bad Boy",img:"img/bb_logo_horizontal_orange.svg"},
-    {k:"IronCraft",img:"https://jjriggsequipment.com/wp-content/uploads/2024/10/IronCraft-Attachments-Logo-1.svg"},
-    {k:"Braber",img:"https://jjriggsequipment.com/wp-content/uploads/2024/10/braber-equipment-logo-png.png"},
-    {k:"CID",img:"img/cid-logo-black.svg"}];
-  function chips(){
-    document.getElementById('bfilter').innerHTML=BRANDS.map(function(b){
-      var inner=b.img?'<img src="'+b.img+'" alt="'+b.k+'">':'<span class="all">All</span>';
-      return '<button class="btog'+(b.k===active?' on':'')+'" type="button" data-b="'+b.k+'" aria-pressed="'+(b.k===active)+'">'+inner+'</button>';
-    }).join('');
-    Array.prototype.forEach.call(document.querySelectorAll('.btog'),function(el){
-      el.onclick=function(){active=el.getAttribute('data-b');chips();render();};
-    });
   }
 
   function jchips(){
@@ -274,7 +258,7 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     sel.onchange=function(){if(sel.value)location.href='implements/'+sel.value+'/';};
   }
 
-  chips();jchips();jumpMenu();render();
+  jchips();jumpMenu();render();
 })();
 </script>
 <script src="js/analytics.js"></script>
