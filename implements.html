@@ -34,14 +34,42 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .btn-ghost{border-color:rgba(255,255,255,.7);color:#fff;text-transform:uppercase;letter-spacing:.07em}.btn-ghost:hover{background:#fff;color:var(--red);border-color:#fff}
 .cut-tab{display:inline-block;background:var(--red);color:#fff;font-family:"Tactic Sans Bld","Bebas Neue",sans-serif;font-size:clamp(.78rem,1vw,.9rem);letter-spacing:.08em;text-transform:uppercase;line-height:1;padding:.46rem 1.3rem .46rem .95rem;clip-path:polygon(0 0,100% 0,calc(100% - 13px) 100%,0 100%)}
 
-/* HERO — minimal */
-.cat-head{position:relative;overflow:hidden;background:var(--ink);color:#fff;padding:clamp(1.5rem,3vw,2.4rem) 0 clamp(1.4rem,2.6vw,2rem);min-height:clamp(230px,24vw,300px);display:flex;align-items:center}
-.cat-head .wrap{position:relative;z-index:2;width:100%}
+/* HERO — title/copy left, category navigator right (matches subcategory pages).
+   NOTE: no overflow:hidden here — it would clip the floating catnav panel. */
+.cat-head{position:relative;background:var(--ink);color:#fff;padding:clamp(1.5rem,3vw,2.4rem) 0 clamp(1.4rem,2.6vw,2rem);min-height:clamp(230px,24vw,300px);display:flex;align-items:center}
+.cat-head .wrap{position:relative;z-index:2;width:100%;display:flex;align-items:flex-start;justify-content:space-between;gap:clamp(1rem,3vw,2.4rem);flex-wrap:wrap}
+.ch-main{flex:1 1 460px;min-width:0}
 .cat-head h1{font-family:"Michroma","Tactic Sans Bld",sans-serif;text-transform:none;font-size:clamp(1.8rem,3.8vw,3rem);color:#fff;line-height:1.08;letter-spacing:-.01em;margin:.5rem 0 .5rem}
 .cat-head .lead{max-width:52ch;margin:0}
 .ch-photo{position:absolute;top:0;right:0;bottom:0;width:62%;background:url('img/implements-glamour-shot.jpeg') center right/cover no-repeat;filter:grayscale(1) brightness(.9) contrast(1.05);clip-path:polygon(20% 0,100% 0,100% 100%,0 100%);z-index:1}
 .ch-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--ink),rgba(20,23,26,.55) 32%,rgba(20,23,26,0) 64%)}
 @media(max-width:760px){.ch-photo{display:none}}
+
+/* category navigator — same component as the subcategory pages (toggle logic
+   comes from the shared js/implements-cards.js; markup ids must match) */
+.ch-nav{position:relative;flex:0 0 auto;align-self:flex-start;margin-top:.2rem}
+.catnav-trigger{display:inline-flex;align-items:center;justify-content:space-between;gap:.7rem;width:clamp(220px,24vw,280px);min-height:44px;padding:.5rem .95rem;background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:6px;font-family:inherit;font-size:.95rem;font-weight:600;letter-spacing:.005em;cursor:pointer;transition:background .18s,border-color .18s}
+.catnav-trigger:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.55)}
+.catnav-trigger:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.catnav-trigger .cn-chev{flex:none;width:.5rem;height:.5rem;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .2s;margin-top:-.18rem}
+.catnav-trigger[aria-expanded="true"] .cn-chev{transform:rotate(-135deg);margin-top:.1rem}
+.catnav-panel{position:absolute;top:calc(100% + .55rem);right:0;z-index:70;width:min(600px,calc(100vw - 2*var(--gut)));max-height:min(70vh,600px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:#fbfaf6;color:var(--ink);border:1px solid #ddd8cb;border-radius:8px;box-shadow:0 24px 64px -22px rgba(0,0,0,.55)}
+.catnav-panel[hidden]{display:none}
+.catnav-panel-inner{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0 1.6rem;padding:.35rem 1.1rem .7rem}
+.cat-grp{margin:0;padding-top:.5rem;break-inside:avoid}
+.cat-grp .gh{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6f675b;margin:.1rem 0 .2rem;padding-bottom:.14rem;border-bottom:2px solid var(--red)}
+.cat-grp ul{list-style:none}
+.cat-grp li{margin:0}
+.cat-grp a{display:flex;align-items:center;min-height:34px;padding:.16rem .1rem;font-size:.95rem;line-height:1.3;color:var(--ink)}
+.cat-grp a:hover,.cat-grp a:focus-visible{color:var(--red);text-decoration:underline;text-underline-offset:3px}
+@media(max-width:860px){
+  .ch-nav{flex:1 1 100%;width:100%;margin-top:.9rem}
+  .catnav-trigger{width:100%}
+  .catnav-panel{width:100%;left:0;right:auto;max-height:70vh}
+  .catnav-panel-inner{grid-template-columns:1fr}
+  .cat-grp{padding-top:.7rem}
+  .cat-grp a{min-height:44px;padding:.3rem .1rem}
+}
 
 /* BODY */
 .imp-body{background:var(--bone);color:var(--ink);padding:clamp(1.8rem,3.5vw,2.6rem) 0 clamp(2.4rem,5vw,3.6rem)}
@@ -55,12 +83,12 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
 .jtog{display:inline-flex;align-items:center;min-height:44px;font-family:inherit;border:1.5px solid #b9b4a5;background:#fff;color:var(--ink);padding:.55rem 1.15rem;border-radius:999px;font-weight:500;font-size:1rem;cursor:pointer;transition:.15s}
 .jtog:hover{border-color:var(--ink)}
 .jtog.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-/* brand logos are a plain "we carry these" strip — informational, not filters */
-.bstrip{display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;min-height:48px}
-.bstrip img{height:22px;width:auto;object-fit:contain}
-.bstrip img[alt="Bad Boy"]{height:17px}
-.catjump{font-family:inherit;font-size:1rem;min-height:48px;padding:.55rem 2.4rem .55rem 1rem;border:1.5px solid #b9b4a5;background:#fff;color:var(--ink);cursor:pointer;max-width:100%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2314171a' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;-webkit-appearance:none;appearance:none}
-.catjump:hover{border-color:var(--ink)}
+/* brand logos: a full-width "we carry these" row above the job filter —
+   informational, not filters */
+.brandsrow{display:flex;align-items:center;justify-content:space-between;gap:clamp(1.4rem,4vw,3.5rem);flex-wrap:wrap;margin:.6rem 0 clamp(1.3rem,2.8vw,1.9rem);padding-bottom:clamp(1.1rem,2.4vw,1.5rem);border-bottom:1px solid rgba(20,23,26,.16)}
+.brandsrow img{height:36px;width:auto;object-fit:contain}
+.brandsrow img[alt="Bad Boy"]{height:27px}
+@media(max-width:680px){.brandsrow{justify-content:flex-start;gap:1.3rem}.brandsrow img{height:26px}.brandsrow img[alt="Bad Boy"]{height:19px}}
 .noresult{color:#5a6066;font-size:1.05rem;padding:1.2rem 0}
 .noresult a{color:var(--red);font-weight:600}
 
@@ -122,23 +150,34 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
   <section class="cat-head">
     <div class="ch-photo" aria-hidden="true"></div>
     <div class="wrap">
-      <span class="cut-tab">Equipment · Implements</span>
-      <h1>Implements</h1>
-      <p class="lead">Attachments for every job. Front-mount fits all tractors; 3-point comes in Cat 1 &amp; Cat 2.</p>
+      <div class="ch-main">
+        <span class="cut-tab">Equipment · Implements</span>
+        <h1>Implements</h1>
+        <p class="lead">Attachments for every job. Front-mount fits all tractors; 3-point comes in Cat 1 &amp; Cat 2.</p>
+      </div>
+      <div class="ch-nav">
+        <button type="button" class="catnav-trigger" id="catNavBtn" aria-expanded="false" aria-controls="catNavPanel" aria-haspopup="true">
+          <span>Browse categories</span>
+          <span class="cn-chev" aria-hidden="true"></span>
+        </button>
+        <div class="catnav-panel" id="catNavPanel" role="group" aria-label="Browse implement categories" hidden>
+          <div class="catnav-panel-inner" id="catNavInner"></div>
+        </div>
+      </div>
     </div>
   </section>
 
   <section class="imp-body">
     <div class="wrap">
+      <span class="flabel">Brands we carry</span>
+      <div class="brandsrow">
+        <img src="img/bb_logo_horizontal_orange.svg" alt="Bad Boy" loading="lazy">
+        <img src="img/ironcraft-logo.svg" alt="IronCraft" loading="lazy">
+        <img src="img/braber-logo.png" alt="Braber" loading="lazy">
+        <img src="img/cid-logo-black.svg" alt="CID" loading="lazy">
+      </div>
       <div class="filterbar">
         <div class="fgroup"><span class="flabel">Filter by job</span><div class="jfilter" id="jfilter"></div></div>
-        <div class="fgroup"><span class="flabel">Brands we carry</span><div class="bstrip">
-          <img src="img/bb_logo_horizontal_orange.svg" alt="Bad Boy" loading="lazy">
-          <img src="https://jjriggsequipment.com/wp-content/uploads/2024/10/IronCraft-Attachments-Logo-1.svg" alt="IronCraft" loading="lazy">
-          <img src="https://jjriggsequipment.com/wp-content/uploads/2024/10/braber-equipment-logo-png.png" alt="Braber" loading="lazy">
-          <img src="img/cid-logo-black.svg" alt="CID" loading="lazy">
-        </div></div>
-        <div class="fgroup fgroup-jump"><label class="flabel" for="catJump">Jump to category</label><select class="catjump" id="catJump"><option value="">Choose a category…</option></select></div>
       </div>
       <div id="groups"></div>
       <div class="help">
@@ -249,18 +288,26 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Bebas Neue","Questrial","Helvetica Neue"
     });
   }
 
-  function jumpMenu(){
-    var sel=document.getElementById('catJump');if(!sel)return;
-    var opts=CATS.slice().sort(function(a,b){return a.category.localeCompare(b.category);});
-    sel.insertAdjacentHTML('beforeend',opts.map(function(c){
-      return '<option value="'+slug(c.category)+'">'+c.category+'</option>';
-    }).join(''));
-    sel.onchange=function(){if(sel.value)location.href='implements/'+sel.value+'/';};
+  // Category navigator panel — same component as the subcategory pages
+  // (open/close behavior comes from js/implements-cards.js). Groups + links
+  // render from the data so it can never drift from the 21 static pages.
+  function catNav(){
+    var inner=document.getElementById('catNavInner');if(!inner)return;
+    var byGroup={};
+    CATS.forEach(function(c){var g=c.group||'Other';(byGroup[g]=byGroup[g]||[]).push(c.category);});
+    var order=ORDER.filter(function(g){return byGroup[g];})
+      .concat(Object.keys(byGroup).filter(function(g){return ORDER.indexOf(g)<0;}));
+    inner.innerHTML=order.map(function(g){
+      return '<div class="cat-grp"><div class="gh">'+g+'</div><ul>'
+        +byGroup[g].map(function(c){return '<li><a href="implements/'+slug(c)+'/">'+c+'</a></li>';}).join('')
+        +'</ul></div>';
+    }).join('');
   }
 
-  jchips();jumpMenu();render();
+  jchips();catNav();render();
 })();
 </script>
+<script src="js/implements-cards.js"></script>
 <script src="js/analytics.js"></script>
 <script src="js/meta-ads.js"></script>
 </body>
