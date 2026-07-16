@@ -53,6 +53,22 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:.6rem}
 .kv .k{font-weight:600;color:#4a5057}
 .kv .cur{color:#8a8f96}
 details{margin:.4rem 0}summary{cursor:pointer;font-weight:600}
+/* ---- dashboard quick actions ---- */
+.qa{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.7rem;margin-bottom:1.6rem}
+.qa a,.qa button{display:flex;flex-direction:column;align-items:flex-start;gap:.25rem;font-family:inherit;text-align:left;background:#fff;border:1px solid #d9d5c8;border-left:4px solid var(--red);padding:.85rem 1rem;cursor:pointer;text-decoration:none;color:var(--ink);transition:background .15s}
+.qa a:hover,.qa button:hover{background:#faf7ee}
+.qa .ql{font-weight:700;font-size:.95rem}
+.qa .qs{color:#6a7077;font-size:.8rem;line-height:1.35}
+/* ---- accordion cards ---- */
+details.card{padding:0;margin:.4rem 0 1.4rem}
+details.card>summary{list-style:none;display:flex;align-items:baseline;gap:.9rem;flex-wrap:wrap;padding:1.1rem 1.4rem;cursor:pointer}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::after{content:"▾";margin-left:auto;color:#6a7077;transition:transform .15s}
+details.card:not([open])>summary::after{transform:rotate(-90deg)}
+details.card>summary h2{margin:0}
+details.card>summary .sub{color:#6a7077;font-size:.88rem;font-weight:400}
+details.card>.inner{padding:.1rem 1.4rem 1.3rem}
+details.card>.inner>.card{border:0;border-top:1px solid #eee9dd;padding-left:0;padding-right:0;margin-bottom:.6rem}
 </style>
 </head>
 <body>
@@ -67,6 +83,21 @@ details{margin:.4rem 0}summary{cursor:pointer;font-weight:600}
 </div></header>
 
 <div class="wrap">
+
+  <!-- QUICK ACTIONS — pick a job; the right section opens -->
+  <div class="qa">
+    <button onclick="qopen('acc-inventory')"><span class="ql">📄 Update inventory</span><span class="qs">Import the master sheet — prices, stock, new &amp; retired models</span></button>
+    <a href="/admin/photos/"><span class="ql">📷 Fix product photos</span><span class="qs">Add, swap or star photos on any product page</span></a>
+    <a href="/admin/new/"><span class="ql">＋ Add one product</span><span class="qs">New unit wizard — no sheet needed</span></a>
+    <a href="/admin/photos/"><span class="ql">🗑 Removed &amp; trash</span><span class="qs">Restore a removed product or a trashed photo</span></a>
+    <button onclick="qopen('featuredCard')"><span class="ql">⭐ Homepage featured</span><span class="qs">Pick what shows in the Featured Equipment carousel</span></button>
+    <button onclick="qopen('appearanceCard')"><span class="ql">🎨 Header style</span><span class="qs">Dark see-through or white like the old site</span></button>
+    <button onclick="qopen('socialCard')"><span class="ql">📣 Social accounts</span><span class="qs">Connect Facebook &amp; Instagram for one-tap ad posting</span></button>
+  </div>
+
+  <details class="card" id="acc-inventory">
+  <summary><h2>Inventory sheet import</h2><span class="sub">CSV from the master sheet → validate → publish, in 5 steps</span></summary>
+  <div class="inner">
 
   <div class="steps">
     <button class="stepbtn on" data-step="import">1 · Import</button>
@@ -147,9 +178,13 @@ details{margin:.4rem 0}summary{cursor:pointer;font-weight:600}
     </div>
   </section>
 
+  </div>
+  </details>
+
   <!-- SOCIAL PUBLISHING — powers the share buttons on ad review pages -->
-  <div class="card" id="socialCard">
-    <h2>Social publishing</h2>
+  <details class="card" id="socialCard">
+    <summary><h2>Social publishing</h2><span class="sub">Facebook &amp; Instagram share buttons on ad review pages</span></summary>
+    <div class="inner">
     <p class="muted">Connect the <b>JJ Riggs Facebook business Page</b> (and the Instagram business account linked to it) once, and the ad review pages get one-tap “post to Facebook / Instagram” buttons after an ad is approved. Automations can only post to a business Page — never a personal profile (Facebook removed that in 2018).</p>
     <div id="socialStatus" class="muted" style="margin:.8rem 0">Checking connection…</div>
     <details id="socialSetup">
@@ -174,11 +209,13 @@ details{margin:.4rem 0}summary{cursor:pointer;font-weight:600}
       </details>
     </details>
     <div class="log" id="socialLog" style="margin-top:.8rem;display:none"></div>
-  </div>
+    </div>
+  </details>
 
   <!-- SITE APPEARANCE — independent of the 5-step inventory flow -->
-  <div class="card" id="appearanceCard">
-    <h2>Site appearance</h2>
+  <details class="card" id="appearanceCard">
+    <summary><h2>Site appearance</h2><span class="sub">Header style — dark see-through or white like the old site</span></summary>
+    <div class="inner">
     <p class="muted">Header style across the whole site. <b>Dark</b> is the current look — see-through over the homepage photo, dark once you scroll. <b>White</b> is like the old site — white bar, black text, from the top and while scrolling. Applies to every page in about a minute.</p>
     <div class="grid2" style="margin:.9rem 0 0;align-items:end">
       <div><label>Header style</label>
@@ -191,11 +228,13 @@ details{margin:.4rem 0}summary{cursor:pointer;font-weight:600}
     </div>
     <div class="muted" id="appearanceState" style="margin-top:.6rem">Loading current setting…</div>
     <div class="log" id="appearanceLog" style="margin-top:.8rem;display:none"></div>
-  </div>
+    </div>
+  </details>
 
   <!-- HOMEPAGE FEATURED EQUIPMENT — which products show in the carousel -->
-  <div class="card" id="featuredCard">
-    <h2>Homepage featured equipment</h2>
+  <details class="card" id="featuredCard">
+    <summary><h2>Homepage featured equipment</h2><span class="sub">What shows in the “Featured Equipment” carousel</span></summary>
+    <div class="inner">
     <p class="muted">The “Featured Equipment” carousel on the homepage. Pick <b>which</b> products show — photos, names and specs come live from the product data, so updating a product photo updates the carousel automatically.</p>
     <div id="featList" class="muted" style="margin:.9rem 0">Loading…</div>
     <div class="grid2" style="align-items:end">
@@ -207,7 +246,8 @@ details{margin:.4rem 0}summary{cursor:pointer;font-weight:600}
     </div>
     <button class="btn" id="featApply" onclick="applyFeatured()" style="margin-top:1rem" disabled>Apply to the live site ›</button>
     <div class="log" id="featLog" style="margin-top:.8rem;display:none"></div>
-  </div>
+    </div>
+  </details>
 
 </div>
 
@@ -251,6 +291,15 @@ function loadSettings(){for(const k of ['ghtoken','claudekey','claudemodel']){co
 function saveSettings(){for(const k of ['ghtoken','claudekey','claudemodel']){localStorage.setItem('jj_'+k,document.getElementById(k).value.trim());}document.getElementById('settings').close();}
 loadSettings();
 document.getElementById('branch').value='builder/inventory-'+new Date().toISOString().slice(0,10);
+
+/* ---------- dashboard accordions ---------- */
+function qopen(id){const d=document.getElementById(id);if(!d)return;d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'});}
+// remember which sections this browser keeps open
+document.querySelectorAll('details.card[id]').forEach(d=>{
+  const k='jj_acc_'+d.id, v=localStorage.getItem(k);
+  if(v!==null)d.open=v==='1';
+  d.addEventListener('toggle',()=>localStorage.setItem(k,d.open?'1':'0'));
+});
 
 /* ---------- steps ---------- */
 document.querySelectorAll('.stepbtn').forEach(b=>b.onclick=()=>{
