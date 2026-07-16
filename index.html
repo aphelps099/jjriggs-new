@@ -452,11 +452,10 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
           <span class="offer-logo"><img src="https://jjriggsequipment.com/wp-content/uploads/2024/09/tym-1.png" alt="TYM"></span>
           <h2 class="offer-h2">
             <span class="lead-in">Financing as low as</span>
-            <span class="offer-rate"><span class="num num-sm">0.99%</span><span class="apr">APR*</span></span>
+            <span class="offer-rate"><span class="num">0%</span><span class="apr">APR</span></span>
           </h2>
-          <p class="offer-sub">For 60 months on select TYM models.</p>
+          <p class="offer-sub">Contact us for details on latest offer.</p>
           <a class="btn btn-red" href="financing.html">Learn more</a>
-          <p class="offer-fine">*On approved credit. See dealer for details. Offer subject to change.</p>
         </div>
       </div>
       <figure class="offer-media">
@@ -469,11 +468,10 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
           <span class="offer-logo"><img src="img/bb_logo_horizontal_orange.svg" alt="Bad Boy"></span>
           <h2 class="offer-h2">
             <span class="lead-in">Mower financing as low as</span>
-            <span class="offer-rate"><span class="num">0%</span><span class="apr">APR*</span></span>
+            <span class="offer-rate"><span class="num">0%</span><span class="apr">APR</span></span>
           </h2>
-          <p class="offer-sub">For 60 months on any Bad Boy mower.</p>
+          <p class="offer-sub">Contact us for details on latest offer.</p>
           <a class="btn btn-red" href="financing.html">Learn more</a>
-          <p class="offer-fine">*On approved credit. See dealer for details. Offer subject to change.</p>
         </div>
       </div>
       <figure class="offer-media">
@@ -500,40 +498,10 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
         </div>
       </div>
 
+      <!-- Cards render client-side from js/featured.data.js + the product data
+           files, so a photo updated through /admin shows here automatically. -->
       <div class="ft-viewport" id="ftViewport">
-        <div class="ft-track">
-
-          <a class="ft-card" href="product.html?type=tractor&b=Bad%20Boy&m=5055CH">
-            <span class="ft-pic"><span class="ft-tag">Just In</span><img src="img/bb-tractor-images/5055/5055cs_model_photo_1.jpg" alt="Bad Boy 5055CH compact utility tractor" loading="lazy"></span>
-            <span class="ft-body"><span class="ft-brand">Bad Boy</span><span class="ft-name">5055CH</span><span class="ft-meta">Compact Utility · 55 HP</span><span class="ft-go">View details &rarr;</span></span>
-          </a>
-
-          <a class="ft-card" href="product.html?type=mower&m=Rogue">
-            <span class="ft-pic"><span class="ft-tag">Just In</span><img src="img/bad-boy-mowers/bad-boy-rogue-commercial.jpg" alt="Bad Boy Rogue zero-turn mower" loading="lazy"></span>
-            <span class="ft-body"><span class="ft-brand">Bad Boy</span><span class="ft-name">Rogue</span><span class="ft-meta">Zero-Turn · 40 HP</span><span class="ft-go">View details &rarr;</span></span>
-          </a>
-
-          <a class="ft-card" href="product-template.html?type=implement&id=CID-019">
-            <span class="ft-pic"><span class="ft-tag">Just In</span><img src="https://cdn.bfldr.com/71PUUW3G/at/stbpczxfcmfj73ftp8b6t9m/cid-mini-skid-steer-rock-bucket-attachment__82146.png" alt="CID 60-inch rock bucket attachment" loading="lazy"></span>
-            <span class="ft-body"><span class="ft-brand">CID</span><span class="ft-name">60&quot; Rock Bucket</span><span class="ft-meta">Skid-steer attachment</span><span class="ft-go">View details &rarr;</span></span>
-          </a>
-
-          <a class="ft-card" href="product.html?type=tractor&b=Bad%20Boy&m=1025H">
-            <span class="ft-pic"><img src="img/bb-tractor-images/1025/1025_model_photo_1.png" alt="Bad Boy 1025H sub-compact tractor" loading="lazy"></span>
-            <span class="ft-body"><span class="ft-brand">Bad Boy</span><span class="ft-name">1025H</span><span class="ft-meta">Sub-Compact · 25 HP</span><span class="ft-go">View details &rarr;</span></span>
-          </a>
-
-          <a class="ft-card" href="product.html?type=mower&m=Rebel">
-            <span class="ft-pic"><img src="img/bad-boy-mowers/bad-boy-rebel.jpg" alt="Bad Boy Rebel zero-turn mower" loading="lazy"></span>
-            <span class="ft-body"><span class="ft-brand">Bad Boy</span><span class="ft-name">Rebel</span><span class="ft-meta">Zero-Turn · 35 HP</span><span class="ft-go">View details &rarr;</span></span>
-          </a>
-
-          <a class="ft-card" href="product-template.html?type=implement&id=CID-001">
-            <span class="ft-pic"><img src="https://cdn.bfldr.com/71PUUW3G/at/6f3tkw5n9fkfqhnbqmxgjvf/cid-mini-skid-steer-root-grapple-sideways__49254.png" alt="CID 60-inch economy root grapple" loading="lazy"></span>
-            <span class="ft-body"><span class="ft-brand">CID</span><span class="ft-name">60&quot; Root Grapple</span><span class="ft-meta">Skid-steer attachment</span><span class="ft-go">View details &rarr;</span></span>
-          </a>
-
-        </div>
+        <div class="ft-track"></div>
       </div>
 
       <div class="sep-ink" aria-hidden="true"></div>
@@ -750,6 +718,58 @@ h1,h2,h3{font-family:"Tactic Sans Bld","Michroma","Bebas Neue","Questrial","Helv
     offerEl.addEventListener('mouseleave',oStart);
     oShow(0);oStart();
   }
+})();
+</script>
+<script src="js/tym-models.data.js"></script>
+<script src="js/badboy-models.data.js"></script>
+<script src="js/mower-models.data.js"></script>
+<script src="implements-data.js"></script>
+<script src="js/featured.data.js"></script>
+<script>
+/* Featured Equipment — render cards from js/featured.data.js, resolving image,
+   name, spec line and link from the live product data so nothing here can
+   drift from the product pages. Unresolvable entries are skipped, never faked. */
+(function(){
+  var track=document.querySelector('#ftViewport .ft-track');if(!track)return;
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function find(arr,key,val){arr=arr||[];for(var i=0;i<arr.length;i++){if(arr[i][key]===val)return arr[i];}return null;}
+  function resolve(f){
+    var m;
+    if(f.type==='tractor'){
+      m=find(f.brand==='TYM'?window.TYM_MODELS:window.BADBOY_MODELS,'model',f.model);
+      if(!m)return null;
+      return {href:'product.html?type=tractor&b='+encodeURIComponent(f.brand)+'&m='+encodeURIComponent(f.model),
+        img:m.image,brand:f.brand,name:m.model,
+        meta:[m.series,m.hp?m.hp+' HP':''].filter(Boolean).join(' · '),
+        alt:f.brand+' '+m.model+' tractor'};
+    }
+    if(f.type==='mower'){
+      m=find(window.MOWER_MODELS,'model',f.model);
+      if(!m)return null;
+      return {href:'product.html?type=mower&m='+encodeURIComponent(f.model),
+        img:m.image,brand:'Bad Boy',name:m.model,
+        meta:[(m.type||'').replace('Zero Turn','Zero-Turn'),m.hp?m.hp+' HP':''].filter(Boolean).join(' · '),
+        alt:'Bad Boy '+m.model+' mower'};
+    }
+    if(f.type==='implement'){
+      m=find(window.JJ_IMPLEMENTS,'id',f.id);
+      if(!m)return null;
+      return {href:'product-template.html?type=implement&id='+encodeURIComponent(f.id),
+        img:m.img,brand:m.brand==='Ironcraft'?'IronCraft':m.brand,name:m.name,
+        meta:m.category,alt:(m.brand||'')+' '+m.name};
+    }
+    return null;
+  }
+  track.innerHTML=(window.JJ_FEATURED||[]).map(function(f){
+    var r=resolve(f);
+    if(!r){if(window.console)console.warn('Featured item not found in data:',JSON.stringify(f));return '';}
+    return '<a class="ft-card" href="'+esc(r.href)+'">'
+      +'<span class="ft-pic">'+(f.tag?'<span class="ft-tag">'+esc(f.tag)+'</span>':'')
+      +(r.img?'<img src="'+esc(r.img)+'" alt="'+esc(r.alt)+'" loading="lazy">':'')+'</span>'
+      +'<span class="ft-body"><span class="ft-brand">'+esc(r.brand)+'</span><span class="ft-name">'+esc(r.name)+'</span>'
+      +(r.meta?'<span class="ft-meta">'+esc(r.meta)+'</span>':'')
+      +'<span class="ft-go">View details &rarr;</span></span></a>';
+  }).join('');
 })();
 </script>
 <script>

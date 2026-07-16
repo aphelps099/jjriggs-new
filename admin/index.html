@@ -193,6 +193,22 @@ details{margin:.4rem 0}summary{cursor:pointer;font-weight:600}
     <div class="log" id="appearanceLog" style="margin-top:.8rem;display:none"></div>
   </div>
 
+  <!-- HOMEPAGE FEATURED EQUIPMENT — which products show in the carousel -->
+  <div class="card" id="featuredCard">
+    <h2>Homepage featured equipment</h2>
+    <p class="muted">The “Featured Equipment” carousel on the homepage. Pick <b>which</b> products show — photos, names and specs come live from the product data, so updating a product photo updates the carousel automatically.</p>
+    <div id="featList" class="muted" style="margin:.9rem 0">Loading…</div>
+    <div class="grid2" style="align-items:end">
+      <div><label>Add a product</label><select id="featAdd"></select></div>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+        <button class="btn ghost sm" onclick="featAddItem(false)">＋ Add</button>
+        <button class="btn ghost sm" onclick="featAddItem(true)">＋ Add with “Just In” tag</button>
+      </div>
+    </div>
+    <button class="btn" id="featApply" onclick="applyFeatured()" style="margin-top:1rem" disabled>Apply to the live site ›</button>
+    <div class="log" id="featLog" style="margin-top:.8rem;display:none"></div>
+  </div>
+
 </div>
 
 <dialog id="settings" style="border:1px solid #d9d5c8;padding:1.4rem;max-width:560px;width:92vw">
@@ -604,6 +620,76 @@ async function applyAppearance(){
   }catch(e){say('ERROR: '+JJ.explain(e));}
   btn.disabled=false;
 }
+/* ---------- homepage featured equipment ---------- */
+let FEAT=null; // working copy; null until loaded
+function featLabel(f){
+  if(f.type==='tractor')return f.brand+' '+f.model+' (tractor)';
+  if(f.type==='mower')return 'Bad Boy '+f.model+' (mower)';
+  const i=(window.JJ_IMPLEMENTS||[]).find(x=>x.id===f.id);
+  return i?(i.brand+' '+i.name+' (implement)'):('⚠ missing implement '+f.id);
+}
+function featuredFileText(list){
+  return '// Homepage "Featured Equipment" carousel — WHICH products are featured.\n'
+    +'// Everything else (image, name, spec line, link) is resolved live from the\n'
+    +'// product data files, so an image updated through /admin updates here too.\n'
+    +'// Edit this list from /admin (Homepage featured equipment card) or by hand:\n'
+    +'//   tractor:   {"type":"tractor","brand":"TYM"|"Bad Boy","model":"..."}\n'
+    +'//   mower:     {"type":"mower","model":"..."}\n'
+    +'//   implement: {"type":"implement","id":"..."}   (id from implements-data.js)\n'
+    +'// Optional on any entry: "tag":"Just In" (corner ribbon).\n'
+    +'window.JJ_FEATURED=[\n'+list.map(f=>'  '+JSON.stringify(f)).join(',\n')+'\n];\n';
+}
+function renderFeat(){
+  const el=document.getElementById('featList');
+  if(!FEAT){el.textContent='Loading…';return;}
+  if(!FEAT.length){el.innerHTML='<span class="pill warn">Nothing featured — the homepage carousel will be empty</span>';}
+  else{
+    el.innerHTML='<table class="tbl">'+FEAT.map((f,i)=>'<tr><td style="width:1.5rem">'+(i+1)+'</td><td>'+esc(featLabel(f))+'</td>'
+      +'<td><label style="display:inline-flex;align-items:center;gap:.35rem;text-transform:none;letter-spacing:0;font-size:.85rem;margin:0"><input type="checkbox" '+(f.tag?'checked':'')+' onchange="featTag('+i+',this.checked)" style="width:auto">Just In</label></td>'
+      +'<td style="white-space:nowrap"><button class="btn ghost sm" '+(i===0?'disabled':'')+' onclick="featMove('+i+',-1)">↑</button> '
+      +'<button class="btn ghost sm" '+(i===FEAT.length-1?'disabled':'')+' onclick="featMove('+i+',1)">↓</button> '
+      +'<button class="btn ghost sm" onclick="featDel('+i+')">✕</button></td></tr>').join('')+'</table>';
+  }
+  document.getElementById('featApply').disabled=false;
+}
+function featMove(i,d){const x=FEAT.splice(i,1)[0];FEAT.splice(i+d,0,x);renderFeat();}
+function featDel(i){FEAT.splice(i,1);renderFeat();}
+function featTag(i,on){if(on)FEAT[i].tag='Just In';else delete FEAT[i].tag;}
+function featAddItem(tagged){
+  if(!FEAT)return;
+  const t=JSON.parse(document.getElementById('featAdd').value);
+  const entry=t.kind==='tym'?{type:'tractor',brand:'TYM',model:eff('tym')[t.i].model}
+    :t.kind==='badboy'?{type:'tractor',brand:'Bad Boy',model:eff('badboy')[t.i].model}
+    :t.kind==='mowers'?{type:'mower',model:eff('mowers')[t.i].model}
+    :{type:'implement',id:eff('implements')[t.i].id};
+  if(tagged)entry.tag='Just In';
+  FEAT.push(entry);renderFeat();
+}
+(async function loadFeatured(){
+  try{
+    const t=await (await fetch('/js/featured.data.js?v='+Date.now(),{cache:'no-store'})).text();
+    const m=t.match(/window\.JJ_FEATURED\s*=\s*(\[[\s\S]*?\])\s*;/);
+    FEAT=m?JSON.parse(m[1]):[];
+  }catch(e){FEAT=[];}
+  // product picker reuses the photo tool's option list (built by fillPhotoTargets,
+  // which has run by the time this await resolves)
+  document.getElementById('featAdd').innerHTML=document.getElementById('photoTarget').innerHTML;
+  renderFeat();
+})();
+async function applyFeatured(){
+  const btn=document.getElementById('featApply');
+  const log=document.getElementById('featLog');log.style.display='block';log.textContent='';
+  const say=s=>{log.textContent+=s+'\n';log.scrollTop=1e9;};
+  btn.disabled=true;
+  try{
+    const text=featuredFileText(FEAT);
+    await JJ.publish({target:'live',message:'Homepage featured equipment via admin',files:{'js/featured.data.js':text}},say);
+    say('\n✓ Published.');
+    await JJ.waitLive('js/featured.data.js',text,say);
+  }catch(e){say('ERROR: '+JJ.explain(e));}
+  btn.disabled=false;
+}
+
 const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 fillPhotoTargets();renderFiles();
 </script>
