@@ -22,7 +22,10 @@ const REPO = "jjriggs-new";
 const BASE_BRANCH = "main";
 const BRANCH_RE = /^builder\/[a-zA-Z0-9._-]{1,80}$/;
 const FILE_RE = /^(js\/[a-zA-Z0-9._-]+\.data\.js|implements-data\.js)$/;
-const PHOTO_RE = /^img\/uploads\/[a-zA-Z0-9._-]+\.(jpe?g|png)$/i;
+// trash/ is the photo recycle bin: the photos editor MOVES an unreferenced
+// upload there (copy + delete) instead of hard-deleting it, and a scheduled
+// Action empties it after 30 days. Deeper nesting stays forbidden.
+const PHOTO_RE = /^img\/uploads\/(trash\/)?[a-zA-Z0-9._-]+\.(jpe?g|png)$/i;
 const MAX_ITEMS = 40;
 
 export async function onRequestPost({ request, env }) {

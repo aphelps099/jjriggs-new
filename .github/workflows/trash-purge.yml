@@ -1,0 +1,42 @@
+name: Empty old photo trash
+
+# The /admin/photos/ editor moves unused upload photos to img/uploads/trash/
+# instead of deleting them (restorable from the editor's Photo trash section).
+# This empties anything older than 30 days — see tools/purge-photo-trash.mjs.
+on:
+  schedule:
+    - cron: "17 9 * * *" # daily, ~1am Pacific
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Purge expired trash
+        run: node tools/purge-photo-trash.mjs
+      - name: Commit results
+        # same rebase-retry as regenerate.yml — admin publishes can land while
+        # this runs, and a rejected push must not kill the purge silently
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for i in 1 2 3 4 5; do
+            git add -A   # data file rewrite + deletions under img/uploads/trash/
+            git diff --cached --quiet && exit 0
+            git commit -m "Empty photo trash entries older than 30 days"
+            git push && exit 0
+            echo "push rejected (main moved) — refreshing and retrying ($i/5)"
+            git fetch origin main
+            git reset --hard origin/main
+            node tools/purge-photo-trash.mjs
+            sleep 3
+          done
+          echo "could not push after 5 attempts" >&2
+          exit 1

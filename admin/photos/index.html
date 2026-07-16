@@ -216,6 +216,7 @@ dialog::backdrop{background:rgba(20,23,26,.55)}
 <script src="/js/tractor-features.data.js"></script>
 <script src="/js/mower-features.data.js"></script>
 <script src="/js/archived-products.data.js"></script>
+<script src="/js/photo-trash.data.js"></script>
 <script src="/admin/common.js"></script>
 
 <script>
@@ -255,6 +256,11 @@ const ARCH=(window.JJ_ARCHIVED&&typeof window.JJ_ARCHIVED==='object')?window.JJ_
 for(const kk of Object.keys(KINDS))if(!Array.isArray(ARCH[kk]))ARCH[kk]=[];
 const SHEET_TAB={tym:'Tractors',badboy:'Tractors',mowers:'Mowers',implements:'Implements'};
 let ARCH_OPEN=false, LC=null;
+
+/* ---------- photo trash — mirrors js/photo-trash.data.js ---------- */
+const TRASH=Array.isArray(window.JJ_PHOTO_TRASH)?window.JJ_PHOTO_TRASH:[];
+const TRASH_DAYS=30;
+let TRASH_OPEN=false;
 
 /* ---------- state ----------
    W[id]  working copy  {main, gallery:[...], removed:[{src,from}]}
@@ -303,8 +309,9 @@ function renderList(){
     }).join('');
   }
   if(!html)html='<p class="muted" style="padding:1rem">No products match.</p>';
-  el.innerHTML=html+renderArchive();
+  el.innerHTML=html+renderArchive()+renderTrash();
   const d=el.querySelector('.archsec');if(d)d.ontoggle=()=>{ARCH_OPEN=d.open;};
+  const tr=el.querySelector('.trashsec');if(tr)tr.ontoggle=()=>{TRASH_OPEN=tr.open;};
 }
 document.getElementById('q').oninput=renderList;
 
@@ -319,6 +326,75 @@ function renderArchive(){
       +'<button class="btn ghost sm" onclick="askRestore(\''+kind+'\','+i+')">Restore</button></div>';
   }).join('')).join('');
   return '<details class="archsec"'+(ARCH_OPEN?' open':'')+'><summary>Removed products ('+n+')</summary>'+inner+'</details>';
+}
+
+function renderTrash(){
+  let inner;
+  if(!TRASH.length)inner='<p class="muted" style="padding:.2rem .8rem .8rem;font-size:.84rem">Empty. When a photo comes off every page, it lands here instead of being deleted — restorable for '+TRASH_DAYS+' days.</p>';
+  else inner='<p class="muted" style="padding:.2rem .8rem .4rem;font-size:.8rem">Photos here are off the site but not gone. Each auto-deletes '+TRASH_DAYS+' days after it was trashed.</p>'
+    +TRASH.map((t,i)=>'<div class="arch"><span class="th"><img src="'+esc(disp(t.trash))+'" alt="" loading="lazy"></span>'
+      +'<span class="nm"><b>'+esc(t.name||'photo')+'</b><small>'+esc((KINDS[t.kind]||{}).label||t.kind||'')+' · trashed '+esc(t.deletedAt||'')+'</small></span>'
+      +'<button class="btn ghost sm" onclick="askRestorePhoto('+i+')">Restore</button></div>').join('');
+  return '<details class="archsec trashsec"'+(TRASH_OPEN?' open':'')+'><summary>🗑 Photo trash ('+TRASH.length+')</summary>'+inner+'</details>';
+}
+
+/* ---------- photo trash restore ---------- */
+function askRestorePhoto(i){
+  if(lifecycleBlocked())return;
+  const t=TRASH[i];if(!t)return;
+  const k=KINDS[t.kind];
+  const idx=k?k.arr().findIndex(m=>String(k.name(m)).toLowerCase()===String(t.name).toLowerCase()):-1;
+  const attach=idx>-1
+    ?(k.galKey?'It goes back into the “'+esc(t.name)+'” photo gallery.':'It becomes the main photo of “'+esc(t.name)+'” again (replacing the current one).')
+    :'“'+esc(t.name)+'” is no longer on the site, so the photo returns to the uploads library only — re-attach it to a product by hand if you need it on a page.';
+  openLifecycle({
+    title:'Restore this photo?',
+    btn:'Restore ›',
+    body:'<p class="muted" style="margin-top:.4rem">'+attach+' Live in about a minute.</p>'
+      +'<div style="margin-top:.7rem"><img src="'+esc(disp(t.trash))+'" alt="" style="max-height:140px;border:1px solid #d9d5c8"></div>',
+    go:()=>doRestorePhoto(i,idx),
+  });
+}
+async function doRestorePhoto(i,idx){
+  const t=TRASH[i],k=KINDS[t.kind];
+  document.getElementById('lcgo').disabled=true;
+  try{
+    const b64=await fetchB64(t.trash);
+    const files={'js/photo-trash.data.js':serializeTrash(TRASH.filter((_,j)=>j!==i))};
+    const photos={[t.orig]:b64};
+    let attached=false,m=null;
+    if(idx>-1){
+      m=k.arr()[idx];
+      if(k.galKey){
+        const key=k.galKey(m);
+        const gal=((window.UPLOADS_CURRENT||{})[key]||GA()[key]||[]).slice();
+        if(!gal.includes(t.orig))gal.push(t.orig);
+        files['js/uploads-gallery.data.js']=serializeGallery({...(window.UPLOADS_CURRENT||{}),[key]:gal});
+      }else{
+        const arr=k.arr().map((x,j)=>j===idx?{...x,[k.imgField]:t.orig}:x);
+        files[k.file]=serializeKind(t.kind,arr);
+      }
+      attached=true;
+    }
+    await JJ.publish({target:'live',message:'Restore photo from trash — '+(t.name||t.orig),files,photos,deletions:[t.trash]},lcSay);
+    // publish succeeded — mirror it in memory
+    if(attached){
+      if(k.galKey){
+        const key=k.galKey(m);
+        const gal=((window.UPLOADS_CURRENT||{})[key]||GA()[key]||[]).slice();
+        if(!gal.includes(t.orig))gal.push(t.orig);
+        window.UPLOADS_CURRENT={...(window.UPLOADS_CURRENT||{}),[key]:gal};
+        window.TRACTOR_GALLERY=Object.assign(window.TRACTOR_GALLERY||{},{[key]:gal});
+      }else{
+        k.arr()[idx][k.imgField]=t.orig;
+      }
+      for(const id of Object.keys(W)){delete W[id];delete B[id];}
+    }
+    TRASH.splice(i,1);
+    TRASH_OPEN=true;renderList();if(CUR)renderPane();
+    lcSay('\n✓ Restored.');
+    lcDone(attached?'':'<div class="sheetbox">The photo file is back at <code>'+esc(t.orig)+'</code> — open a product and add it from there if you want it on a page.</div>');
+  }catch(e){lcSay('ERROR: '+JJ.explain(e));document.getElementById('lcgo').disabled=false;}
 }
 
 /* ---------- editor pane ---------- */
@@ -484,6 +560,22 @@ function serializeArchive(arch){
     +'// put everything back exactly as it was.\n'
     +'window.JJ_ARCHIVED='+JSON.stringify(arch)+';\n';
 }
+function serializeTrash(list){
+  return '// Photo trash — uploads that came off every page via /admin/photos/.\n'
+    +'// Instead of hard-deleting, the editor moves the file to img/uploads/trash/\n'
+    +'// and records it here so it can be restored with one click. A scheduled\n'
+    +'// GitHub Action (trash-purge.yml) empties entries older than 30 days.\n'
+    +'// Entry shape: {trash, orig, kind, name, deletedAt}\n'
+    +'window.JJ_PHOTO_TRASH='+JSON.stringify(list)+';\n';
+}
+// raw bytes of a repo file as base64 (no canvas re-encode — bytes move as-is)
+async function fetchB64(path){
+  const r=await fetch('/'+path+'?v='+Date.now(),{cache:'no-store'});
+  if(!r.ok)throw new Error('could not read '+path+' ('+r.status+')');
+  const buf=new Uint8Array(await r.arrayBuffer());
+  let s='';for(let i=0;i<buf.length;i+=0x8000)s+=String.fromCharCode.apply(null,buf.subarray(i,i+0x8000));
+  return btoa(s);
+}
 
 /* ---------- remove / restore (archive, never delete) ---------- */
 function lifecycleBlocked(){
@@ -495,10 +587,12 @@ function openLifecycle(o){
     '<h2>'+o.title+'</h2>'+o.body
     +'<div style="display:flex;gap:.6rem;margin-top:1.1rem;flex-wrap:wrap">'
     +'<button class="btn'+(o.danger?' danger':'')+'" id="lcgo">'+o.btn+'</button>'
+    +(o.alt?'<button class="btn'+(o.danger?' danger':'')+'" id="lcalt">'+o.alt.btn+'</button>':'')
     +'<button class="btn ghost" id="lccancel" onclick="document.getElementById(\'lifecycle\').close()">Cancel</button></div>'
     +'<div class="log" id="lclog" style="margin-top:1rem;display:none"></div>'
     +'<div id="lcafter"></div>';
   document.getElementById('lcgo').onclick=o.go;
+  if(o.alt)document.getElementById('lcalt').onclick=o.alt.go;
   document.getElementById('lifecycle').showModal();
 }
 function lcSay(s){const log=document.getElementById('lclog');log.style.display='block';log.textContent+=s+'\n';log.scrollTop=1e9;}
@@ -508,54 +602,90 @@ function lcDone(afterHtml){
   document.getElementById('lcafter').innerHTML=afterHtml;
 }
 
+// Implements are sold as size families ("Standard Box Blade" in 60/72/84")
+// that render as ONE card with a sizes table on the category page. Removing
+// one size only drops a row — the card stays. Surface that in the dialog and
+// offer removing the whole family, or Andrew sees "nothing changed".
+const stripSize=n=>String(n||'').replace(/^\s*\d+(?:\.\d+)?\s*["']\s+/,'').trim();
+function implFamily(index){
+  const arr=window.JJ_IMPLEMENTS||[],me=arr[index];if(!me)return[index];
+  const key=i=>i.familyId||(i.category+'|'+stripSize(i.name));
+  const mine=key(me);
+  return arr.map((it,i)=>({it,i})).filter(({it})=>key(it)===mine).map(({i})=>i);
+}
 async function askRemove(){
   if(!CUR||lifecycleBlocked())return;
   const kind=kindOf(CUR),index=+CUR.split(':')[1],k=KINDS[kind],m=model(CUR),name=k.name(m);
-  // warn (don't block) if the homepage's hand-built Featured Equipment carousel shows this model
+  // warn (don't block) if the homepage Featured Equipment carousel shows this
+  // model — it renders from js/featured.data.js, so check the featured list
   let featured=false;
   try{
-    const t=await (await fetch('/index.html',{cache:'no-store'})).text();
-    const sec=((t.match(/<section class="featured"[\s\S]*?<\/section>/)||[])[0]||'').toLowerCase();
-    featured=sec.includes(String(name).toLowerCase())||(m.id&&sec.includes(String(m.id).toLowerCase()));
+    const t=await (await fetch('/js/featured.data.js?v='+Date.now(),{cache:'no-store'})).text();
+    const list=JSON.parse((t.match(/window\.JJ_FEATURED\s*=\s*(\[[\s\S]*?\])\s*;/)||[])[1]||'[]');
+    featured=list.some(f=>kind==='implements'?f.id===m.id:String(f.model||'').toLowerCase()===String(name).toLowerCase());
   }catch(e){}
+  const fam=kind==='implements'?implFamily(index):[index];
+  const famNote=fam.length>1
+    ?'<div class="note">ℹ️ “'+esc(name)+'” is <b>one size of a '+fam.length+'-size card</b> ('
+      +fam.map(i=>esc(window.JJ_IMPLEMENTS[i].name)).join(' · ')
+      +'). Removing just this size keeps the card on the page — only its row in the sizes table comes off. To take the whole card down, use <b>Remove all '+fam.length+' sizes</b>.</div>'
+    :'';
   openLifecycle({
     title:'Take “'+esc(name)+'” off the site?',
-    danger:true,btn:'Remove from the site ›',
-    body:'<p class="muted" style="margin-top:.4rem">It comes off the site in about a minute. <b>Nothing is deleted</b> — you can put it back anytime with one click from <b>Removed products</b> at the bottom of the product list.</p>'
-      +(featured?'<div class="note">⚠ This model appears in the <b>Featured Equipment</b> section on the homepage. That section is updated by hand, so the homepage card will NOT come off automatically — tell Aaron before removing.</div>':''),
-    go:()=>doRemove(kind,index),
+    danger:true,btn:fam.length>1?'Remove only this size ›':'Remove from the site ›',
+    body:'<p class="muted" style="margin-top:.4rem">'
+      +(kind==='implements'
+        ?'The category page rebuilds automatically — <b>allow about two minutes</b> before checking.'
+        :'It comes off the site in about a minute.')
+      +' <b>Nothing is deleted</b> — you can put it back anytime with one click from <b>Removed products</b> at the bottom of the product list.</p>'
+      +famNote
+      +(featured?'<div class="note">⚠ This model is in the homepage <b>Featured Equipment</b> carousel. Take it out on the /admin page (Homepage featured equipment card) — otherwise the homepage card goes blank.</div>':''),
+    go:()=>doRemove(kind,[index]),
+    alt:fam.length>1?{btn:'Remove all '+fam.length+' sizes ›',go:()=>doRemove(kind,fam)}:null,
   });
 }
-async function doRemove(kind,index){
-  const k=KINDS[kind],arr=k.arr(),item=arr[index],name=k.name(item);
+async function doRemove(kind,indices){
+  const k=KINDS[kind],arr=k.arr();
+  indices=[...indices].sort((a,b)=>a-b);
+  const items=indices.map(i=>arr[i]);
+  const name=items.length>1?stripSize(k.name(items[0]))+' (all '+items.length+' sizes)':k.name(items[0]);
   document.getElementById('lcgo').disabled=true;
+  const alt=document.getElementById('lcalt');if(alt)alt.disabled=true;
   try{
-    const entry={...item,archivedAt:new Date().toISOString().slice(0,10),archivedIndex:index};
+    const today=new Date().toISOString().slice(0,10);
     const files={};
-    const galKey=k.galKey?k.galKey(item):null;
     let nextGal=null;
-    if(galKey&&(window.UPLOADS_CURRENT||{})[galKey]){
-      entry.archivedGallery=window.UPLOADS_CURRENT[galKey];
-      nextGal={...window.UPLOADS_CURRENT};delete nextGal[galKey];
-      files['js/uploads-gallery.data.js']=serializeGallery(nextGal);
-    }
-    files[k.file]=serializeKind(kind,arr.slice(0,index).concat(arr.slice(index+1)));
-    const nextArch={...ARCH,[kind]:ARCH[kind].concat([entry])};
+    const entries=indices.map((idx,j)=>{
+      const item=arr[idx];
+      const entry={...item,archivedAt:today,archivedIndex:idx};
+      const galKey=k.galKey?k.galKey(item):null;
+      if(galKey&&(window.UPLOADS_CURRENT||{})[galKey]){
+        entry.archivedGallery=window.UPLOADS_CURRENT[galKey];
+        nextGal=nextGal||{...window.UPLOADS_CURRENT};delete nextGal[galKey];
+      }
+      return entry;
+    });
+    if(nextGal)files['js/uploads-gallery.data.js']=serializeGallery(nextGal);
+    const keep=new Set(indices);
+    files[k.file]=serializeKind(kind,arr.filter((_,i)=>!keep.has(i)));
+    const nextArch={...ARCH,[kind]:ARCH[kind].concat(entries)};
     files['js/archived-products.data.js']=serializeArchive(nextArch);
     await JJ.publish({target:'live',message:'Remove '+name+' from the site via product editor',files},lcSay);
     // publish succeeded — update this page's in-memory state to match
-    arr.splice(index,1);
+    for(let j=indices.length-1;j>=0;j--)arr.splice(indices[j],1);
     ARCH[kind]=nextArch[kind];
-    if(nextGal){window.UPLOADS_CURRENT=nextGal;if(window.TRACTOR_GALLERY)delete window.TRACTOR_GALLERY[galKey];}
+    if(nextGal){window.UPLOADS_CURRENT=nextGal;items.forEach(it=>{if(k.galKey&&window.TRACTOR_GALLERY)delete window.TRACTOR_GALLERY[k.galKey(it)];});}
     for(const id of Object.keys(W)){delete W[id];delete B[id];}
     CUR=null;ARCH_OPEN=true;renderList();updatePubbar();
-    document.getElementById('pane').innerHTML='<div class="card"><h2>Removed</h2><p>“'+esc(name)+'” is coming off the site now. Restore it anytime from <b>Removed products</b> at the bottom of the product list.</p></div>';
+    document.getElementById('pane').innerHTML='<div class="card"><h2>Removed</h2><p>“'+esc(name)+'” is coming off the site now'
+      +(kind==='implements'?' — the category page rebuilds automatically, allow about two minutes':'')
+      +'. Restore it anytime from <b>Removed products</b> at the bottom of the product list.</p></div>';
     lcSay('\n✓ Published.');
     lcDone('<div class="sheetbox"><b>Last step — keep the sheet truthful.</b>'
-      +'<p style="margin-top:.3rem">In the <b>'+SHEET_TAB[kind]+'</b> tab of the JJ Riggs Inventory Master sheet, find the row for “'+esc(name)+'” and change its <b>Status</b> to <b>Hidden</b>.</p>'
+      +'<p style="margin-top:.3rem">In the <b>'+SHEET_TAB[kind]+'</b> tab of the JJ Riggs Inventory Master sheet, find the row'+(items.length>1?'s':'')+' for “'+esc(name)+'” and change '+(items.length>1?'their':'its')+' <b>Status</b> to <b>Hidden</b>.</p>'
       +'<p class="muted" style="margin-top:.4rem">Skip this and the next sheet import will put the product back on the site (the builder\'s diff screen would show it as an ADD first).</p></div>');
     JJ.waitLive(k.file,files[k.file],lcSay);
-  }catch(e){lcSay('ERROR: '+JJ.explain(e));document.getElementById('lcgo').disabled=false;}
+  }catch(e){lcSay('ERROR: '+JJ.explain(e));document.getElementById('lcgo').disabled=false;if(alt)alt.disabled=false;}
 }
 
 function askRestore(kind,i){
@@ -627,11 +757,16 @@ function genFiles(){
     files['js/uploads-gallery.data.js']=serializeGallery({...(window.UPLOADS_CURRENT||{}),...galleryOverrides});
   // photos to upload: new files still referenced after all edits
   const uploads={};for(const[p,v]of Object.entries(NEW))if(referenced(p))uploads[p]=v.b64;
-  // photos to delete from the repo: session-removed img/uploads/* files nothing references anymore
-  const dels=new Set();
+  // session-removed img/uploads/* files nothing references anymore — these go
+  // to the TRASH (moved, not deleted; restorable for TRASH_DAYS), tagged with
+  // the product they came off so Restore knows where to put them back
+  const trashables={};
   for(const id of dirtyIds())for(const r of W[id].removed)
-    if(r.src&&r.src.startsWith('img/uploads/')&&!NEW[r.src]&&!referenced(r.src))dels.add(r.src);
-  return{files,uploads,deletions:[...dels]};
+    if(r.src&&r.src.startsWith('img/uploads/')&&!r.src.startsWith('img/uploads/trash/')&&!NEW[r.src]&&!referenced(r.src)&&!trashables[r.src]){
+      const kind=kindOf(id);
+      trashables[r.src]={kind,name:String(KINDS[kind].name(model(id)))};
+    }
+  return{files,uploads,trashables};
 }
 
 /* ---------- review dialog ---------- */
@@ -642,7 +777,7 @@ function openReview(){
     ids.map(id=>{const d=describe(id);return '<div class="row"><b>'+esc(d.label)+'</b><span>'+esc(d.text)+'</span></div>';}).join('')
     +'<div class="row"><b>Files</b><span class="muted">'+Object.keys(g.files).map(esc).join(' · ')
     +(Object.keys(g.uploads).length?' · '+Object.keys(g.uploads).length+' photo upload'+(Object.keys(g.uploads).length>1?'s':''):'')
-    +(g.deletions.length?' · '+g.deletions.length+' unused upload file'+(g.deletions.length>1?'s':'')+' deleted':'')+'</span></div>';
+    +(Object.keys(g.trashables).length?' · '+Object.keys(g.trashables).length+' unused photo'+(Object.keys(g.trashables).length>1?'s':'')+' → Trash (restorable for '+TRASH_DAYS+' days)':'')+'</span></div>';
   document.getElementById('branch').value='builder/photos-'+new Date().toISOString().slice(0,10);
   document.getElementById('publog').style.display='none';
   document.getElementById('gobtn').disabled=false;
@@ -658,8 +793,23 @@ async function publish(){
     const preview=document.getElementById('previewMode').checked;
     const branch=document.getElementById('branch').value.trim();
     const msg=document.getElementById('commitmsg').value.trim()||'Photo updates via photo editor';
-    const{files,uploads,deletions}=genFiles();
+    const{files,uploads,trashables}=genFiles();
+    // move unused uploads to the trash: copy bytes to img/uploads/trash/,
+    // delete the original, record it for one-click restore
+    const deletions=[];const trashAdds=[];
+    const today=new Date().toISOString().slice(0,10);
+    for(const[src,info]of Object.entries(trashables)){
+      try{
+        const b64=await fetchB64(src);
+        const trashPath='img/uploads/trash/'+today.replace(/-/g,'')+'-'+src.split('/').pop();
+        uploads[trashPath]=b64;
+        deletions.push(src);
+        trashAdds.push({trash:trashPath,orig:src,kind:info.kind,name:info.name,deletedAt:today});
+      }catch(e){say('note: could not move '+src+' to trash ('+e.message+') — leaving the file in place');}
+    }
+    if(trashAdds.length)files['js/photo-trash.data.js']=serializeTrash(TRASH.concat(trashAdds));
     await JJ.publish({target:preview?'preview':'live',branch,message:msg,files,photos:uploads,deletions},say);
+    if(!preview&&trashAdds.length){TRASH.push(...trashAdds);say(trashAdds.length+' photo'+(trashAdds.length>1?'s':'')+' moved to Trash — restorable for '+TRASH_DAYS+' days from the bottom of the product list.');}
     if(preview){
       say('\n✓ Published to the preview branch.');
       say('Preview (after Cloudflare builds): https://'+branch.replace(/[^a-z0-9-]/g,'-')+'.jjriggs-new.pages.dev');
@@ -667,9 +817,22 @@ async function publish(){
       say('\nThis editor still shows the site as it is today — reload the page after the PR merges.');
     }else{
       say('\n✓ Published.');
+      // fold what was just published into this page's live-data mirror so
+      // editing (and trash restore) can continue without a reload
+      for(const id of dirtyIds()){
+        const kind=kindOf(id),k=KINDS[kind],m=model(id);
+        if(W[id].main!==B[id].main){if(W[id].main)m[k.imgField]=W[id].main;else delete m[k.imgField];}
+        if(k.galKey&&JSON.stringify(W[id].gallery)!==JSON.stringify(B[id].gallery)){
+          const key=k.galKey(m),gal=W[id].gallery.slice();
+          window.UPLOADS_CURRENT={...(window.UPLOADS_CURRENT||{}),[key]:gal};
+          window.TRACTOR_GALLERY=Object.assign(window.TRACTOR_GALLERY||{},{[key]:gal});
+        }
+      }
+      for(const id of Object.keys(W)){delete W[id];delete B[id];}
+      if(CUR){ensure(CUR);renderPane();}
+      renderList();updatePubbar();
       const fp=Object.keys(files)[0];
       if(fp)await JJ.waitLive(fp,files[fp],say);
-      say('Reload this page to keep editing from the fresh data.');
       btn.disabled=false;
     }
   }catch(e){say('ERROR: '+JJ.explain(e));btn.disabled=false;}

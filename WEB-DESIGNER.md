@@ -132,12 +132,17 @@ All catalog content is plain-JS globals loaded via `<script>`:
 | `js/tractor-features.data.js` | `TRACTOR_FEATURES` | `"Brand|Model"` |
 | `js/mower-features.data.js` | `MOWER_FEATURES` | model |
 | `js/badboy-tractor-images.data.js` | `TRACTOR_GALLERY` | `"Brand|Model"` |
+| `js/featured.data.js` | `JJ_FEATURED` | model / implement `id` (homepage carousel; editable in /admin) |
+| `js/photo-trash.data.js` | `JJ_PHOTO_TRASH` | — (photo recycle bin; managed by /admin/photos/) |
+| `js/archived-products.data.js` | `JJ_ARCHIVED` | — (removed products; managed by /admin/photos/) |
+
+**Publishing mechanics worth knowing:** admin publishes land as several commits seconds apart; the regenerate Action (static implement pages + sitemap) and the trash-purge Action both push with a refresh-and-retry loop because a plain push loses that race (a July 2026 product-removal demo failed exactly this way — the pages never rebuilt and the run died silently). Photos removed from every page are MOVED to `img/uploads/trash/` + recorded in `js/photo-trash.data.js` (one-click restore in /admin/photos/, auto-purged after 30 days by `trash-purge.yml`) — never hard-deleted. Implements are size families that render as one card: removing one size only drops a table row; the editor offers "remove all N sizes" for taking the card down.
 
 **The iron rule: model names are foreign keys.** Feature copy and galleries are keyed on the exact `"Brand|Model"` string. Rename or remove a model in a main data file without updating the keyed files and the product page **silently** loses its features/gallery — no error, no 404, just a quietly worse page. This exact bug class cost us a full reconciliation pass in June 2026.
 
 **After any model rename/removal, always:**
 1. Update the matching keys in `tractor-features.data.js` / `badboy-tractor-images.data.js` / mower equivalents.
-2. `grep` the whole repo for the old model string — nav links, `index.html`'s hardcoded carousel, anchors.
+2. `grep` the whole repo for the old model string — nav links, `js/featured.data.js` (homepage carousel entries), anchors.
 3. Load the category page in a browser; click through to the product page; confirm title, Open Station/Cab label, photo, features, gallery.
 4. Node-syntax-check the data files (`node --check`).
 
