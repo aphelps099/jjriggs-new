@@ -51,7 +51,18 @@
   mount.outerHTML=html;
 
   var head=document.getElementById('siteHead');
-  var onScroll=function(){var y=window.pageYOffset||document.documentElement.scrollTop;if(y>70){head.classList.add('scrolled');}else if(y<24){head.classList.remove('scrolled');}};
+  // Shrink-on-scroll with WIDE hysteresis. The shrink removes 62px of in-flow
+  // height on sticky headers (white theme + solid pages); Chrome's scroll
+  // anchoring compensates scrollY by up to that much, so the on/off band must
+  // be comfortably larger than 62px or arrow-key scrolling near the threshold
+  // ping-pongs the header between states (Andrew's Chrome laptop stutter).
+  // header.css also sets overflow-anchor:none as the second half of this fix.
+  var isScrolled=false;
+  var onScroll=function(){
+    var y=window.pageYOffset||document.documentElement.scrollTop;
+    if(!isScrolled&&y>150){isScrolled=true;head.classList.add('scrolled');}
+    else if(isScrolled&&y<10){isScrolled=false;head.classList.remove('scrolled');}
+  };
   onScroll();window.addEventListener('scroll',onScroll,{passive:true});
 
   var burger=document.getElementById('burger'),menu=document.getElementById('mobileMenu');
